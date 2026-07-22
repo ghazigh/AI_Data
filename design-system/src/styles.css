@@ -71,6 +71,37 @@
 .dl-on-ink .dl-seclabel { color: var(--dl-on-ink-muted); }
 .dl-on-ink .dl-seclabel--rule::before { background: var(--dl-blue-bright); }
 
+/* Stat */
+.dl-stat-value { font-family: var(--dl-font-display); font-size: var(--dl-text-h2); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.dl-stat-label { font-size: var(--dl-text-small); color: var(--dl-grey-4); margin-top: 12px; max-width: 280px; }
+.dl-stat-source { display: block; font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); margin-top: 10px; }
+.dl-on-ink .dl-stat-label { color: var(--dl-on-ink-muted); }
+
+/* Card */
+.dl-card { border: var(--dl-hairline); padding: var(--dl-space-6); }
+.dl-card--paper { background: var(--dl-paper); }
+.dl-card--canvas { background: var(--dl-canvas); }
+.dl-card--ink { background: var(--dl-ink); border-color: #2A2A30; }
+.dl-card-label { display: block; font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dl-card-title { font-family: var(--dl-font-display); font-size: var(--dl-text-h3); font-weight: 600; letter-spacing: -0.015em; margin-top: 10px; }
+.dl-card-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); margin-top: 10px; line-height: 1.65; }
+.dl-card--ink .dl-card-body { color: var(--dl-on-ink-muted); }
+.dl-card--ink .dl-card-label { color: var(--dl-on-ink-muted); }
+
+/* Input */
+.dl-field { display: flex; flex-direction: column; gap: 8px; }
+.dl-field-label { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-4); }
+.dl-input { border: var(--dl-hairline); border-radius: 0; background: var(--dl-paper); padding: 12px 14px; font-size: var(--dl-text-small); color: var(--dl-ink); transition: border-color var(--dl-ease); }
+.dl-input::placeholder { color: var(--dl-grey-3); }
+.dl-input:focus { border-color: var(--dl-blue); outline: none; }
+
+/* Logo */
+.dl-logo { display: inline-flex; align-items: center; gap: 9px; font-family: var(--dl-font-display); font-weight: 700; letter-spacing: -0.02em; color: var(--dl-ink); line-height: 1; }
+.dl-logo-stream { stroke: currentColor; stroke-width: 1.4; }
+.dl-logo-merge { stroke: var(--dl-blue); stroke-width: 3; stroke-linecap: round; }
+.dl-on-ink .dl-logo { color: var(--dl-on-ink); }
+.dl-on-ink .dl-logo-merge { stroke: var(--dl-blue-bright); }
+
 /* ===== signature (Task 4) ===== */
 
 /* ===== sections (Task 5–7) ===== */
