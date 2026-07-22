@@ -1,0 +1,43 @@
+:root {
+  /* color */
+  --dl-canvas: #FCFCFB;
+  --dl-paper: #FFFFFF;
+  --dl-ink: #101013;
+  --dl-blue: #0031E3;
+  --dl-blue-bright: #3D5FFF; /* blue on ink sections */
+  --dl-blue-wash: #EEF1FE;
+  --dl-grey-1: #F1F1EE;
+  --dl-grey-2: #E4E4E0;
+  --dl-grey-3: #9A9AA2;
+  --dl-grey-4: #6D6D76;
+  --dl-ink-2: #1A1A1E;
+  --dl-on-ink: #F4F4F2;
+  --dl-on-ink-muted: #8F8F98;
+  --dl-ok: #1E7A46;
+  --dl-warn: #B7791F;
+
+  /* type */
+  --dl-font-display: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --dl-font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --dl-font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --dl-text-label: 0.75rem;   /* 12 */
+  --dl-text-small: 0.875rem;  /* 14 */
+  --dl-text-body: 1rem;       /* 16 */
+  --dl-text-lead: 1.25rem;    /* 20 */
+  --dl-text-h3: 1.75rem;      /* 28 */
+  --dl-text-h2: 2.5rem;       /* 40 */
+  --dl-text-h1: 3.5rem;       /* 56 */
+  --dl-text-display: 4.5rem;  /* 72 */
+
+  /* space */
+  --dl-space-1: 4px; --dl-space-2: 8px; --dl-space-3: 12px; --dl-space-4: 16px;
+  --dl-space-5: 24px; --dl-space-6: 32px; --dl-space-7: 48px; --dl-space-8: 64px;
+  --dl-space-9: 96px; --dl-space-10: 128px;
+
+  /* shape & motion */
+  --dl-radius-pill: 999px;
+  --dl-hairline: 1px solid var(--dl-grey-2);
+  --dl-hairline-ink: 1px solid #2A2A30;
+  --dl-ease: 0.18s ease;
+  --dl-max-width: 1160px;
+}

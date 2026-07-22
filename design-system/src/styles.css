@@ -1,0 +1,34 @@
+@import './fonts/fonts.css';
+@import './tokens.css';
+
+/* ===== base ===== */
+.dl-root, .dl-root * , .dl-root *::before, .dl-root *::after { box-sizing: border-box; }
+.dl-root {
+  margin: 0;
+  background: var(--dl-canvas);
+  color: var(--dl-ink);
+  font-family: var(--dl-font-body);
+  font-size: var(--dl-text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.dl-root ::selection { background: var(--dl-blue); color: #fff; }
+.dl-wrap { max-width: var(--dl-max-width); margin: 0 auto; padding: 0 28px; }
+.dl-root :is(a) { color: inherit; text-decoration: none; }
+.dl-root :is(h1,h2,h3,h4,p,ul,ol,figure,blockquote) { margin: 0; }
+.dl-root :is(ul,ol) { padding: 0; list-style: none; }
+.dl-root :is(button,input) { font: inherit; }
+.dl-root :is(a,button,input,summary):focus-visible { outline: 2px solid var(--dl-blue); outline-offset: 2px; }
+.dl-on-ink :is(a,button,input,summary):focus-visible { outline-color: var(--dl-blue-bright); }
+@media (prefers-reduced-motion: reduce) {
+  .dl-root *, .dl-root *::before, .dl-root *::after { animation: none !important; transition: none !important; }
+}
+
+/* dark section base */
+.dl-on-ink { background: var(--dl-ink); color: var(--dl-on-ink); }
+
+/* ===== primitives (Task 2–3) ===== */
+
+/* ===== signature (Task 4) ===== */
+
+/* ===== sections (Task 5–7) ===== */
