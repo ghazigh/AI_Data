@@ -83,6 +83,29 @@
   .card p{font-size:14.5px;color:var(--mut)}
   .card .src{display:block;margin-top:14px;font-size:11.5px;color:var(--dim)}
 
+  /* promises */
+  .pillars{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:48px}
+  @media(max-width:860px){.pillars{grid-template-columns:1fr}}
+  .pillar{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:34px;position:relative;overflow:hidden}
+  .pillar::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+  .pillar.p1::before{background:linear-gradient(90deg,var(--c1),var(--c2))}
+  .pillar.p2::before{background:linear-gradient(90deg,var(--c2),var(--c3))}
+  .pillar .pk{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+  .pillar.p1 .pk{color:var(--c1)}
+  .pillar.p2 .pk{color:var(--c3)}
+  .pillar h3{font-size:24px;letter-spacing:-.015em;line-height:1.2}
+  .pillar>p{font-size:14.5px;color:var(--mut);margin-top:12px}
+  .pillar ul{margin:18px 0 0;list-style:none}
+  .pillar li{font-size:14px;color:var(--mut);padding:7px 0 7px 26px;position:relative}
+  .pillar li b{color:var(--txt);font-weight:600}
+  .pillar li::before{content:"◆";position:absolute;left:0;font-size:10px;top:11px}
+  .pillar.p1 li::before{color:var(--c1)}
+  .pillar.p2 li::before{color:var(--c3)}
+  .pillar .pwords{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+  .pillar .pword{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--line2)}
+  .pillar.p1 .pword{color:var(--c1)}
+  .pillar.p2 .pword{color:var(--c3)}
+
   /* loop */
   .loop{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:52px}
   @media(max-width:960px){.loop{grid-template-columns:repeat(3,1fr)}}
@@ -186,6 +209,7 @@
     <a class="logo" href="#"><span class="logo-mark"></span>Datalith</a>
     <div class="nav-links">
       <a href="#problem">Why</a>
+      <a href="#promises">What you get</a>
       <a href="#platform">Platform</a>
       <a href="#products">Products</a>
       <a href="#security">Security</a>
@@ -237,9 +261,43 @@
       <p class="sub">The model war is over for buyers. The context war is starting — and most companies are walking into it with silos, stale pipelines, and hand-rolled MCP servers.</p>
     </div>
     <div class="cards3">
-      <div class="card reveal"><div class="big grad-text">Silos</div><h3>Data lives in 20+ systems</h3><p>Warehouses, SaaS apps, wikis, tickets, drives. Every agent team rebuilds the same brittle integrations — then rebuilds them again.</p><span class="src">The average enterprise runs 5+ data platforms and hundreds of SaaS apps.</span></div>
+      <div class="card reveal"><div class="big grad-text">Blind</div><h3>Nobody can see the estate</h3><p>Data lives in 20+ systems — warehouses, SaaS, wikis, drives — and nobody can answer "what do we have, where is it, and what's happening in our databases right now?"</p><span class="src">The average enterprise runs 5+ data platforms and hundreds of SaaS apps.</span></div>
       <div class="card reveal"><div class="big grad-text">No context</div><h3>Pipes without meaning</h3><p>MCP moves context — it doesn't produce it. Without a shared semantic layer, agents guess at metrics, join the wrong entities, and answer confidently wrong.</p><span class="src">Gartner: 60% of MCP-only agentic analytics projects will fail by 2028.</span></div>
       <div class="card reveal"><div class="big grad-text">No trust</div><h3>Security says no</h3><p>Agents with god-mode credentials and zero audit trail don't survive review. Governance is where agent rollouts go to die.</p><span class="src">Inadequate risk controls: a top-3 reason agentic projects get canceled.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="promises" style="padding-top:20px">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">What you get</span>
+      <h2>Two promises.</h2>
+      <p class="sub">Your data is everywhere — warehouses, SaaS apps, drives, tickets — and nobody in the company can say what exists, where it lives, or what's happening inside it. Datalith fixes that in two moves.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar p1 reveal">
+        <div class="pk">Promise 01 — See everything</div>
+        <h3>Visibility, transparency, control over all your data.</h3>
+        <p>One live dashboard for the entire estate. Know what you have, watch what's happening in your databases, and decide exactly who — human or agent — can touch what.</p>
+        <ul>
+          <li><b>Live estate map</b> — every source, table, document and pipeline, discovered automatically</li>
+          <li><b>Activity stream</b> — what's changing, what's going stale, what's breaking, in real time</li>
+          <li><b>Access control &amp; audit</b> — every human and agent touch logged and governed</li>
+        </ul>
+        <div class="pwords"><span class="pword">Visibility</span><span class="pword">Transparency</span><span class="pword">Control</span></div>
+      </div>
+      <div class="pillar p2 reveal">
+        <div class="pk">Promise 02 — Make it work for agents</div>
+        <h3>Every modality made agent-ready — and its potential unlocked.</h3>
+        <p>Tables, documents, tickets, transcripts, images — all prepared for agent consumption. Then Datalith goes further: it detects the potential sleeping in your databases and tells you what to build with it.</p>
+        <ul>
+          <li><b>Agent-ready, agent-friendly</b> — cleaned, typed, chunked, embedded, scored (ARS 0–100)</li>
+          <li><b>Potential detection</b> — automation opportunities mined directly from your data</li>
+          <li><b>Suggested workflows &amp; knowledge bases</b> — deployable agentic blueprints, topic by topic</li>
+        </ul>
+        <div class="pwords"><span class="pword">Agent-ready</span><span class="pword">Detected potential</span><span class="pword">Suggested workflows</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -272,10 +330,10 @@
     <div class="prod-grid">
       <div class="prod reveal"><div class="picon">⛓️</div><span class="tag">Ingestion</span><h3>Datalith Connect</h3><p>Every source, one platform. Multi-source, multi-platform, multi-modal.</p><ul><li>150+ connectors: warehouses, DBs, SaaS, files, streams</li><li>Tables, documents, tickets, transcripts, images</li><li>Read-only, incremental, agentless</li></ul></div>
       <div class="prod reveal"><div class="picon">🕸️</div><span class="tag">Knowledge</span><h3>Datalith Graph</h3><p>The Enterprise Knowledge Graph — your company, resolved into one ontology.</p><ul><li>Auto-extracted entities &amp; relationships</li><li>Cross-source identity resolution</li><li>Lineage, freshness &amp; provenance on every node</li></ul></div>
-      <div class="prod reveal"><div class="picon">🧭</div><span class="tag">Semantics</span><h3>Datalith Topics</h3><p>The semantic layer agents can trust — auto-defined, human-curated.</p><ul><li>Business domains &amp; topic maps</li><li>Canonical metric definitions &amp; glossary</li><li>Authoritative-source rules per topic</li></ul></div>
+      <div class="prod reveal"><div class="picon">🧭</div><span class="tag">Semantics</span><h3>Datalith Topics</h3><p>The semantic layer agents can trust — auto-defined, human-curated.</p><ul><li>Business domains &amp; topic maps</li><li>Canonical metric definitions &amp; glossary</li><li>Auto-built knowledge base per topic</li></ul></div>
       <div class="prod reveal"><div class="picon">⚡</div><span class="tag">Preparation</span><h3>Datalith Ready</h3><p>The agent-ready data engine — measured by one number your board understands.</p><ul><li>Cleaning, dedup, semantic typing, chunking, embeddings</li><li>PII detection &amp; masking</li><li>Agent-Readiness Score (ARS 0–100) per domain</li></ul></div>
       <div class="prod reveal"><div class="picon">🛰️</div><span class="tag">Serving</span><h3>Datalith Gateway</h3><p>One governed endpoint for your whole estate. Any framework, any agent.</p><ul><li>MCP-native; adapters for every major agent SDK</li><li>Per-agent identity &amp; least-privilege scopes</li><li>Full audit log of every agent query</li></ul></div>
-      <div class="prod reveal"><div class="picon">🤖</div><span class="tag">Intelligence</span><h3>Datalith Flows</h3><p>Recommended agentic workflows — mined from your own data, with ROI attached.</p><ul><li>Detects automation opportunities across sources</li><li>Deployable blueprints with guardrails &amp; eval sets</li><li>Exports to LangGraph, CrewAI, OpenAI Agents, n8n</li></ul></div>
+      <div class="prod reveal"><div class="picon">🤖</div><span class="tag">Intelligence</span><h3>Datalith Flows</h3><p>Recommended agentic workflows — mined from your own data, with ROI attached.</p><ul><li>Detects dormant potential in your databases</li><li>Deployable blueprints with guardrails &amp; eval sets</li><li>Exports to LangGraph, CrewAI, OpenAI Agents, n8n</li></ul></div>
     </div>
   </div>
 </section>

@@ -98,9 +98,50 @@ function chip(s, x, y, label, color) {
   s.addNotes("Window: agents everywhere + MCP exposing the missing semantic layer + budgets explicitly allocated to context infrastructure in the next 12 months.");
 }
 
-/* ---------- 4. SOLUTION ---------- */
+/* ---------- 4. TWO PROMISES ---------- */
 {
-  const s = base("04", "The solution");
+  const s = base("04", "What clients get");
+  title(s, "Two promises: see everything.\nMake everything agent-ready.");
+  // pillar 1 — visibility
+  card(s, M, 2.5, 5.85, 3.75);
+  s.addText("PROMISE 01 — SEE EVERYTHING", { x: M + 0.35, y: 2.8, w: 5.15, h: 0.3, fontFace: F, fontSize: 11, bold: true, color: CYAN, charSpacing: 2, margin: 0 });
+  s.addText("Visibility. Transparency. Control.", { x: M + 0.35, y: 3.15, w: 5.15, h: 0.45, fontFace: F, fontSize: 19, bold: true, color: TXT, margin: 0 });
+  s.addText("Clients have data everywhere — and no idea what they have or what's happening in their databases. Datalith maps the whole estate into one live dashboard.",
+    { x: M + 0.35, y: 3.68, w: 5.15, h: 0.85, fontFace: F, fontSize: 12, color: MUT, margin: 0, lineSpacingMultiple: 1.12 });
+  [
+    ["Live estate map", "every source, table & document, auto-discovered"],
+    ["Activity stream", "what's changing, going stale, or breaking — live"],
+    ["Control & audit", "who (human or agent) touches what, fully logged"],
+  ].forEach(([h, b], i) => {
+    const y = 4.62 + i * 0.5;
+    s.addShape("ellipse", { x: M + 0.38, y: y + 0.08, w: 0.12, h: 0.12, fill: { color: CYAN }, line: { type: "none" } });
+    s.addText([{ text: h + " — ", options: { bold: true, color: TXT } }, { text: b, options: { color: MUT } }],
+      { x: M + 0.65, y, w: 4.9, h: 0.42, fontFace: F, fontSize: 11.5, margin: 0 });
+  });
+  // pillar 2 — agent-ready + potential
+  card(s, 6.78, 2.5, 5.85, 3.75);
+  s.addText("PROMISE 02 — MAKE IT WORK FOR AGENTS", { x: 7.13, y: 2.8, w: 5.15, h: 0.3, fontFace: F, fontSize: 11, bold: true, color: PUR, charSpacing: 2, margin: 0 });
+  s.addText("Agent-ready. Potential unlocked.", { x: 7.13, y: 3.15, w: 5.15, h: 0.45, fontFace: F, fontSize: 19, bold: true, color: TXT, margin: 0 });
+  s.addText("Every modality — tables, docs, tickets, transcripts — prepared for agents. Then we detect the potential sleeping in the data and suggest what to build with it.",
+    { x: 7.13, y: 3.68, w: 5.15, h: 0.85, fontFace: F, fontSize: 12, color: MUT, margin: 0, lineSpacingMultiple: 1.12 });
+  [
+    ["Agent-ready, agent-friendly", "cleaned, typed, chunked, embedded, scored"],
+    ["Potential detection", "automation opportunities mined from your DBs"],
+    ["Suggested workflows & knowledge bases", "deployable, topic by topic"],
+  ].forEach(([h, b], i) => {
+    const y = 4.62 + i * 0.5;
+    s.addShape("ellipse", { x: 7.16, y: y + 0.08, w: 0.12, h: 0.12, fill: { color: PUR }, line: { type: "none" } });
+    s.addText([{ text: h + " — ", options: { bold: true, color: TXT } }, { text: b, options: { color: MUT } }],
+      { x: 7.43, y, w: 4.9, h: 0.42, fontFace: F, fontSize: 11.5, margin: 0 });
+  });
+  s.addText("First we show you what you have. Then we turn it into an agent workforce.",
+    { x: M, y: 6.6, w: W - 2 * M, h: 0.4, align: "center", fontFace: F, fontSize: 15, bold: true, italic: true, color: CYAN, margin: 0 });
+  s.addNotes("The value prop in two beats. Beat 1: visibility, transparency, control — the estate made legible. Beat 2: agent-readiness across all modalities, plus detected potential: suggested agentic workflows and knowledge bases.");
+}
+
+/* ---------- 5. SOLUTION ---------- */
+{
+  const s = base("05", "The solution");
   title(s, "Datalith: the agentic data center.");
   s.addText("Connect read-only. Get your Agent-Readiness Score in 48 hours. No migration.",
     { x: M, y: 1.75, w: 11, h: 0.4, fontFace: F, fontSize: 15, color: MUT, margin: 0 });
@@ -132,9 +173,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("One diagram: estate in, Datalith graph/score/prepare/govern in the middle, any agent out. Read-only wedge kills the security objection.");
 }
 
-/* ---------- 5. PRODUCT ---------- */
+/* ---------- 6. PRODUCT ---------- */
 {
-  const s = base("05", "Product");
+  const s = base("06", "Product");
   title(s, "Six modules. One loop.", 0.78, 33, 7);
   s.addText("Connect → Graph → Score → Prepare → Serve → Recommend",
     { x: M, y: 1.72, w: 11.9, h: 0.4, fontFace: F, fontSize: 15, bold: true, color: CYAN, margin: 0 });
@@ -158,9 +199,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Walk the loop once, then name the six sellable modules. Flows is the expansion engine: readiness tool becomes revenue driver.");
 }
 
-/* ---------- 6. COMMAND (product visual) ---------- */
+/* ---------- 7. COMMAND (product visual) ---------- */
 {
-  const s = base("06", "Command");
+  const s = base("07", "Command");
   title(s, "Your whole estate. One dashboard.", 0.78, 33, 9);
   // window frame
   card(s, M, 1.9, 11.93, 4.55, PANEL2);
@@ -206,9 +247,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Demo slot. Command is the CDO's Monday-meeting pane: score, estate, agent activity, workflow ROI queue.");
 }
 
-/* ---------- 7. WEDGE / GTM ---------- */
+/* ---------- 8. WEDGE / GTM ---------- */
 {
-  const s = base("07", "Go-to-market");
+  const s = base("08", "Go-to-market");
   title(s, "The wedge: a free 48-hour\nAgent-Readiness Audit.");
   const steps = [
     { k: "LAND", c: CYAN, h: "Free audit", b: "Read-only credentials in an afternoon. Board-ready ARS report in 48 hours. Shareable benchmark = built-in distribution." },
@@ -228,9 +269,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Land free with the audit (lead magnet + benchmark + proprietary dataset), convert to Growth, expand to Enterprise. We are indexed to the agent wave itself.");
 }
 
-/* ---------- 8. MARKET ---------- */
+/* ---------- 9. MARKET ---------- */
 {
-  const s = base("08", "Market");
+  const s = base("09", "Market");
   title(s, "A new category, indexed to agent adoption.", 0.78, 31);
   // left: chart
   s.addText("AI-ready enterprise knowledge graph market ($B)", { x: M, y: 2.1, w: 6, h: 0.3, fontFace: F, fontSize: 12.5, bold: true, color: TXT, margin: 0 });
@@ -262,9 +303,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Core market $1.05B→$6.55B by 2036 (20.1% CAGR). Bottom-up SAM $3–6B. Every dollar of agent spend pulls context spend behind it.");
 }
 
-/* ---------- 9. COMPETITION ---------- */
+/* ---------- 10. COMPETITION ---------- */
 {
-  const s = base("09", "Competition");
+  const s = base("10", "Competition");
   title(s, "Nobody serves the whole estate to agents.", 0.78, 31);
   // 2x2 map
   const mx = M, my = 2.3, mw = 7.2, mh = 4.0;
@@ -302,9 +343,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("2x2: humans vs agents, single-source vs whole-estate. Upper-right is empty except us. DIY MCP is the real competitor — and the documented failure pattern.");
 }
 
-/* ---------- 10. BUSINESS MODEL ---------- */
+/* ---------- 11. BUSINESS MODEL ---------- */
 {
-  const s = base("10", "Business model");
+  const s = base("11", "Business model");
   title(s, "SaaS + usage, priced on the agent wave.", 0.78, 31);
   const tiers = [
     ["Audit", "Free", "3 sources · one-time ARS report · the lead magnet", PANEL],
@@ -334,9 +375,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Free audit → $2.5K Growth → $6K Scale → $100K+ Enterprise. Usage meters index revenue to the customer's own agent adoption.");
 }
 
-/* ---------- 11. TRACTION & ROADMAP ---------- */
+/* ---------- 12. TRACTION & ROADMAP ---------- */
 {
-  const s = base("11", "Traction & roadmap");
+  const s = base("12", "Traction & roadmap");
   title(s, "48 hours to value. 18 months to Series A.", 0.78, 31);
   // timeline
   const phases = [
@@ -365,9 +406,9 @@ function chip(s, x, y, label, color) {
   s.addNotes("Fill traction numbers at send time: design partners, audits run, sources connected, LOIs. The roadmap gates map directly to the raise milestones.");
 }
 
-/* ---------- 12. TEAM ---------- */
+/* ---------- 13. TEAM ---------- */
 {
-  const s = base("12", "Team");
+  const s = base("13", "Team");
   title(s, "Built by people who lived the grounding problem.", 0.78, 30);
   const team = [
     ["CEO · Co-founder", "Data/AI product leader. Shipped enterprise data platforms; owns narrative, design partners, and the raise.", CYAN],
@@ -389,7 +430,7 @@ function chip(s, x, y, label, color) {
   s.addNotes("Replace with real founder bios, logos of past employers, and named advisors before the deck goes out.");
 }
 
-/* ---------- 13. ASK ---------- */
+/* ---------- 14. ASK ---------- */
 {
   const s = p.addSlide();
   s.background = { color: BG };

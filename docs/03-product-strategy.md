@@ -6,6 +6,13 @@
 
 Category name we are claiming: **the Agentic Data Center** — the layer between the enterprise data estate and the agent workforce. (Analogy pitch: "JetScale is agentic AI for your cloud. Datalith is agentic AI for your data.")
 
+## The two promises (core value proposition)
+
+1. **See everything — visibility, transparency, control.** Clients have data everywhere and no visibility on what they have or what's happening in their databases. Datalith maps the entire estate into one live dashboard: what exists and where it lives (estate map), what's changing/going stale/breaking (activity stream), and who — human or agent — can touch what (access control + full audit).
+2. **Make it work for agents — agent-ready, potential unlocked.** Every modality (tables, documents, tickets, transcripts, images) is prepared for agent consumption: cleaned, typed, chunked, embedded, scored. Then Datalith goes further — it **detects the potential sleeping in the data** and **suggests the agentic workflows and topic knowledge bases** to build, with projected ROI.
+
+Elevator line: *"First we show you what you have. Then we turn it into an agent workforce."*
+
 ## Product principles
 
 1. **Agent-native, human-governed.** Agents are the primary consumers; humans set policy, review, and approve.

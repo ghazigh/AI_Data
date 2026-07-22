@@ -16,6 +16,13 @@ Datalith connects every data source in the enterprise, builds the **Enterprise K
 
 MCP moves context — it doesn't *produce* it. Datalith is the layer that produces it.
 
+## The two promises
+
+1. **See everything — visibility, transparency, control.** Clients have data everywhere and no visibility on what they have or what's happening in their databases. Datalith maps the whole estate into one live dashboard: estate map, activity stream, access control with full audit.
+2. **Make it work for agents — agent-ready, potential unlocked.** Every modality prepared for agent consumption (agent-ready, agent-friendly), plus detection of the potential sleeping in the data — with **suggested agentic workflows and topic knowledge bases**, ROI attached.
+
+*"First we show you what you have. Then we turn it into an agent workforce."*
+
 ## Repository map
 
 | Path | Contents |
