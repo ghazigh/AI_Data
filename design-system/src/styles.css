@@ -183,3 +183,44 @@
 .dl-featuregrid-label { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-blue); }
 .dl-featuregrid-title { font-family: var(--dl-font-display); font-size: var(--dl-text-lead); font-weight: 600; letter-spacing: -0.01em; margin-top: 12px; }
 .dl-featuregrid-body { font-size: var(--dl-text-small); color: var(--dl-grey-4); margin-top: 8px; line-height: 1.65; }
+
+/* StatBand */
+.dl-statband { border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); }
+.dl-statband-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 800px) { .dl-statband-grid { grid-template-columns: 1fr; } }
+.dl-statband-cell { padding: var(--dl-space-7) var(--dl-space-6); border-left: var(--dl-hairline); }
+.dl-statband-cell:first-child { border-left: 0; padding-left: 0; }
+@media (max-width: 800px) { .dl-statband-cell { border-left: 0; border-top: var(--dl-hairline); padding-left: 0; } .dl-statband-cell:first-child { border-top: 0; } }
+
+/* Steps */
+.dl-steps { padding: var(--dl-space-9) 0; }
+.dl-steps-list { margin-top: var(--dl-space-7); border-top: var(--dl-hairline); counter-reset: none; }
+.dl-steps-row { display: grid; grid-template-columns: 90px 240px 1fr; gap: var(--dl-space-6); padding: var(--dl-space-6) 0; border-bottom: var(--dl-hairline); align-items: baseline; }
+@media (max-width: 860px) { .dl-steps-row { grid-template-columns: 1fr; gap: 8px; } }
+.dl-steps-num { font-family: var(--dl-font-mono); font-size: var(--dl-text-small); color: var(--dl-blue); letter-spacing: 0.08em; }
+.dl-steps-title { font-family: var(--dl-font-display); font-size: var(--dl-text-lead); font-weight: 600; letter-spacing: -0.01em; }
+.dl-steps-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); line-height: 1.65; max-width: 560px; }
+
+/* Quote */
+.dl-quote { padding: var(--dl-space-9) 0; }
+.dl-quote-text { font-family: var(--dl-font-display); font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; max-width: 780px; }
+.dl-quote-attr { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-4); margin-top: var(--dl-space-5); display: block; }
+.dl-quote-attr span { color: var(--dl-grey-3); }
+
+/* PricingTable */
+.dl-pricing { padding: var(--dl-space-9) 0; }
+.dl-pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: var(--dl-hairline); background: var(--dl-paper); margin-top: var(--dl-space-7); }
+@media (max-width: 980px) { .dl-pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .dl-pricing-grid { grid-template-columns: 1fr; } }
+.dl-pricing-tier { padding: var(--dl-space-6); border-left: var(--dl-hairline); display: flex; flex-direction: column; }
+.dl-pricing-tier:first-child { border-left: 0; }
+@media (max-width: 980px) { .dl-pricing-tier { border-top: var(--dl-hairline); } }
+.dl-pricing-tier--featured { box-shadow: inset 0 3px 0 var(--dl-blue); background: #FDFDFF; }
+.dl-pricing-name { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dl-grey-4); }
+.dl-pricing-tier--featured .dl-pricing-name { color: var(--dl-blue); }
+.dl-pricing-price { font-family: var(--dl-font-display); font-size: var(--dl-text-h2); font-weight: 700; letter-spacing: -0.02em; margin-top: 14px; line-height: 1; }
+.dl-pricing-period { font-size: var(--dl-text-body); font-weight: 500; color: var(--dl-grey-3); }
+.dl-pricing-blurb { font-size: var(--dl-text-small); color: var(--dl-grey-4); margin-top: 12px; line-height: 1.6; }
+.dl-pricing-features { margin: var(--dl-space-5) 0 var(--dl-space-6); border-top: var(--dl-hairline); flex: 1; }
+.dl-pricing-features li { padding: 10px 0; border-bottom: var(--dl-hairline); font-size: var(--dl-text-small); color: var(--dl-grey-4); display: flex; gap: 10px; }
+.dl-pricing-features li::before { content: "—"; color: var(--dl-blue); font-family: var(--dl-font-mono); }
