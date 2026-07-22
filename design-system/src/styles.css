@@ -29,6 +29,48 @@
 
 /* ===== primitives (Task 2–3) ===== */
 
+/* Button */
+.dl-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid transparent; border-radius: var(--dl-radius-pill);
+  font-family: var(--dl-font-body); font-weight: 600; cursor: pointer;
+  transition: background var(--dl-ease), border-color var(--dl-ease), color var(--dl-ease);
+  white-space: nowrap;
+}
+.dl-btn--sm { padding: 8px 18px; font-size: var(--dl-text-small); }
+.dl-btn--md { padding: 12px 26px; font-size: var(--dl-text-small); }
+.dl-btn--lg { padding: 15px 32px; font-size: var(--dl-text-body); }
+.dl-btn--ink { background: var(--dl-ink); color: #fff; }
+.dl-btn--ink:hover { background: #2A2A30; }
+.dl-btn--blue { background: var(--dl-blue); color: #fff; }
+.dl-btn--blue:hover { background: #0027B8; }
+.dl-btn--ghost { border-color: var(--dl-ink); color: var(--dl-ink); background: transparent; }
+.dl-btn--ghost:hover { background: var(--dl-ink); color: #fff; }
+.dl-on-ink .dl-btn--ink { background: var(--dl-on-ink); color: var(--dl-ink); }
+.dl-on-ink .dl-btn--ink:hover { background: #fff; }
+.dl-on-ink .dl-btn--ghost { border-color: #3A3A42; color: var(--dl-on-ink); }
+.dl-on-ink .dl-btn--ghost:hover { background: var(--dl-on-ink); color: var(--dl-ink); border-color: var(--dl-on-ink); }
+
+/* TextLink */
+.dl-textlink { font-family: var(--dl-font-mono); font-size: var(--dl-text-small); letter-spacing: 0.02em; border-bottom: 1px solid var(--dl-ink); padding-bottom: 2px; transition: color var(--dl-ease), border-color var(--dl-ease); }
+.dl-textlink:hover { color: var(--dl-blue); border-color: var(--dl-blue); }
+.dl-on-ink .dl-textlink { border-color: var(--dl-on-ink-muted); }
+.dl-on-ink .dl-textlink:hover { color: var(--dl-blue-bright); border-color: var(--dl-blue-bright); }
+
+/* Badge */
+.dl-badge { display: inline-flex; align-items: center; border-radius: var(--dl-radius-pill); padding: 4px 12px; font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.06em; }
+.dl-badge--neutral { background: var(--dl-grey-1); color: var(--dl-grey-4); }
+.dl-badge--ink { background: var(--dl-ink); color: #fff; }
+.dl-badge--blue { background: var(--dl-blue-wash); color: var(--dl-blue); }
+.dl-badge--ok { background: #E7F3EC; color: var(--dl-ok); }
+.dl-badge--warn { background: #F8EFDD; color: var(--dl-warn); }
+
+/* SectionLabel */
+.dl-seclabel { display: flex; align-items: center; gap: 10px; font-family: var(--dl-font-mono); font-size: var(--dl-text-label); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dl-grey-4); }
+.dl-seclabel--rule::before { content: ""; width: 20px; height: 1px; background: var(--dl-blue); }
+.dl-on-ink .dl-seclabel { color: var(--dl-on-ink-muted); }
+.dl-on-ink .dl-seclabel--rule::before { background: var(--dl-blue-bright); }
+
 /* ===== signature (Task 4) ===== */
 
 /* ===== sections (Task 5–7) ===== */
