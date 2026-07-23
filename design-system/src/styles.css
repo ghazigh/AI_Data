@@ -14,10 +14,12 @@
 }
 .dl-root ::selection { background: var(--dl-blue); color: #fff; }
 .dl-wrap { max-width: var(--dl-max-width); margin: 0 auto; padding: 0 28px; }
-.dl-root :is(a) { color: inherit; text-decoration: none; }
-.dl-root :is(h1,h2,h3,h4,p,ul,ol,figure,blockquote) { margin: 0; }
-.dl-root :is(ul,ol) { padding: 0; list-style: none; }
-.dl-root :is(button,input) { font: inherit; }
+/* :where() keeps these resets at zero specificity so component rules
+   (e.g. .dl-btn--ink's white label on an anchor button) always win. */
+.dl-root :where(a) { color: inherit; text-decoration: none; }
+.dl-root :where(h1,h2,h3,h4,p,ul,ol,figure,blockquote) { margin: 0; }
+.dl-root :where(ul,ol) { padding: 0; list-style: none; }
+.dl-root :where(button,input) { font: inherit; }
 .dl-root :is(a,button,input,summary):focus-visible { outline: 2px solid var(--dl-blue); outline-offset: 2px; }
 .dl-on-ink :is(a,button,input,summary):focus-visible { outline-color: var(--dl-blue-bright); }
 @media (prefers-reduced-motion: reduce) {
