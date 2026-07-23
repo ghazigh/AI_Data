@@ -1,2 +1,2 @@
 import { LogoStrip } from '../index'
-export default <LogoStrip />
+export default <div className="dl-root"><LogoStrip /></div>

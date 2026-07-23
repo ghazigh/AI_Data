@@ -1,2 +1,2 @@
 import { Hero } from '../index'
-export default <Hero />
+export default <div className="dl-root"><Hero /></div>

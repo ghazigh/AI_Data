@@ -1,2 +1,2 @@
 import { SectionLabel } from '../index'
-export default <SectionLabel>The agentic data center</SectionLabel>
+export default <div className="dl-root"><SectionLabel>The agentic data center</SectionLabel></div>

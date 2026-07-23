@@ -1,2 +1,2 @@
 import { ScoreMeter } from '../index'
-export default <ScoreMeter value={87} caption="Certified · full audit" />
+export default <div className="dl-root"><ScoreMeter value={87} caption="Certified · full audit" /></div>

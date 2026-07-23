@@ -81,7 +81,7 @@
 .dl-card { border: var(--dl-hairline); padding: var(--dl-space-6); }
 .dl-card--paper { background: var(--dl-paper); }
 .dl-card--canvas { background: var(--dl-canvas); }
-.dl-card--ink { background: var(--dl-ink); border-color: #2A2A30; }
+.dl-card--ink { background: var(--dl-ink-2); border-color: #2A2A30; }
 .dl-card-label { display: block; font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
 .dl-card-title { font-family: var(--dl-font-display); font-size: var(--dl-text-h3); font-weight: 600; letter-spacing: -0.015em; margin-top: 10px; }
 .dl-card-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); margin-top: 10px; line-height: 1.65; }
@@ -101,6 +101,8 @@
 .dl-logo-merge { stroke: var(--dl-blue); stroke-width: 3; stroke-linecap: round; }
 .dl-on-ink .dl-logo { color: var(--dl-on-ink); }
 .dl-on-ink .dl-logo-merge { stroke: var(--dl-blue-bright); }
+.dl-logo--on-ink { color: var(--dl-on-ink); }
+.dl-logo--on-ink .dl-logo-merge { stroke: var(--dl-blue-bright); }
 
 /* ===== signature (Task 4) ===== */
 
@@ -165,7 +167,7 @@
 .dl-logostrip { border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); padding: var(--dl-space-5) 0; }
 .dl-logostrip-in { display: flex; align-items: center; gap: var(--dl-space-6); flex-wrap: wrap; }
 .dl-logostrip-title { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dl-logostrip-items { display: flex; gap: var(--dl-space-6); flex-wrap: wrap; font-family: var(--dl-font-display); font-weight: 600; font-size: var(--dl-text-body); color: var(--dl-grey-3); }
+.dl-logostrip-items { display: flex; gap: var(--dl-space-6); flex-wrap: wrap; font-family: var(--dl-font-display); font-weight: 600; font-size: var(--dl-text-body); color: var(--dl-grey-4); }
 
 /* FeatureGrid */
 .dl-featuregrid { padding: var(--dl-space-9) 0; }
@@ -206,15 +208,25 @@
 .dl-quote-text { font-family: var(--dl-font-display); font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; max-width: 780px; }
 .dl-quote-attr { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-4); margin-top: var(--dl-space-5); display: block; }
 .dl-quote-attr span { color: var(--dl-grey-3); }
+.dl-quote-fig { margin: 0; }
 
 /* PricingTable */
 .dl-pricing { padding: var(--dl-space-9) 0; }
 .dl-pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: var(--dl-hairline); background: var(--dl-paper); margin-top: var(--dl-space-7); }
 @media (max-width: 980px) { .dl-pricing-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .dl-pricing-grid { grid-template-columns: 1fr; } }
-.dl-pricing-tier { padding: var(--dl-space-6); border-left: var(--dl-hairline); display: flex; flex-direction: column; }
-.dl-pricing-tier:first-child { border-left: 0; }
-@media (max-width: 980px) { .dl-pricing-tier { border-top: var(--dl-hairline); } }
+.dl-pricing-tier { padding: var(--dl-space-6); border-left: var(--dl-hairline); border-top: var(--dl-hairline); display: flex; flex-direction: column; }
+.dl-pricing-tier:nth-child(-n+4) { border-top: 0; }
+.dl-pricing-tier:nth-child(4n+1) { border-left: 0; }
+@media (max-width: 980px) {
+  .dl-pricing-tier { border-left: var(--dl-hairline); border-top: var(--dl-hairline); }
+  .dl-pricing-tier:nth-child(-n+2) { border-top: 0; }
+  .dl-pricing-tier:nth-child(2n+1) { border-left: 0; }
+}
+@media (max-width: 640px) {
+  .dl-pricing-tier { border-left: 0; border-top: var(--dl-hairline); }
+  .dl-pricing-tier:first-child { border-top: 0; }
+}
 .dl-pricing-tier--featured { box-shadow: inset 0 3px 0 var(--dl-blue); background: #FDFDFF; }
 .dl-pricing-name { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dl-grey-4); }
 .dl-pricing-tier--featured .dl-pricing-name { color: var(--dl-blue); }
@@ -257,3 +269,8 @@
 .dl-footer-col a { font-size: var(--dl-text-small); color: var(--dl-on-ink); opacity: 0.85; transition: opacity var(--dl-ease); }
 .dl-footer-col a:hover { opacity: 1; }
 .dl-footer-note { border-top: var(--dl-hairline-ink); padding-top: var(--dl-space-5); padding-bottom: var(--dl-space-6); font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-on-ink-muted); }
+
+/* standalone-safety: survive rendering without .dl-root */
+.dl-logostrip-items, .dl-footer-col ul, .dl-pricing-features, .dl-steps-list, .dl-navbar-links { list-style: none; margin: 0; padding: 0; }
+.dl-btn, .dl-textlink, .dl-navbar-links a, .dl-footer-col a { text-decoration: none; }
+.dl-textlink, .dl-navbar-links a, .dl-footer-col a { color: inherit; }

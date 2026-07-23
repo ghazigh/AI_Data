@@ -1,2 +1,2 @@
 import { Navbar } from '../index'
-export default <Navbar />
+export default <div className="dl-root"><Navbar /></div>

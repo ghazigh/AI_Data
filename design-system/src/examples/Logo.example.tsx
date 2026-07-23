@@ -1,2 +1,2 @@
 import { Logo } from '../index'
-export default <Logo size={22} />
+export default <div className="dl-root"><Logo size={22} /></div>

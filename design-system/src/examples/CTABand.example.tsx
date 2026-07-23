@@ -1,2 +1,2 @@
 import { CTABand } from '../index'
-export default <CTABand />
+export default <div className="dl-root"><CTABand /></div>

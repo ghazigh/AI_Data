@@ -23,3 +23,8 @@ test('Logo renders wordmark and glyph by default', () => {
   expect(getByText('datalith')).toBeTruthy()
   expect(container.querySelector('svg')).toBeTruthy()
 })
+
+test('Logo onInk appends dl-logo--on-ink class', () => {
+  const { container } = render(<Logo onInk />)
+  expect((container.firstChild as HTMLElement).className).toContain('dl-logo--on-ink')
+})

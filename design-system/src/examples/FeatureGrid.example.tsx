@@ -1,2 +1,2 @@
 import { FeatureGrid } from '../index'
-export default <FeatureGrid />
+export default <div className="dl-root"><FeatureGrid /></div>

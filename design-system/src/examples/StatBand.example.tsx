@@ -1,2 +1,2 @@
 import { StatBand } from '../index'
-export default <StatBand />
+export default <div className="dl-root"><StatBand /></div>

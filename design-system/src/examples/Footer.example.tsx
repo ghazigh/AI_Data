@@ -1,2 +1,2 @@
 import { Footer } from '../index'
-export default <Footer />
+export default <div className="dl-root"><Footer /></div>

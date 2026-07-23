@@ -1,2 +1,2 @@
 import { PricingTable } from '../index'
-export default <PricingTable />
+export default <div className="dl-root"><PricingTable /></div>

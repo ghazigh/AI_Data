@@ -1,2 +1,2 @@
 import { FAQ } from '../index'
-export default <FAQ />
+export default <div className="dl-root"><FAQ /></div>
