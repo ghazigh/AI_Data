@@ -1,0 +1,57 @@
+import type { ComponentType } from 'react'
+import { Home } from './Home'
+import { Platform } from './Platform'
+import { Pricing } from './Pricing'
+import { Company } from './Company'
+import { Investors } from './Investors'
+import { NotFound } from './NotFound'
+
+export interface PageDef {
+  /** Output file name without extension; "index" is the home page. */
+  slug: string
+  title: string
+  description: string
+  Component: ComponentType
+  /** Exclude from sitemap.xml (e.g. 404). */
+  noindex?: boolean
+}
+
+export const PAGES: PageDef[] = [
+  {
+    slug: 'index',
+    title: 'Datalith — The Agentic Data Center',
+    description: 'Datalith connects every data source, builds your Enterprise Knowledge Graph, and serves governed, agent-ready data to any AI agent. Every source. One graph. Agent-ready.',
+    Component: Home,
+  },
+  {
+    slug: 'platform',
+    title: 'Platform — Datalith',
+    description: 'Six modules, one monolith: Connect, Graph, Topics, Ready, Gateway, Flows — from 150+ read-only connectors to governed MCP serving with full audit.',
+    Component: Platform,
+  },
+  {
+    slug: 'pricing',
+    title: 'Pricing — Datalith',
+    description: 'Free 48-hour Agent-Readiness Audit, Growth from $2.5K/mo, Scale from $6K/mo, Enterprise from $100K ACV. Priced on usage — sources, entities, agent calls.',
+    Component: Pricing,
+  },
+  {
+    slug: 'company',
+    title: 'Company — Datalith',
+    description: 'We make enterprise data ready for the agent workforce. The mission, the six principles, the roadmap from Audit to Platform, and the founding team.',
+    Component: Company,
+  },
+  {
+    slug: 'investors',
+    title: 'Investors — Datalith seed round',
+    description: 'Raising a $4M seed to build the Agentic Data Center: the thesis in three numbers, the market, the moat, the financial model, and the ask.',
+    Component: Investors,
+  },
+  {
+    slug: '404',
+    title: 'Page not found — Datalith',
+    description: 'This page isn’t in the graph.',
+    Component: NotFound,
+    noindex: true,
+  },
+]

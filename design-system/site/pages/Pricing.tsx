@@ -1,0 +1,103 @@
+import {
+  PricingTable, Steps, FAQ, CTABand, SectionLabel, Card, type Tier,
+} from '../../src/index'
+import { SiteNav } from '../components/SiteNav'
+import { SiteFooter } from '../components/SiteFooter'
+import { PageIntro } from '../components/PageIntro'
+
+const TIERS: Tier[] = [
+  {
+    name: 'Audit', price: 'Free',
+    blurb: '48-hour Agent-Readiness Audit. Read-only credentials in, board-ready score out.',
+    features: ['3 sources', 'One-time ARS report', 'Estate map', 'Top-10 findings'],
+    cta: { label: 'Run the audit', href: 'mailto:hello@datalith.ai?subject=Agent-Readiness%20Audit' },
+  },
+  {
+    name: 'Growth', price: '$2.5K', period: '/mo',
+    blurb: 'The graph, live. For teams making their first agents work.',
+    features: ['10 sources', 'Knowledge graph + Topics', 'Gateway · 100K agent calls/mo', 'Continuous ARS'],
+    cta: { label: 'Start Growth', href: 'mailto:hello@datalith.ai?subject=Datalith%20Growth' }, featured: true,
+  },
+  {
+    name: 'Scale', price: '$6K', period: '/mo',
+    blurb: 'Full governance for agent fleets in production.',
+    features: ['25 sources', 'Ready engine', 'Flows recommendations', 'RBAC + priority support'],
+    cta: { label: 'Start Scale', href: 'mailto:hello@datalith.ai?subject=Datalith%20Scale' },
+  },
+  {
+    name: 'Enterprise', price: 'Custom',
+    blurb: '$100K+ ACV. The whole estate, every guarantee.',
+    features: ['Unlimited sources', 'In-VPC / self-hosted', 'SSO/SCIM · custom policies', 'Audit exports · dedicated CSM'],
+    cta: { label: 'Talk to us', href: 'mailto:hello@datalith.ai?subject=Datalith%20Enterprise' },
+  },
+]
+
+const MOTION = [
+  { title: 'Land — free', body: 'The Agent-Readiness Audit: connect read-only in an afternoon, get the ARS and estate map in 48 hours. The score is the benchmark your board shares.' },
+  { title: 'Convert — Growth', body: 'Unlock continuous scoring, the knowledge graph, and the Gateway. Your first agents get governed context instead of hand-built MCP servers.' },
+  { title: 'Expand — Enterprise', body: 'More sources, more agents served, Flows blueprints, in-VPC deployment. Usage grows with your agent adoption — pricing is indexed to the wave itself.' },
+]
+
+const PRICING_FAQ = [
+  { q: 'What do the usage meters measure?', a: 'Three things: connected sources, graph entities, and Gateway calls. You pay for the estate you connect and the agent traffic you serve — not for seats.' },
+  { q: 'What happens after the free audit?', a: 'You keep the report — estate map, ARS, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
+  { q: 'Do you require write access to our systems?', a: 'Never to start. Datalith connects with scoped, read-only credentials, and every read is logged. In-VPC deployment is available on Enterprise.' },
+  { q: 'How do contracts work?', a: 'Growth and Scale are monthly, cancel anytime. Enterprise is annual with a blended target ACV of $60K in year one — customers typically reach $90K+ by year two as usage expands.' },
+]
+
+export function Pricing() {
+  return (
+    <div className="dl-root">
+      <SiteNav current="pricing" />
+      <PageIntro
+        label="Pricing"
+        title={'Land with the audit.'}
+        accent="Expand with the graph."
+        lead="Free to see your score. Paid when the graph goes live. Priced on usage — sources, entities, agent calls — so our growth is indexed to your agents actually working."
+      />
+
+      <div data-reveal>
+        <PricingTable label="Plans" title="" tiers={TIERS} />
+      </div>
+
+      <section className="st-section st-section--rule" id="meters">
+        <div className="dl-wrap">
+          <SectionLabel>Usage meters</SectionLabel>
+          <h2 className="dl-h2">Three meters. No seats.</h2>
+          <div className="st-cols-3" data-reveal-group>
+            <Card label="Meter 01" title="Connected sources">
+              Each warehouse, database, SaaS app, bucket or stream you plug in. The estate map
+              grows with every one.
+            </Card>
+            <Card label="Meter 02" title="Graph entities">
+              Customers, products, orders, contracts — the resolved nodes of your Enterprise
+              Knowledge Graph.
+            </Card>
+            <Card label="Meter 03" title="Gateway calls">
+              Governed context served to your agents over MCP. More agents working means more
+              calls — that is the point.
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <div data-reveal>
+        <Steps label="The motion" title="Land. Convert. Expand." steps={MOTION} />
+      </div>
+
+      <div data-reveal>
+        <FAQ label="Pricing questions" title="The fine print, out loud." items={PRICING_FAQ} />
+      </div>
+
+      <div id="audit">
+        <CTABand
+          headline="Your score is free."
+          lead="Read-only credentials in. Board-ready Agent-Readiness Score out. 48 hours."
+          primaryCta={{ label: 'Request the audit', href: 'mailto:hello@datalith.ai?subject=Agent-Readiness%20Audit' }}
+          secondaryCta={{ label: 'Explore the platform', href: './platform.html' }}
+        />
+      </div>
+      <SiteFooter />
+    </div>
+  )
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ghazigh.github.io/AI_Data/sitemap.xml

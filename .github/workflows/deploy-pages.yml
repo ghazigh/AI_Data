@@ -1,12 +1,13 @@
-name: Deploy landing page to GitHub Pages
+name: Deploy website to GitHub Pages
 
 on:
   push:
     branches:
       - main
       - claude/agentic-data-center-startup-5nf913
+      - claude/vc-ready-startup-website-68mn9e
     paths:
-      - "landing/**"
+      - "website/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -31,10 +32,10 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Upload landing page
+      - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: landing
+          path: website
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

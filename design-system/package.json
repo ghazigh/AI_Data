@@ -16,6 +16,9 @@
   "scripts": {
     "fonts": "node scripts/fetch-fonts.mjs",
     "build": "tsup && node scripts/copy-assets.mjs",
+    "build:landing": "node scripts/build-landing.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "build:og": "node scripts/build-og.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -25,6 +28,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "jsdom": "^24.1.0",
+    "playwright-core": "^1.45.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsup": "^8.1.0",

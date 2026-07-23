@@ -32,7 +32,9 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 | [`docs/03-product-strategy.md`](docs/03-product-strategy.md) | The six product modules, platform loop, roadmap, success metrics |
 | [`docs/04-gtm-business-plan.md`](docs/04-gtm-business-plan.md) | ICP, land→expand motion, pricing, financial model, the $4M seed ask, 90-day plan |
 | [`docs/05-pitch-deck-narrative.md`](docs/05-pitch-deck-narrative.md) | Slide-by-slide deck script + investor Q&A objection prep |
-| [`landing/index.html`](landing/index.html) | Production-ready landing page — fully self-contained, open directly in a browser |
+| [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404, SEO/OG/sitemap, animations. Open `website/index.html` directly, or deploy via GitHub Pages |
+| [`design-system/site/`](design-system/site/) | Website source (React pages + site.css/site.js) — rebuild with `npm run build:site` in `design-system/` |
+| [`landing/index.html`](landing/index.html) | Legacy single-file landing page — fully self-contained, open directly in a browser |
 | [`deck/Datalith-Pitch-Deck.pptx`](deck/Datalith-Pitch-Deck.pptx) | 13-slide seed pitch deck (PowerPoint) |
 | [`deck/generate-deck.js`](deck/generate-deck.js) | Deck generator (`node generate-deck.js`, requires `pptxgenjs`) — edit & regenerate |
 
@@ -50,5 +52,6 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 ## Status / next steps
 
 - [ ] Replace placeholder founder bios in deck slide 12 and add real traction numbers to slide 11 before sending to investors.
+- [ ] Register the `hello@datalith.ai` mailbox (all website CTAs point to it) and swap the GitHub Pages URL in `design-system/scripts/build-site.mjs` for the real domain once purchased.
 - [ ] Trademark/domain diligence on the "Datalith" name (search on 2026-07-22 found no conflicting company).
 - [ ] Build Audit v0 per the 90-day plan in `docs/04-gtm-business-plan.md`.
