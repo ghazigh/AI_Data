@@ -157,6 +157,11 @@ export function DashboardFigure() {
     '10:01 agent:support-bot read tickets.* — allowed',
     '09:58 policy blocked agent:intern-demo on payroll.*',
     '09:55 ars recomputed · revenue domain 87 (+3)',
+    '09:54 connect synced salesforce · 1,204 rows',
+    '09:51 agent:churn-digest read accounts.* — allowed',
+    '09:49 ready masked 36 pii columns in s3 · data-lake',
+    '09:47 flows drafted blueprint: invoice reconciliation',
+    '09:45 gateway issued scoped key to agent:collections',
   ]
   const flows = [
     { name: 'collections follow-up agent', roi: '$340K/yr' },
@@ -196,10 +201,14 @@ export function DashboardFigure() {
           </ul>
         </div>
         <div className="st-dash-pane">
-          <span className="st-dash-label">Agent activity · live</span>
-          <ul className="st-dash-log">
-            {activity.map(a => (<li key={a}>{a}</li>))}
-          </ul>
+          <span className="st-dash-label"><span className="st-dash-livedot" aria-hidden="true" />Agent activity · live</span>
+          <div className="st-dash-logview">
+            <ul className="st-dash-log">
+              {[...activity, ...activity].map((a, i) => (
+                <li key={a + i} aria-hidden={i >= activity.length || undefined}>{a}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </figure>

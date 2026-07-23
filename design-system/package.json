@@ -8,11 +8,17 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./styles.css": "./dist/styles.css",
     "./tokens.css": "./dist/tokens.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "fonts": "node scripts/fetch-fonts.mjs",
     "build": "tsup && node scripts/copy-assets.mjs",
@@ -22,7 +28,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
-  "peerDependencies": { "react": "^18 || ^19", "react-dom": "^18 || ^19" },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.3.3",
@@ -31,6 +40,7 @@
     "playwright-core": "^1.45.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "simple-icons": "^16.27.0",
     "tsup": "^8.1.0",
     "typescript": "^5.5.3",
     "vitest": "^2.0.3"

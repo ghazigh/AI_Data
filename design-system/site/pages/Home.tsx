@@ -4,6 +4,8 @@ import {
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
+import { HeroFigure } from '../components/HeroFigure'
+import { DashboardFigure } from '../components/figures'
 
 const CONNECTORS = [
   'Snowflake', 'Databricks', 'BigQuery', 'Postgres', 'MySQL', 'MongoDB',
@@ -22,7 +24,7 @@ export function Home() {
           lead="Datalith draws every database, warehouse, wiki and inbox into a single governed knowledge graph — then serves it to any agent, audited end to end."
           primaryCta={{ label: 'Run the 48h audit', href: '#audit' }}
           secondaryCta={{ label: 'see the platform', href: './platform.html' }}
-          figure={<ConfluenceFigure animated />}
+          figure={<HeroFigure />}
         />
       </div>
 
@@ -62,12 +64,23 @@ export function Home() {
         </div>
       </section>
 
-      <div id="platform" data-reveal>
-        <FeatureGrid />
-        <div className="dl-wrap st-more">
-          <TextLink href="./platform.html">explore all six modules</TextLink>
+      <section id="platform" className="st-section st-section--rule">
+        <div className="dl-wrap">
+          <SectionLabel>The platform</SectionLabel>
+          <h2 className="dl-h2">Six modules. One monolith.</h2>
+          <p className="st-lead">
+            The whole agentic data program in one pane — estate map, Agent-Readiness Score, live
+            agent activity, and the workflow pipeline with ROI attached.
+          </p>
+          <DashboardFigure />
         </div>
-      </div>
+        <div data-reveal>
+          <FeatureGrid label="The modules" title="" />
+          <div className="dl-wrap st-more">
+            <TextLink href="./platform.html">explore all six modules</TextLink>
+          </div>
+        </div>
+      </section>
 
       <div id="method" data-reveal><Steps /></div>
 
