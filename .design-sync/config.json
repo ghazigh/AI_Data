@@ -1,0 +1,26 @@
+{
+  "projectId": "13976d23-981a-4395-bcb7-8de96b770cc8",
+  "shape": "package",
+  "pkg": "@datalith/ui",
+  "globalName": "DatalithUI",
+  "buildCmd": "npm run build --prefix design-system",
+  "cssEntry": "dist/styles.css",
+  "extraFonts": ["dist/fonts/fonts.css"],
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": { "FAQ": "src/components/FAQ.tsx" },
+  "libOverrides": { "dts.mjs": "allow the all-caps acronym component name FAQ" },
+  "overrides": {
+    "Button": { "cardMode": "column" },
+    "Navbar": { "cardMode": "column" },
+    "Hero": { "cardMode": "column" },
+    "LogoStrip": { "cardMode": "column" },
+    "FeatureGrid": { "cardMode": "column" },
+    "StatBand": { "cardMode": "column" },
+    "Steps": { "cardMode": "column" },
+    "Quote": { "cardMode": "column" },
+    "PricingTable": { "cardMode": "column" },
+    "FAQ": { "cardMode": "column" },
+    "CTABand": { "cardMode": "column" },
+    "Footer": { "cardMode": "column" }
+  }
+}
