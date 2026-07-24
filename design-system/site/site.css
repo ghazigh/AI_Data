@@ -60,7 +60,8 @@
 .st-marquee-head { margin-bottom: var(--dl-space-4); }
 .st-marquee-viewport { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .st-marquee-track { display: flex; gap: var(--dl-space-7); width: max-content; margin: 0; padding: 0; list-style: none; font-family: var(--dl-font-display); font-weight: 600; font-size: var(--dl-text-body); color: var(--dl-grey-4); animation: st-marquee 42s linear infinite; }
-.st-marquee-track li { white-space: nowrap; }
+.st-marquee-track li { white-space: nowrap; display: flex; align-items: center; gap: 9px; }
+.st-marquee-icon { width: 17px; height: 17px; fill: var(--dl-grey-4); flex: none; }
 @keyframes st-marquee { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .st-marquee-track { flex-wrap: wrap; width: auto; } }
 

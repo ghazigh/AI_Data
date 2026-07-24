@@ -6,11 +6,39 @@ import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { HeroFigure } from '../components/HeroFigure'
 import { DashboardFigure } from '../components/figures'
+import {
+  siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
+  siMongodb, siRedis, siClickhouse, siApachekafka, siHubspot, siZendesk,
+  siJira, siConfluence, siNotion, siGoogledrive, siElastic, siStripe,
+  siAirtable, siDropbox, siSap, type SimpleIcon,
+} from 'simple-icons'
 
-const CONNECTORS = [
-  'Snowflake', 'Databricks', 'BigQuery', 'Postgres', 'MySQL', 'MongoDB',
-  'Salesforce', 'HubSpot', 'Zendesk', 'Jira', 'Notion', 'Slack',
-  'SharePoint', 'Google Drive', 'S3', 'Kafka', 'Redshift', 'Kinesis',
+/** Marquee roster — icon where a redistributable mark exists, name-only otherwise. */
+const CONNECTORS: { name: string; icon?: SimpleIcon }[] = [
+  { name: 'Snowflake', icon: siSnowflake },
+  { name: 'Databricks', icon: siDatabricks },
+  { name: 'BigQuery', icon: siGooglebigquery },
+  { name: 'Postgres', icon: siPostgresql },
+  { name: 'MySQL', icon: siMysql },
+  { name: 'MongoDB', icon: siMongodb },
+  { name: 'Redis', icon: siRedis },
+  { name: 'ClickHouse', icon: siClickhouse },
+  { name: 'Kafka', icon: siApachekafka },
+  { name: 'Salesforce' },
+  { name: 'HubSpot', icon: siHubspot },
+  { name: 'Zendesk', icon: siZendesk },
+  { name: 'Jira', icon: siJira },
+  { name: 'Confluence', icon: siConfluence },
+  { name: 'Notion', icon: siNotion },
+  { name: 'Slack' },
+  { name: 'Google Drive', icon: siGoogledrive },
+  { name: 'SharePoint' },
+  { name: 'S3' },
+  { name: 'Elastic', icon: siElastic },
+  { name: 'Stripe', icon: siStripe },
+  { name: 'Airtable', icon: siAirtable },
+  { name: 'Dropbox', icon: siDropbox },
+  { name: 'SAP', icon: siSap },
 ]
 
 export function Home() {
@@ -35,8 +63,15 @@ export function Home() {
         </div>
         <div className="st-marquee-viewport">
           <ul className="st-marquee-track">
-            {[...CONNECTORS, ...CONNECTORS].map((n, i) => (
-              <li key={n + i} aria-hidden={i >= CONNECTORS.length || undefined}>{n}</li>
+            {[...CONNECTORS, ...CONNECTORS].map((c, i) => (
+              <li key={c.name + i} aria-hidden={i >= CONNECTORS.length || undefined}>
+                {c.icon && (
+                  <svg className="st-marquee-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d={c.icon.path} />
+                  </svg>
+                )}
+                {c.name}
+              </li>
             ))}
           </ul>
         </div>
