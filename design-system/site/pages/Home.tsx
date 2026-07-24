@@ -6,6 +6,7 @@ import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { HeroFigure } from '../components/HeroFigure'
 import { DashboardFigure } from '../components/figures'
+import { KnowledgeGraph } from '../components/KnowledgeGraph'
 import {
   siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
   siMongodb, siRedis, siClickhouse, siApachekafka, siHubspot, siZendesk,
@@ -95,6 +96,35 @@ export function Home() {
               embedded and scored for agent consumption. Then Datalith finds the potential sleeping
               in your data and suggests the agentic workflows to build, ROI attached.
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* the knowledge graph */}
+      <section id="graph" className="st-section st-section--rule">
+        <div className="dl-wrap">
+          <SectionLabel>The knowledge graph</SectionLabel>
+          <h2 className="dl-h2">Every source, wired into one intelligence.</h2>
+          <p className="st-lead">
+            Datalith doesn&rsquo;t stop at connecting sources — it resolves them into each other.
+            One customer, one order, one contract across every system, with lineage on every link.
+            That graph is your company&rsquo;s intelligence, and every agent inherits it.
+          </p>
+          <KnowledgeGraph />
+          <div className="st-kg-stats" data-reveal-group>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="23">23</span></span>
+              <span className="st-kg-statlabel">sources connected</span>
+            </div>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="4.2" data-decimals="1">4.2</span>M</span>
+              <span className="st-kg-statlabel">entities resolved</span>
+            </div>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="18">18</span>M</span>
+              <span className="st-kg-statlabel">relationships, lineage on every link</span>
+            </div>
+            <TextLink href="./platform.html#graph">how the graph is built</TextLink>
           </div>
         </div>
       </section>

@@ -199,8 +199,12 @@
 .dl-confluence--on-ink .dl-confluence-node { fill: var(--dl-blue-bright); }
 .dl-confluence--on-ink .dl-confluence-srclabel { fill: var(--dl-on-ink-muted); }
 .dl-confluence--on-ink .dl-confluence-mergelabel { fill: var(--dl-blue-bright); }
-.dl-confluence--animated .dl-confluence-stream { stroke-dasharray: 700; stroke-dashoffset: 700; animation: dl-draw 1.4s ease forwards; }
-.dl-confluence--animated .dl-confluence-merge { stroke-dasharray: 200; stroke-dashoffset: 200; animation: dl-draw 0.6s ease 1.1s forwards; }
+/* no-preference gate: with reduced motion the figure renders finished
+   instead of stuck at dashoffset with its animation suppressed */
+@media (prefers-reduced-motion: no-preference) {
+  .dl-confluence--animated .dl-confluence-stream { stroke-dasharray: 700; stroke-dashoffset: 700; animation: dl-draw 1.4s ease forwards; }
+  .dl-confluence--animated .dl-confluence-merge { stroke-dasharray: 200; stroke-dashoffset: 200; animation: dl-draw 0.6s ease 1.1s forwards; }
+}
 @keyframes dl-draw { to { stroke-dashoffset: 0; } }
 
 /* ScoreMeter */
@@ -430,11 +434,58 @@
 
 /* ===== home: hero figure with connector logos ===== */
 .st-herofig-icon path { fill: var(--dl-grey-4); }
-.st-herofig-icon { opacity: 0; animation: st-fade 0.5s ease 0.9s forwards; }
+@media (prefers-reduced-motion: no-preference) {
+  .st-herofig-icon { opacity: 0; animation: st-fade 0.5s ease 0.9s forwards; }
+}
 @keyframes st-fade { to { opacity: 1; } }
 
 /* section that wraps its own FeatureGrid: collapse the grid's outer rhythm */
 .st-section .dl-featuregrid { padding: var(--dl-space-8) 0 0; }
+
+/* ===== home: knowledge graph ===== */
+.st-kg { margin: var(--dl-space-6) 0 0; }
+.st-kg svg { width: 100%; height: auto; display: block; }
+.st-kg-edge { fill: none; stroke: var(--dl-ink); stroke-width: 1; opacity: 0.32; }
+.st-kg-edge--ring { opacity: 0.5; }
+.st-kg-coreedge { fill: none; stroke: var(--dl-blue); stroke-width: 1.4; opacity: 0.55; }
+.st-kg-nodering { fill: var(--dl-paper); stroke: var(--dl-grey-2); }
+.st-kg-nodeicon { fill: var(--dl-grey-4); }
+.st-kg-nodelabel { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; fill: var(--dl-grey-3); }
+.st-kg-entity { fill: var(--dl-blue-wash); stroke: var(--dl-blue); stroke-width: 1.2; }
+.st-kg-entlabel { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.08em; fill: var(--dl-grey-4); }
+.st-kg-corering { fill: none; stroke: var(--dl-blue); stroke-width: 1; opacity: 0.5; }
+.st-kg-corewash { fill: var(--dl-blue-wash); }
+.st-kg-coredot { fill: var(--dl-blue); }
+.st-kg-corelabel { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.16em; font-weight: 500; fill: var(--dl-blue); }
+.st-kg-pulse { fill: var(--dl-blue); opacity: 0; }
+.st-kg-corepulse { fill: none; stroke: var(--dl-blue); stroke-width: 1; opacity: 0; transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  /* choreography: edges draw, nodes rise, then the graph stays alive */
+  .js .st-kg .st-kg-edge, .js .st-kg .st-kg-coreedge { stroke-dasharray: 900; stroke-dashoffset: 900; }
+  .js .st-kg.is-visible .st-kg-edge { animation: dl-draw 1.1s ease var(--d, 0s) forwards; }
+  .js .st-kg.is-visible .st-kg-coreedge { animation: dl-draw 0.8s ease var(--d, 0s) forwards; }
+  .js .st-kg .st-kg-node { opacity: 0; transform: translateY(6px); transition: opacity 0.55s ease var(--d, 0s), transform 0.55s ease var(--d, 0s); }
+  .js .st-kg.is-visible .st-kg-node { opacity: 1; transform: none; }
+  .js .st-kg.is-visible .st-kg-pulse { animation: st-kg-travel var(--dur, 5s) linear var(--d, 0s) infinite; }
+  .js .st-kg.is-visible .st-kg-corepulse { animation: st-kg-ring 3.4s ease-out 2.2s infinite; }
+  .js .st-kg.is-visible .st-kg-corepulse--late { animation-delay: 3.9s; }
+}
+@keyframes st-kg-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes st-kg-ring {
+  0% { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.st-kg-stats { display: flex; flex-wrap: wrap; gap: var(--dl-space-6) var(--dl-space-7); align-items: baseline; margin-top: var(--dl-space-6); border-top: var(--dl-hairline); padding-top: var(--dl-space-5); }
+.st-kg-stat { display: flex; align-items: baseline; gap: 10px; }
+.st-kg-statvalue { font-family: var(--dl-font-display); font-size: var(--dl-text-h3); font-weight: 700; letter-spacing: -0.02em; }
+.st-kg-statlabel { font-size: var(--dl-text-small); color: var(--dl-grey-4); }
+.st-kg-stats .dl-textlink { margin-left: auto; }
+@media (max-width: 760px) { .st-kg-stats .dl-textlink { margin-left: 0; } }
 
 /* ===== home: score row ===== */
 .st-score-row { display: flex; flex-wrap: wrap; gap: var(--dl-space-8); margin-top: var(--dl-space-7); align-items: center; }
@@ -479,11 +530,14 @@
 .st-fig-body { font-family: var(--dl-font-body); font-size: 12px; fill: var(--dl-ink); }
 .st-fig-axis { stroke: var(--dl-grey-2); stroke-width: 1; }
 .st-fig-dot { fill: var(--dl-grey-3); }
-/* draw-in for stream/merge paths on scroll (added by site.js) */
-.js [data-draw] .dl-confluence-stream, .js [data-draw] .st-fig-axis { stroke-dasharray: 700; stroke-dashoffset: 700; }
-.js [data-draw] .dl-confluence-merge { stroke-dasharray: 220; stroke-dashoffset: 220; }
-.js [data-draw].is-visible .dl-confluence-stream, .js [data-draw].is-visible .st-fig-axis { animation: dl-draw 1.2s ease forwards; }
-.js [data-draw].is-visible .dl-confluence-merge { animation: dl-draw 0.6s ease 0.9s forwards; }
+/* draw-in for stream/merge paths on scroll (added by site.js);
+   gated on no-preference so reduced-motion users see the finished figure */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-draw] .dl-confluence-stream, .js [data-draw] .st-fig-axis { stroke-dasharray: 700; stroke-dashoffset: 700; }
+  .js [data-draw] .dl-confluence-merge { stroke-dasharray: 220; stroke-dashoffset: 220; }
+  .js [data-draw].is-visible .dl-confluence-stream, .js [data-draw].is-visible .st-fig-axis { animation: dl-draw 1.2s ease forwards; }
+  .js [data-draw].is-visible .dl-confluence-merge { animation: dl-draw 0.6s ease 0.9s forwards; }
+}
 
 /* ===== platform: topics + flows figures ===== */
 .st-topics { display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
@@ -571,9 +625,11 @@
 .st-app-spark-line { fill: none; stroke: var(--dl-blue); stroke-width: 1.6; }
 .st-app-spark-fill { fill: var(--dl-blue-wash); }
 .st-app-spark-end { fill: var(--dl-blue); }
-.js .st-dash .st-app-spark-line { stroke-dasharray: 600; stroke-dashoffset: 600; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .st-dash .st-app-spark-line { stroke-dasharray: 600; stroke-dashoffset: 600; }
+  .js .st-dash.is-visible .st-app-spark-line { animation: dl-draw 1.3s ease 0.3s forwards; }
+}
 .js .st-dash .st-app-spark-fill, .js .st-dash .st-app-spark-end { opacity: 0; transition: opacity 0.6s ease 1.1s; }
-.js .st-dash.is-visible .st-app-spark-line { animation: dl-draw 1.3s ease 0.3s forwards; }
 .js .st-dash.is-visible .st-app-spark-fill, .js .st-dash.is-visible .st-app-spark-end { opacity: 1; }
 .st-app-domains { margin: 12px 0 0; padding: 0; list-style: none; }
 .st-app-domains li { display: grid; grid-template-columns: 84px 1fr 30px; gap: 10px; align-items: center; padding: 6px 0; border-top: var(--dl-hairline); }
