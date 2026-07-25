@@ -3,7 +3,7 @@ import { SectionLabel } from './SectionLabel'
 export interface FeatureGridProps {
   label?: string
   title?: string
-  items?: { label: string; title: string; body: string }[]
+  items?: { label: string; title: string; body: string; value?: string }[]
   columns?: 2 | 3
 }
 
@@ -29,6 +29,7 @@ export function FeatureGrid({ label = 'The platform', title = 'Six modules. One 
               <span className="dl-featuregrid-label">{it.label}</span>
               <h3 className="dl-featuregrid-title">{it.title}</h3>
               <p className="dl-featuregrid-body">{it.body}</p>
+              {it.value && <p className="dl-featuregrid-value">{it.value}</p>}
             </div>
           ))}
         </div>

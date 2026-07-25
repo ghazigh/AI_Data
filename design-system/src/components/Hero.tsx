@@ -16,6 +16,8 @@ export interface HeroProps {
   secondaryCta?: CtaSpec
   /** Right column; defaults to the ConfluenceFigure. Pass null to omit. */
   figure?: ReactNode
+  /** Small mono note under the CTA row, e.g. trial or pricing terms. */
+  note?: string
 }
 
 /** Landing hero: display type left, the confluence artwork right. */
@@ -26,6 +28,7 @@ export function Hero({
   primaryCta = { label: 'Begin the audit', href: '#audit' },
   secondaryCta = { label: 'the method', href: '#method' },
   figure = <ConfluenceFigure />,
+  note,
 }: HeroProps) {
   const lines = headline.split('\n')
   return (
@@ -41,6 +44,7 @@ export function Hero({
             {primaryCta && <Button variant="ink" size="lg" href={primaryCta.href}>{primaryCta.label}</Button>}
             {secondaryCta && <TextLink href={secondaryCta.href}>{secondaryCta.label}</TextLink>}
           </div>
+          {note && <p className="dl-hero-note">{note}</p>}
         </div>
         {figure && <div className="dl-hero-figure">{figure}</div>}
       </div>

@@ -31,3 +31,32 @@ test('FeatureGrid renders one cell per item with mono label', () => {
   const { container } = render(<FeatureGrid items={items} />)
   expect(container.querySelectorAll('.dl-featuregrid-cell').length).toBe(2)
 })
+
+test('Hero renders an optional note under the CTA row', () => {
+  const { container } = render(
+    <Hero headline="H" lead="Lead." primaryCta={{ label: 'Begin', href: '#' }} note="Free 48-hour score." />,
+  )
+  const note = container.querySelector('.dl-hero-note')
+  expect(note).toBeTruthy()
+  expect(note?.textContent).toBe('Free 48-hour score.')
+})
+
+test('Hero omits the note element when no note is given', () => {
+  const { container } = render(<Hero headline="H" lead="Lead." />)
+  expect(container.querySelector('.dl-hero-note')).toBeNull()
+})
+
+test('FeatureGrid renders a value line when an item supplies one', () => {
+  const { container, getByText } = render(
+    <FeatureGrid items={[{ label: '01', title: 'Connect', body: 'Body.', value: 'No migration.' }]} />,
+  )
+  expect(getByText('No migration.')).toBeTruthy()
+  expect(container.querySelector('.dl-featuregrid-value')).toBeTruthy()
+})
+
+test('FeatureGrid omits the value line when an item has none', () => {
+  const { container } = render(
+    <FeatureGrid items={[{ label: '01', title: 'Connect', body: 'Body.' }]} />,
+  )
+  expect(container.querySelector('.dl-featuregrid-value')).toBeNull()
+})
