@@ -412,7 +412,13 @@ In the `id="graph"` section, replace the `<h2>` and `<p className="st-lead">` wi
           </p>
 ```
 
-Also change the trailing `TextLink` label from "how the graph is built" to "how the graph is built" (unchanged) but repoint nothing — the href stays `./platform.html#graph`.
+The trailing `TextLink` ("how the graph is built", href `./platform.html#graph`) is unchanged.
+
+Then, in the same section, replace the third `st-kg-statlabel` — it currently reads "relationships, lineage on every link", which violates the Home jargon ban:
+
+```tsx
+              <span className="st-kg-statlabel">relationships mapped, each traceable to its source</span>
+```
 
 - [ ] **Step 4: Move the dashboard into its own retitled section**
 
@@ -474,12 +480,22 @@ Delete the entire `<Quote quote="MCP moves context. ..." />` block and remove `Q
       </section>
 ```
 
-- [ ] **Step 8: Typecheck and build**
+- [ ] **Step 8: Fix the DashboardFigure aria-label**
+
+`design-system/site/components/figures.tsx:258` describes the dashboard as having "module navigation" and an "ARS trend" — both violate the global constraints, and this figure renders on Home. Replace the `aria-label` value:
+
+```tsx
+    <figure className="st-dash" data-reveal aria-label="Datalith command dashboard: capability navigation, estate KPIs, source table with readiness scores, readiness-score trend, live agent audit feed, and recommended workflows">
+```
+
+This figure is also used on the Platform page; the same label serves both.
+
+- [ ] **Step 9: Typecheck and build**
 
 Run: `cd design-system && npm run typecheck && npm run build:site`
 Expected: both succeed.
 
-- [ ] **Step 9: Verify the rendered output**
+- [ ] **Step 10: Verify the rendered output**
 
 ```bash
 cd /Users/ghazigharsallah/data/AI_Data
@@ -492,10 +508,10 @@ grep -ci "ontology\|lineage\|semantic layer" website/index.html                 
 
 Expected: first three non-zero, last two `0`.
 
-- [ ] **Step 10: Commit**
+- [ ] **Step 11: Commit**
 
 ```bash
-git add design-system/site/pages/Home.tsx website/
+git add design-system/site/pages/Home.tsx design-system/site/components/figures.tsx website/
 git commit -m "feat(site): capabilities, value and cost sections on home"
 ```
 
