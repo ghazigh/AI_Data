@@ -8,7 +8,7 @@ import { PositioningMap, AllocationBars } from '../components/figures'
 
 const WHY_NOW = [
   { label: 'Curve 01', title: 'Agent adoption is exploding', body: '17% of organizations have deployed agents today; over 60% plan to within two years. The deployment wave is ahead of the data-readiness wave — that gap is the market.' },
-  { label: 'Curve 02', title: 'MCP standardized the pipe, not the content', body: 'Gartner: 60% of MCP-only agentic analytics projects fail by 2028 for lack of a semantic layer. MCP — the Model Context Protocol — moves context; it doesn’t produce it.' },
+  { label: 'Curve 02', title: 'The Model Context Protocol standardized the pipe, not the content', body: 'Gartner: 60% of MCP-only agentic analytics projects fail by 2028 for lack of a semantic layer. MCP moves context; it doesn’t produce it.' },
   { label: 'Curve 03', title: 'Context is becoming shared infrastructure', body: '89% of teams are investing in context management in the next 12 months; 93% expect to treat it as shared infrastructure, not per-team tooling.' },
 ]
 
