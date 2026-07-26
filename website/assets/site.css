@@ -246,6 +246,7 @@
 .dl-hero-headline em { font-style: normal; color: var(--dl-blue); }
 .dl-hero-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.55; margin-top: var(--dl-space-5); max-width: 420px; }
 .dl-hero-ctas { display: flex; align-items: center; gap: var(--dl-space-5); margin-top: var(--dl-space-6); flex-wrap: wrap; }
+.dl-hero-note { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.04em; color: var(--dl-grey-3); margin-top: var(--dl-space-4); max-width: 420px; line-height: 1.7; }
 
 /* LogoStrip */
 .dl-logostrip { border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); padding: var(--dl-space-5) 0; }
@@ -269,6 +270,7 @@
 .dl-featuregrid-label { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-blue); }
 .dl-featuregrid-title { font-family: var(--dl-font-display); font-size: var(--dl-text-lead); font-weight: 600; letter-spacing: -0.01em; margin-top: 12px; }
 .dl-featuregrid-body { font-size: var(--dl-text-small); color: var(--dl-grey-4); margin-top: 8px; line-height: 1.65; }
+.dl-featuregrid-value { font-size: var(--dl-text-small); color: var(--dl-ink); margin-top: 12px; padding-top: 12px; border-top: var(--dl-hairline); line-height: 1.6; }
 
 /* StatBand */
 .dl-statband { border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); }

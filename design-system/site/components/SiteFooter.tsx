@@ -21,7 +21,7 @@ const COLUMNS = [
     title: 'Resources',
     links: [
       { label: 'Pitch deck', href: './deck/Datalith-Pitch-Deck.pptx' },
-      { label: 'How it works', href: './index.html#method' },
+      { label: 'How it works', href: './index.html#how' },
       { label: 'Security', href: './platform.html#security' },
     ],
   },

@@ -1,6 +1,6 @@
 import {
   Hero, StatBand, FeatureGrid, Steps, Quote, FAQ, CTABand,
-  SectionLabel, ScoreMeter, ConfluenceFigure, Card, TextLink,
+  SectionLabel, ScoreMeter, ConfluenceFigure, TextLink,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -48,11 +48,12 @@ export function Home() {
       <SiteNav />
       <div className="st-hero-anim">
         <Hero
-          headline={'Every source.\nOne graph.'}
-          accent="Agent-ready."
-          lead="Datalith draws every database, warehouse, wiki and inbox into a single governed knowledge graph — then serves it to any agent, audited end to end."
-          primaryCta={{ label: 'Run the 48h audit', href: '#audit' }}
-          secondaryCta={{ label: 'see the platform', href: './platform.html' }}
+          headline={'Make your enterprise data\nusable by AI agents.'}
+          accent="Every source. One graph."
+          lead="Datalith connects every database, warehouse, wiki and app your company runs into one governed knowledge graph — then serves it to any AI agent, with a full audit trail. Built for data and AI leaders at companies running dozens of disconnected systems."
+          primaryCta={{ label: 'Get your free readiness score', href: '#audit' }}
+          secondaryCta={{ label: 'see how it works', href: '#how' }}
+          note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."
           figure={<HeroFigure />}
         />
       </div>
@@ -78,27 +79,19 @@ export function Home() {
         </div>
       </section>
 
-      <div data-reveal><StatBand /></div>
-
-      {/* the two promises */}
-      <section className="st-section" id="promises">
+      <section className="st-section" id="problem">
         <div className="dl-wrap">
-          <SectionLabel>The two promises</SectionLabel>
-          <h2 className="dl-h2">First we show you what you have. Then we turn it into an agent workforce.</h2>
-          <div className="st-cols-2" data-reveal-group>
-            <Card label="Promise 01" title="See everything.">
-              Data everywhere, visibility nowhere — until now. One live dashboard maps the whole
-              estate: what exists and where it lives, what is changing or going stale, and who —
-              human or agent — can touch what, with a full audit trail.
-            </Card>
-            <Card label="Promise 02" title="Make it work for agents.">
-              Every modality — tables, documents, tickets, transcripts — cleaned, typed, chunked,
-              embedded and scored for agent consumption. Then Datalith finds the potential sleeping
-              in your data and suggests the agentic workflows to build, ROI attached.
-            </Card>
-          </div>
+          <SectionLabel>The problem</SectionLabel>
+          <h2 className="dl-h2">Most agent projects stall on the data, not the model.</h2>
+          <p className="st-lead">
+            Teams buy the model, pick the framework, then spend the next two quarters discovering
+            their data isn&rsquo;t in a shape any agent can use.
+          </p>
         </div>
+        <div data-reveal><StatBand /></div>
       </section>
+
+      <div id="how" data-reveal><Steps /></div>
 
       {/* the knowledge graph */}
       <section id="graph" className="st-section st-section--rule">
@@ -146,8 +139,6 @@ export function Home() {
           </div>
         </div>
       </section>
-
-      <div id="method" data-reveal><Steps /></div>
 
       {/* the score */}
       <section id="score" className="st-section st-section--rule">
