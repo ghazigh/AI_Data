@@ -20,13 +20,13 @@ export const PAGES: PageDef[] = [
   {
     slug: 'index',
     title: 'Datalith — The Agentic Data Center',
-    description: 'Datalith connects every data source, builds your Enterprise Knowledge Graph, and serves governed, agent-ready data to any AI agent. Every source. One graph. Agent-ready.',
+    description: 'Datalith connects every database, warehouse, wiki and app your company runs into one governed knowledge graph — then serves it to any AI agent, with a full audit trail. Free 48-hour Agent-Readiness Score.',
     Component: Home,
   },
   {
     slug: 'platform',
     title: 'Platform — Datalith',
-    description: 'Six modules, one monolith: Connect, Graph, Topics, Ready, Gateway, Flows — from 150+ read-only connectors to governed MCP serving with full audit.',
+    description: 'One platform, six capabilities: Connect, Graph, Topics, Ready, Gateway, Flows — from 150+ read-only connectors to governed serving with a full audit trail.',
     Component: Platform,
   },
   {

@@ -41,7 +41,7 @@ export function Investors() {
         label="Seed round · open"
         title={'Raising $4M to build'}
         accent="the Agentic Data Center."
-        lead="Every enterprise that adopted agents in 2025–2026 is discovering the same bottleneck: not the model, not the framework — the data. Datalith is the readiness layer, landed with a free audit and priced on the agent wave itself."
+        lead="Datalith connects every database, warehouse, wiki and app an enterprise runs into one governed knowledge graph — then serves it to any AI agent, with a full audit trail. Every company that adopted agents in 2025–2026 is hitting the same bottleneck: not the model, not the framework — the data. We land with a free readiness score and price on the agent wave itself."
       >
         <div className="dl-hero-ctas">
           <Button variant="blue" size="lg" href="./deck/Datalith-Pitch-Deck.pptx">Download the deck</Button>
