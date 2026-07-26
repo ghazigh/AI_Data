@@ -10,11 +10,13 @@
 
 **Spec:** [docs/superpowers/specs/2026-07-25-website-clarity-design.md](../specs/2026-07-25-website-clarity-design.md)
 
+> **Correction (2026-07-26):** an earlier draft of this document asserted "Every plan includes all six capabilities." That claim is **false** — the `TIERS`/`MATRIX` arrays in `design-system/site/pages/Pricing.tsx` gate the Flows capability to Scale and above, so the Growth plan does not include it. The claim was caught in review, removed from the shipped site, and corrected throughout this document. Do not reintroduce it. Datalith is one tiered platform, but the tiers differ in which capabilities they include — not only in limits.
+
 ## Global Constraints
 
 - **All commands run from `design-system/`.** `npm test`, `npm run typecheck`, `npm run build:site`.
 - **Terminology, site-wide:** never "modules" or "monolith" — use **"capabilities"** and **"One platform. Six capabilities."** The capability names (Connect, Graph, Topics, Ready, Gateway, Flows) are retained.
-- **Datalith is one tiered platform, not six purchasable products.** Every plan includes all six capabilities; tiers change limits and governance depth. Copy must never imply otherwise.
+- **Datalith is one tiered platform, not six purchasable products.** You buy a plan, not individual capabilities. Tiers differ in how many sources you connect, how much agent traffic you serve, how deep the governance goes, AND which capabilities are included — the Growth tier does not include Flows. Never claim every plan includes all six; verify any such claim against the `TIERS`/`MATRIX` arrays in `Pricing.tsx`, which are authoritative.
 - **Jargon rule:** "ARS", "MCP", "ontology", "lineage", "semantic layer" may not appear bare. ARS gets "Agent-Readiness Score — a 0–100 measure of how usable your data is for AI agents" on first use per page. MCP gets "MCP, the standard protocol agents use to pull context" on first use per page. "ontology"/"lineage"/"semantic layer" are banned from `Home.tsx` entirely; they are permitted only inside the Platform page's deep-dive bullet lists.
 - **The §2.5 disclaimer is mandatory** and must be reproduced verbatim: *"Illustrative model based on published industry benchmarks, not customer results. Datalith is pre-launch; the first design-partner cohort is open."* Do not soften, shorten, or drop it.
 - **No invented proof.** No customer names, logos, testimonials, or unsourced metrics.
@@ -167,7 +169,7 @@ test('FeatureGrid defaults describe one platform with six valued capabilities', 
 test('FAQ defaults answer what the customer is buying', () => {
   const { container } = render(<FAQ />)
   expect(container.textContent).toMatch(/What exactly am I buying\?/)
-  expect(container.textContent).toMatch(/Every plan includes all six/)
+  expect(container.textContent).toMatch(/You pick a plan rather than buying capabilities à la carte/)
 })
 ```
 
@@ -221,7 +223,7 @@ In `design-system/src/components/FAQ.tsx`, replace `DEFAULT_ITEMS` entirely. The
 
 ```tsx
 const DEFAULT_ITEMS = [
-  { q: 'What exactly am I buying?', a: 'One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. Every plan includes all six; higher tiers raise the limits and deepen the governance.' },
+  { q: 'What exactly am I buying?', a: 'One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. You pick a plan rather than buying capabilities à la carte — higher plans connect more sources, serve more agent traffic, and add deeper governance and workflow recommendations.' },
   { q: 'How is this different from a data catalog, or from Glean?', a: 'A catalog describes data for people to find. Glean answers employee questions. Datalith prepares data for machines and serves it to agents through a governed endpoint, with per-agent identity and a full audit trail.' },
   { q: 'Is access really read-only?', a: 'Yes. Datalith connects with scoped, read-only credentials; nothing writes back to your systems, and every read is logged in the audit trail.' },
   { q: 'What is the Agent-Readiness Score?', a: 'A 0–100 measure of how usable your data is for AI agents — how much of the estate is covered, how well it is defined, how well it is governed, and how fresh it is. Computed per business domain and estate-wide.' },
@@ -350,8 +352,8 @@ Replace the whole `<section id="platform" ...>` block (originally `Home.tsx:132-
           <SectionLabel>What you get</SectionLabel>
           <h2 className="dl-h2">One platform. Six capabilities.</h2>
           <p className="st-lead">
-            Every plan includes all six. Higher tiers raise the limits and deepen the governance —
-            they don&rsquo;t unlock features.
+            You pick a plan, not a shopping list of features. Higher plans connect more sources,
+            serve more agent traffic, and add deeper governance and workflow recommendations.
           </p>
         </div>
         <div data-reveal>
@@ -569,7 +571,7 @@ Replace the `<PageIntro>` props:
         label="The platform"
         title={'One platform.'}
         accent="Six capabilities."
-        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next. Every plan includes all six capabilities."
+        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next."
 ```
 
 - [ ] **Step 4: Gloss MCP on first use and fix remaining "module" wording**
@@ -674,10 +676,10 @@ After the `<div data-reveal><PricingTable ... /></div>` block:
       <section className="st-section st-section--rule" id="whats-included">
         <div className="dl-wrap">
           <SectionLabel>What&rsquo;s included</SectionLabel>
-          <h2 className="dl-h2">All six capabilities, in every plan.</h2>
+          <h2 className="dl-h2">What each plan includes.</h2>
           <p className="st-lead">
-            You don&rsquo;t buy capabilities separately. Tiers change how many sources you connect,
-            how much agent traffic you serve, and how deep the governance goes.
+            You don&rsquo;t buy capabilities à la carte — you pick a plan. Higher plans connect more
+            sources, serve more agent traffic, and add deeper governance and workflow recommendations.
           </p>
           <div className="st-table-wrap" data-reveal>
             <table className="st-table">
@@ -712,7 +714,7 @@ After the `<div data-reveal><PricingTable ... /></div>` block:
 Prepend to `PRICING_FAQ`:
 
 ```tsx
-  { q: 'Do I have to buy the capabilities separately?', a: 'No. Every plan includes all six. Tiers change how many sources you connect, how much agent traffic you serve, and how deep the governance goes.' },
+  { q: 'Do I have to buy the capabilities separately?', a: 'No — there is no à la carte menu, you pick a plan. Growth runs the graph live and serves your agents; Scale adds workflow recommendations and role-based access; Enterprise adds in-VPC deployment and custom policy.' },
 ```
 
 - [ ] **Step 5: Typecheck, build, verify**
@@ -720,7 +722,7 @@ Prepend to `PRICING_FAQ`:
 ```bash
 cd design-system && npm run typecheck && npm run build:site
 cd /Users/ghazigharsallah/data/AI_Data
-grep -c "All six capabilities, in every plan." website/pricing.html  # expect 1
+grep -c "What each plan includes." website/pricing.html  # expect 1
 grep -c "Do I have to buy the capabilities separately?" website/pricing.html  # expect 1
 ```
 
@@ -827,7 +829,7 @@ Open `website/index.html` in a browser and confirm, reading top to bottom and st
 
 1. What is it? — plain-language hero
 2. Who is it for? — "data and AI leaders at companies running dozens of disconnected systems"
-3. What do I buy? — "One platform. Six capabilities." + "Every plan includes all six"
+3. What do I buy? — "One platform. Six capabilities.", with what each plan includes stated accurately
 4. What is it worth? — the value section
 5. What does it cost? — the cost section
 6. What is the first step? — free 48-hour score

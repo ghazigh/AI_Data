@@ -3,6 +3,8 @@
 **Date:** 2026-07-25
 **Goal:** Make the Datalith website immediately clear to two audiences — enterprise buyers and seed investors — about what Datalith is, what a customer buys, and what value it delivers.
 
+> **Correction (2026-07-26):** an earlier draft of this document asserted "Every plan includes all six capabilities." That claim is **false** — the `TIERS`/`MATRIX` arrays in `design-system/site/pages/Pricing.tsx` gate the Flows capability to Scale and above, so the Growth plan does not include it. The claim was caught in review, removed from the shipped site, and corrected throughout this document. Do not reintroduce it. Datalith is one tiered platform, but the tiers differ in which capabilities they include — not only in limits.
+
 ## Problem
 
 The site is visually strong but communicates in slogans. Specific failures, verified against the current source:
@@ -19,7 +21,7 @@ The site is visually strong but communicates in slogans. Specific failures, veri
 
 | Question | Decision |
 |---|---|
-| What does a customer buy? | **One platform, tiered.** All six capabilities belong to one product; tiers change limits and governance depth. |
+| What does a customer buy? | **One platform, tiered.** You buy a plan, not individual capabilities — but the plans differ in which capabilities they include, not only in limits and governance depth (the Growth plan does not include Flows). |
 | How far to change? | **Rewrite copy AND restructure the home page IA.** Visual design and components stay; wording and section order change. |
 | How to prove value pre-launch? | **Modeled numbers, clearly labeled.** Derived from already-cited third-party research. No invented logos, customers, or testimonials. |
 
@@ -123,8 +125,9 @@ New section, `id="capabilities"`. Uses `FeatureGrid` extended with an optional `
 ```
 label: "What you get"
 title: "One platform. Six capabilities."
-lead:  "Every plan includes all six. Higher tiers raise the limits and deepen the
-        governance — not unlock features."
+lead:  "You pick a plan, not a shopping list of features. Higher plans connect more
+        sources, serve more agent traffic, and add deeper governance and workflow
+        recommendations."
 ```
 
 | Capability | Title (what it does) | Value line (added value) |
@@ -188,7 +191,7 @@ Link: `see full pricing and what's in each plan` → `./pricing.html`
 
 Two items prepended to the existing four in `src/components/FAQ.tsx` defaults:
 
-- **"What exactly am I buying?"** — "One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. Every plan includes all six; higher tiers raise limits and deepen governance."
+- **"What exactly am I buying?"** — "One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. You pick a plan rather than buying capabilities à la carte — higher plans connect more sources, serve more agent traffic, and add deeper governance and workflow recommendations."
 - **"How is this different from a data catalog, or from Glean?"** — "A catalog describes data for people to find. Glean answers employee questions. Datalith prepares data for machines and serves it to agents through a governed endpoint, with per-agent identity and a full audit trail."
 
 The existing "How is this different from a data catalog?" item is removed, superseded by the above.
@@ -215,7 +218,7 @@ The existing "How is this different from a data catalog?" item is removed, super
 - **New: capability × tier matrix.** A table with the six capabilities as rows and the four tiers as columns, showing what each tier includes at what limit. Reuses the `st-table` / `st-table-wrap` markup already used on `Investors.tsx:126-135`. Placed directly beneath `PricingTable`.
 
   Row contents follow the tier feature lists already in `TIERS` and must stay consistent with them — if the two ever disagree, `TIERS` is authoritative and the matrix is corrected to match.
-- Add one FAQ item: **"Do I have to buy the capabilities separately?"** — "No. Every plan includes all six. Tiers change how many sources you connect, how much agent traffic you serve, and how deep the governance goes."
+- Add one FAQ item: **"Do I have to buy the capabilities separately?"** — "No — there is no à la carte menu, you pick a plan. Growth runs the graph live and serves your agents; Scale adds workflow recommendations and role-based access; Enterprise adds in-VPC deployment and custom policy."
 
 ## 5. Investors and Company pages
 
@@ -257,7 +260,7 @@ A reader who has never heard of Datalith can answer, from the home page alone, t
 
 - What is it? — a platform that makes enterprise data usable by AI agents
 - Who is it for? — data and AI leaders at companies running many systems
-- What do I buy? — one platform, six capabilities, all included in every plan
+- What do I buy? — one platform, six capabilities, with what each plan includes stated accurately
 - What is it worth? — it removes the 60–75% of agent project effort spent on data prep
 - What does it cost? — free to start, $2.5K/mo when live
 - What is the first step? — free 48-hour readiness score from read-only credentials
