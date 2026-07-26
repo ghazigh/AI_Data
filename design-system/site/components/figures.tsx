@@ -93,7 +93,7 @@ export function PositioningMap() {
     { x: 120, y: 78, label: 'Collibra · Alation · Atlan' },
     { x: 130, y: 232, label: 'Glean' },
     { x: 400, y: 218, label: 'LlamaIndex · Unstructured' },
-    { x: 418, y: 258, label: 'ad-hoc integration scripts' },
+    { x: 418, y: 258, label: 'ad-hoc scripts' },
   ]
   return (
     <figure className="st-svgfig st-posmap" data-reveal>
