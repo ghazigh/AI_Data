@@ -164,6 +164,10 @@ export function Home() {
             </div>
             <TextLink href="./platform.html#graph">how the graph is built</TextLink>
           </div>
+          <p className="st-footnote">
+            Figures illustrate a representative estate, not a customer deployment. Datalith is
+            pre-launch.
+          </p>
         </div>
       </section>
 
@@ -191,7 +195,7 @@ export function Home() {
           </p>
           <div className="st-score-row" data-reveal>
             <div className="st-score-meter" data-scoremeter>
-              <ScoreMeter value={87} caption="Certified · full audit" />
+              <ScoreMeter value={87} caption="Example score · illustrative" />
             </div>
             <div className="st-score-fig" data-draw>
               <ConfluenceFigure

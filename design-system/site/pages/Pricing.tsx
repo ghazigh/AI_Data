@@ -43,7 +43,7 @@ const PRICING_FAQ = [
   { q: 'What do the usage meters measure?', a: 'Three things: connected sources, graph entities, and Gateway calls. You pay for the estate you connect and the agent traffic you serve — not for seats.' },
   { q: 'What happens after the free audit?', a: 'You keep the report — estate map, Agent-Readiness Score, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
   { q: 'Do you require write access to our systems?', a: 'Never to start. Datalith connects with scoped, read-only credentials, and every read is logged. In-VPC deployment is available on Enterprise.' },
-  { q: 'How do contracts work?', a: 'Growth and Scale are monthly, cancel anytime. Enterprise is annual with a blended target ACV of $60K in year one — customers typically reach $90K+ by year two as usage expands.' },
+  { q: 'How do contracts work?', a: 'Growth and Scale are monthly, cancel anytime. Enterprise is an annual contract, priced on the size of the estate you connect and the agent traffic you serve.' },
 ]
 
 const MATRIX = [

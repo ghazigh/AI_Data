@@ -68,7 +68,7 @@ const MODULES: Module[] = [
       'Completeness, freshness, consistency, semantic and governance coverage',
       'The board-level KPI for AI programs — and the free-audit wedge',
     ],
-    figure: <div data-scoremeter data-reveal><ScoreMeter value={87} caption="Estate-wide · Q3" /></div>,
+    figure: <div data-scoremeter data-reveal><ScoreMeter value={87} caption="Example score · illustrative" /></div>,
   },
   {
     id: 'gateway', num: '05', name: 'Datalith Gateway', tagline: 'Governed serving for any agent',

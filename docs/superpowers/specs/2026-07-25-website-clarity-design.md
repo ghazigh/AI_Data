@@ -253,7 +253,7 @@ Both component prop additions are optional with `undefined` defaults, so no exis
 
 ## 8. Success criteria
 
-A reader who has never heard of Datalith can answer, from the home page alone, without scrolling past section 6:
+A reader who has never heard of Datalith can answer, from the home page alone, the first four questions without scrolling past section 6, and the cost question at section 10:
 
 - What is it? — a platform that makes enterprise data usable by AI agents
 - Who is it for? — data and AI leaders at companies running many systems
