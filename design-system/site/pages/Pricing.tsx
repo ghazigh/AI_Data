@@ -8,25 +8,25 @@ import { PageIntro } from '../components/PageIntro'
 const TIERS: Tier[] = [
   {
     name: 'Audit', price: 'Free',
-    blurb: '48-hour Agent-Readiness Audit. Read-only credentials in, board-ready score out.',
+    blurb: 'For teams who want to know where they stand before committing budget.',
     features: ['3 sources', 'One-time ARS report', 'Estate map', 'Top-10 findings'],
     cta: { label: 'Run the audit', href: 'mailto:hello@datalith.ai?subject=Agent-Readiness%20Audit' },
   },
   {
     name: 'Growth', price: '$2.5K', period: '/mo',
-    blurb: 'The graph, live. For teams making their first agents work.',
+    blurb: 'For teams putting their first agents into production.',
     features: ['10 sources', 'Knowledge graph + Topics', 'Gateway · 100K agent calls/mo', 'Continuous ARS'],
     cta: { label: 'Start Growth', href: 'mailto:hello@datalith.ai?subject=Datalith%20Growth' }, featured: true,
   },
   {
     name: 'Scale', price: '$6K', period: '/mo',
-    blurb: 'Full governance for agent fleets in production.',
+    blurb: 'For teams running agent fleets that security has to sign off on.',
     features: ['25 sources', 'Ready engine', 'Flows recommendations', 'RBAC + priority support'],
     cta: { label: 'Start Scale', href: 'mailto:hello@datalith.ai?subject=Datalith%20Scale' },
   },
   {
     name: 'Enterprise', price: 'Custom',
-    blurb: '$100K+ ACV. The whole estate, every guarantee.',
+    blurb: 'For regulated estates that need Datalith inside their own VPC.',
     features: ['Unlimited sources', 'In-VPC / self-hosted', 'SSO/SCIM · custom policies', 'Audit exports · dedicated CSM'],
     cta: { label: 'Talk to us', href: 'mailto:hello@datalith.ai?subject=Datalith%20Enterprise' },
   },
@@ -39,10 +39,22 @@ const MOTION = [
 ]
 
 const PRICING_FAQ = [
+  { q: 'Do I have to buy the capabilities separately?', a: 'No. Every plan includes all six. Tiers change how many sources you connect, how much agent traffic you serve, and how deep the governance goes.' },
   { q: 'What do the usage meters measure?', a: 'Three things: connected sources, graph entities, and Gateway calls. You pay for the estate you connect and the agent traffic you serve — not for seats.' },
   { q: 'What happens after the free audit?', a: 'You keep the report — estate map, ARS, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
   { q: 'Do you require write access to our systems?', a: 'Never to start. Datalith connects with scoped, read-only credentials, and every read is logged. In-VPC deployment is available on Enterprise.' },
   { q: 'How do contracts work?', a: 'Growth and Scale are monthly, cancel anytime. Enterprise is annual with a blended target ACV of $60K in year one — customers typically reach $90K+ by year two as usage expands.' },
+]
+
+const MATRIX = [
+  { k: 'Connect — sources', audit: '3', growth: '10', scale: '25', ent: 'Unlimited' },
+  { k: 'Graph — knowledge graph', audit: 'One-time snapshot', growth: 'Live', scale: 'Live', ent: 'Live' },
+  { k: 'Topics — metric definitions', audit: '—', growth: 'Included', scale: 'Included', ent: 'Custom' },
+  { k: 'Ready — readiness score', audit: 'One-time report', growth: 'Continuous', scale: 'Continuous', ent: 'Continuous' },
+  { k: 'Gateway — agent calls', audit: '—', growth: '100K / mo', scale: 'Metered', ent: 'Metered' },
+  { k: 'Flows — workflow recommendations', audit: 'Top-10 findings', growth: '—', scale: 'Included', ent: 'Included' },
+  { k: 'Governance', audit: '—', growth: 'Audit log', scale: 'RBAC + audit log', ent: 'SSO/SCIM · custom policy' },
+  { k: 'Deployment', audit: 'SaaS', growth: 'SaaS', scale: 'SaaS', ent: 'In-VPC / self-hosted' },
 ]
 
 export function Pricing() {
@@ -59,6 +71,41 @@ export function Pricing() {
       <div data-reveal>
         <PricingTable label="Plans" title="" tiers={TIERS} />
       </div>
+
+      <section className="st-section st-section--rule" id="whats-included">
+        <div className="dl-wrap">
+          <SectionLabel>What&rsquo;s included</SectionLabel>
+          <h2 className="dl-h2">All six capabilities, in every plan.</h2>
+          <p className="st-lead">
+            You don&rsquo;t buy capabilities separately. Tiers change how many sources you connect,
+            how much agent traffic you serve, and how deep the governance goes.
+          </p>
+          <div className="st-table-wrap" data-reveal>
+            <table className="st-table">
+              <thead>
+                <tr>
+                  <th scope="col">Capability</th>
+                  <th scope="col">Audit</th>
+                  <th scope="col">Growth</th>
+                  <th scope="col">Scale</th>
+                  <th scope="col">Enterprise</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MATRIX.map(r => (
+                  <tr key={r.k}>
+                    <th scope="row">{r.k}</th>
+                    <td>{r.audit}</td>
+                    <td>{r.growth}</td>
+                    <td>{r.scale}</td>
+                    <td>{r.ent}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       <section className="st-section st-section--rule" id="meters">
         <div className="dl-wrap">
