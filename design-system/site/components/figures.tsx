@@ -255,7 +255,7 @@ function ArsSparkline() {
  */
 export function DashboardFigure() {
   return (
-    <figure className="st-dash" data-reveal aria-label="Datalith command dashboard: module navigation, estate KPIs, source table with readiness scores, ARS trend, live agent audit feed, and recommended workflows">
+    <figure className="st-dash" data-reveal aria-label="Datalith command dashboard: capability navigation, estate KPIs, source table with readiness scores, readiness-score trend, live agent audit feed, and recommended workflows">
       {/* browser chrome */}
       <div className="st-dash-bar">
         <span className="st-dash-dot" /><span className="st-dash-dot" /><span className="st-dash-dot" />
