@@ -13,6 +13,7 @@ interface Module {
   name: string
   tagline: string
   body: string
+  value: string
   points: string[]
   figure?: ReactNode
 }
@@ -21,6 +22,7 @@ const MODULES: Module[] = [
   {
     id: 'connect', num: '01', name: 'Datalith Connect', tagline: 'Every source, read-only',
     body: 'Multi-source, multi-platform, multi-modal ingestion — agentless, incremental, and read-only by default. No migration; Datalith meets the estate where it is.',
+    value: 'No migration and no engineering project — connected in an afternoon.',
     points: [
       '150+ connectors: warehouses, OLTP databases, SaaS apps, object stores, streams',
       'Every modality: tables, documents, PDFs, wikis, tickets, emails, transcripts, images',
@@ -31,6 +33,7 @@ const MODULES: Module[] = [
   {
     id: 'graph', num: '02', name: 'Datalith Graph', tagline: 'The Enterprise Knowledge Graph',
     body: 'An auto-constructed ontology of your business — entities, relationships, and cross-source identity resolution, with column- and chunk-level lineage on every node.',
+    value: 'Agents stop giving contradictory answers from three systems.',
     points: [
       '"This Salesforce Account = this Snowflake row = this Zendesk org" — resolved automatically',
       'Freshness and provenance tracked on every node',
@@ -40,7 +43,8 @@ const MODULES: Module[] = [
   },
   {
     id: 'topics', num: '03', name: 'Datalith Topics', tagline: 'A semantic layer agents can trust',
-    body: 'Business domains defined once, consistently: canonical metrics, glossary, authoritative sources and freshness SLAs — the layer whose absence kills 60% of MCP-only projects.',
+    body: 'Business domains defined once, consistently: canonical metrics, glossary, authoritative sources and freshness targets. Gartner expects 60% of agent analytics projects without this layer to fail by 2028.',
+    value: '"Revenue" means the same thing to every agent, every time.',
     points: [
       'Auto-defined domains: Revenue, Churn, Inventory, Support…',
       'One canonical definition per metric — agents stop inventing their own',
@@ -58,6 +62,7 @@ const MODULES: Module[] = [
   {
     id: 'ready', num: '04', name: 'Datalith Ready', tagline: 'The agent-ready data engine',
     body: 'Preparation for machine consumption — cleaning, deduplication, normalization, semantic typing, chunking, embedding, PII masking — measured by the Agent-Readiness Score.',
+    value: 'Removes the 60–75% of agent project effort that goes to data prep.',
     points: [
       'ARS 0–100 per source, per domain, and estate-wide',
       'Completeness, freshness, consistency, semantic and governance coverage',
@@ -67,7 +72,8 @@ const MODULES: Module[] = [
   },
   {
     id: 'gateway', num: '05', name: 'Datalith Gateway', tagline: 'Governed serving for any agent',
-    body: 'One MCP endpoint for the whole estate. Per-agent identities, least-privilege scopes, row/column/chunk-level policy — and a full audit log of every agent query.',
+    body: 'One endpoint for the whole estate, speaking MCP — the standard protocol agents use to pull context. Per-agent identities, least-privilege scopes, row/column/chunk-level policy — and a full audit log of every agent query.',
+    value: 'Security signs off, because every agent query is identified and logged.',
     points: [
       'MCP-native; adapters for A2A, OpenAI tool calling, LangChain/CrewAI SDKs',
       'Sub-second retrieval: semantic search, graph traversal, SQL-over-federation',
@@ -78,6 +84,7 @@ const MODULES: Module[] = [
   {
     id: 'flows', num: '06', name: 'Datalith Flows', tagline: 'Workflows, ROI attached',
     body: 'Datalith mines the graph for automation opportunities and generates deployable agent blueprints — data bindings, guardrails, eval set — exportable to your framework of choice.',
+    value: 'Turns a data cleanup budget into a revenue roadmap.',
     points: [
       '"Invoices + contracts + tickets → a collections agent is feasible; projected impact $X"',
       'Blueprints export to LangGraph, CrewAI, OpenAI Agents SDK, n8n',
@@ -105,9 +112,9 @@ export function Platform() {
       <SiteNav current="platform" />
       <PageIntro
         label="The platform"
-        title={'Six modules.'}
-        accent="One monolith."
-        lead="The layer between the enterprise data estate and the agent workforce: connect everything, build one governed graph, score it, prepare it, serve it — and mine it for the workflows it makes possible."
+        title={'One platform.'}
+        accent="Six capabilities."
+        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next. Every plan includes all six capabilities."
       />
 
       <section className="st-section st-section--tight">
@@ -127,6 +134,7 @@ export function Platform() {
                 <span className="dl-featuregrid-label">{m.num} · {m.name}</span>
                 <h3 className="st-module-title">{m.tagline}</h3>
                 <p className="st-module-body">{m.body}</p>
+                <p className="dl-featuregrid-value">{m.value}</p>
                 <ul className="st-module-points">
                   {m.points.map(p => (<li key={p}>{p}</li>))}
                 </ul>
@@ -149,6 +157,14 @@ export function Platform() {
           <DashboardFigure />
         </div>
       </section>
+
+      <div data-reveal>
+        <Quote
+          quote="MCP moves context. It doesn't produce it. Datalith is the layer that produces it."
+          name="Datalith"
+          role="Why this layer exists"
+        />
+      </div>
 
       {/* security */}
       <section className="dl-on-ink st-section" id="security">
