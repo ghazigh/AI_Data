@@ -98,8 +98,8 @@ export function Home() {
           <SectionLabel>What you get</SectionLabel>
           <h2 className="dl-h2">One platform. Six capabilities.</h2>
           <p className="st-lead">
-            Every plan includes all six. Higher tiers raise the limits and deepen the governance —
-            they don&rsquo;t unlock features.
+            You pick a plan, not a shopping list of features. Higher plans connect more sources,
+            serve more agent traffic, and add deeper governance and workflow recommendations.
           </p>
         </div>
         <div data-reveal>

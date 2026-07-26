@@ -7,7 +7,7 @@ export interface FAQProps {
 }
 
 const DEFAULT_ITEMS = [
-  { q: 'What exactly am I buying?', a: 'One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. Every plan includes all six; higher tiers raise the limits and deepen the governance.' },
+  { q: 'What exactly am I buying?', a: 'One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. You pick a plan rather than buying capabilities à la carte — higher plans connect more sources, serve more agent traffic, and add deeper governance and workflow recommendations.' },
   { q: 'How is this different from a data catalog, or from Glean?', a: 'A catalog describes data for people to find. Glean answers employee questions. Datalith prepares data for machines and serves it to agents through a governed endpoint, with per-agent identity and a full audit trail.' },
   { q: 'Is access really read-only?', a: 'Yes. Datalith connects with scoped, read-only credentials; nothing writes back to your systems, and every read is logged in the audit trail.' },
   { q: 'What is the Agent-Readiness Score?', a: 'A 0–100 measure of how usable your data is for AI agents — how much of the estate is covered, how well it is defined, how well it is governed, and how fresh it is. Computed per business domain and estate-wide.' },

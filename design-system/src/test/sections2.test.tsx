@@ -41,5 +41,5 @@ test('FeatureGrid defaults describe one platform with six valued capabilities', 
 test('FAQ defaults answer what the customer is buying', () => {
   const { container } = render(<FAQ />)
   expect(container.textContent).toMatch(/What exactly am I buying\?/)
-  expect(container.textContent).toMatch(/Every plan includes all six/)
+  expect(container.textContent).toMatch(/You pick a plan rather than buying capabilities à la carte/)
 })

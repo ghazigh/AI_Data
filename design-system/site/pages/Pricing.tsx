@@ -39,7 +39,7 @@ const MOTION = [
 ]
 
 const PRICING_FAQ = [
-  { q: 'Do I have to buy the capabilities separately?', a: 'No. Every plan includes all six. Tiers change how many sources you connect, how much agent traffic you serve, and how deep the governance goes.' },
+  { q: 'Do I have to buy the capabilities separately?', a: 'No — there is no à la carte menu, you pick a plan. Growth runs the graph live and serves your agents; Scale adds workflow recommendations and role-based access; Enterprise adds in-VPC deployment and custom policy.' },
   { q: 'What do the usage meters measure?', a: 'Three things: connected sources, graph entities, and Gateway calls. You pay for the estate you connect and the agent traffic you serve — not for seats.' },
   { q: 'What happens after the free audit?', a: 'You keep the report — estate map, ARS, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
   { q: 'Do you require write access to our systems?', a: 'Never to start. Datalith connects with scoped, read-only credentials, and every read is logged. In-VPC deployment is available on Enterprise.' },
@@ -75,10 +75,11 @@ export function Pricing() {
       <section className="st-section st-section--rule" id="whats-included">
         <div className="dl-wrap">
           <SectionLabel>What&rsquo;s included</SectionLabel>
-          <h2 className="dl-h2">All six capabilities, in every plan.</h2>
+          <h2 className="dl-h2">What each plan includes.</h2>
           <p className="st-lead">
-            You don&rsquo;t buy capabilities separately. Tiers change how many sources you connect,
-            how much agent traffic you serve, and how deep the governance goes.
+            You don&rsquo;t buy capabilities à la carte — you pick a plan. Higher plans connect more
+            sources, serve more agent traffic, and add deeper governance and workflow
+            recommendations.
           </p>
           <div className="st-table-wrap" data-reveal>
             <table className="st-table">

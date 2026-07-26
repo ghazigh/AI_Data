@@ -114,7 +114,7 @@ export function Platform() {
         label="The platform"
         title={'One platform.'}
         accent="Six capabilities."
-        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next. Every plan includes all six capabilities."
+        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next."
       />
 
       <section className="st-section st-section--tight">
