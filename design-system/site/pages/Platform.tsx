@@ -42,7 +42,7 @@ const MODULES: Module[] = [
     figure: <GraphFigure />,
   },
   {
-    id: 'topics', num: '03', name: 'Datalith Topics', tagline: 'A semantic layer agents can trust',
+    id: 'topics', num: '03', name: 'Datalith Topics', tagline: 'Business definitions agents can trust',
     body: 'Business domains defined once, consistently: canonical metrics, glossary, authoritative sources and freshness targets. Gartner expects 60% of agent analytics projects without this layer to fail by 2028.',
     value: '"Revenue" means the same thing to every agent, every time.',
     points: [
@@ -64,7 +64,7 @@ const MODULES: Module[] = [
     body: 'Preparation for machine consumption — cleaning, deduplication, normalization, semantic typing, chunking, embedding, PII masking — measured by the Agent-Readiness Score.',
     value: 'Removes the 60–75% of agent project effort that goes to data prep.',
     points: [
-      'ARS 0–100 per source, per domain, and estate-wide',
+      'Score 0–100 per source, per domain, and estate-wide',
       'Completeness, freshness, consistency, semantic and governance coverage',
       'The board-level KPI for AI programs — and the free-audit wedge',
     ],
@@ -151,7 +151,7 @@ export function Platform() {
           <SectionLabel>Command</SectionLabel>
           <h2 className="dl-h2">Built for the CDO&rsquo;s Monday meeting.</h2>
           <p className="st-lead">
-            One pane: estate map, ARS trends, agent activity, policy violations, and the workflow
+            One pane: estate map, readiness-score trends, agent activity, policy violations, and the workflow
             pipeline with ROI — the whole agentic data program, in a view your board can read.
           </p>
           <DashboardFigure />
@@ -199,7 +199,7 @@ export function Platform() {
       <div id="audit">
         <CTABand
           headline="Start with the free audit."
-          lead="25 connectors at launch, the ARS, and your estate map — from read-only credentials to board-ready readout in 48 hours."
+          lead="25 connectors at launch, the Agent-Readiness Score, and your estate map — from read-only credentials to board-ready readout in 48 hours."
           primaryCta={{ label: 'Request the audit', href: 'mailto:hello@datalith.ai?subject=Agent-Readiness%20Audit' }}
           secondaryCta={{ label: 'See pricing', href: './pricing.html' }}
         />

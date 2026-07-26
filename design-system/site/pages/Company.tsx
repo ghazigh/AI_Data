@@ -9,19 +9,19 @@ const PRINCIPLES = [
   { label: 'Principle 01', title: 'Agent-native, human-governed', body: 'Agents are the primary consumers; humans set policy, review, and approve.' },
   { label: 'Principle 02', title: 'Read-only by default', body: 'Connect with read-only credentials and produce value before asking for anything more. Kills the #1 security objection.' },
   { label: 'Principle 03', title: 'Meet the estate where it is', body: 'No migration, no "move your data to us." Federate, index and prepare in place.' },
-  { label: 'Principle 04', title: 'Protocol-open', body: 'MCP first; adapters for A2A, OpenAI tool calling, and agent SDKs. The graph is the asset; wire formats are commodities.' },
-  { label: 'Principle 05', title: 'Score everything', body: 'If readiness isn’t measurable, it isn’t manageable. The ARS is the product’s heartbeat.' },
+  { label: 'Principle 04', title: 'Protocol-open', body: 'Built on the standard agent-context protocol first; adapters for A2A, OpenAI tool calling, and agent SDKs. The graph is the asset; wire formats are commodities.' },
+  { label: 'Principle 05', title: 'Score everything', body: 'If readiness isn’t measurable, it isn’t manageable. The Agent-Readiness Score is the product’s heartbeat.' },
   { label: 'Principle 06', title: 'Ship the wedge first', body: 'A free 48-hour audit before a single sales call. The product earns the conversation.' },
 ]
 
 const ROADMAP = [
   {
     phase: 'v0 · The Audit', when: 'Now → +3 months', badge: 'in build' as const,
-    body: '25 connectors, ARS scoring, estate map. Free tier live; goal: 100 audits run.',
+    body: '25 connectors, readiness scoring, estate map. Free tier live; goal: 100 audits run.',
   },
   {
     phase: 'v1 · The Graph', when: '+3 → +9 months', badge: 'next' as const,
-    body: 'Knowledge graph GA, Topics, Gateway (MCP) beta, in-VPC deploy, SOC 2 Type I. Ten design partners converting to paid.',
+    body: 'Knowledge graph GA, Topics, Gateway beta, in-VPC deploy, SOC 2 Type I. Ten design partners converting to paid.',
   },
   {
     phase: 'v2 · The Platform', when: '+9 → +18 months', badge: 'horizon' as const,

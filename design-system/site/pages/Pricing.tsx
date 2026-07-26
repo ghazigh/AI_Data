@@ -9,13 +9,13 @@ const TIERS: Tier[] = [
   {
     name: 'Audit', price: 'Free',
     blurb: 'For teams who want to know where they stand before committing budget.',
-    features: ['3 sources', 'One-time ARS report', 'Estate map', 'Top-10 findings'],
+    features: ['3 sources', 'One-time readiness report', 'Estate map', 'Top-10 findings'],
     cta: { label: 'Run the audit', href: 'mailto:hello@datalith.ai?subject=Agent-Readiness%20Audit' },
   },
   {
     name: 'Growth', price: '$2.5K', period: '/mo',
     blurb: 'For teams putting their first agents into production.',
-    features: ['10 sources', 'Knowledge graph + Topics', 'Gateway · 100K agent calls/mo', 'Continuous ARS'],
+    features: ['10 sources', 'Knowledge graph + Topics', 'Gateway · 100K agent calls/mo', 'Continuous readiness scoring'],
     cta: { label: 'Start Growth', href: 'mailto:hello@datalith.ai?subject=Datalith%20Growth' }, featured: true,
   },
   {
@@ -33,15 +33,15 @@ const TIERS: Tier[] = [
 ]
 
 const MOTION = [
-  { title: 'Land — free', body: 'The Agent-Readiness Audit: connect read-only in an afternoon, get the ARS and estate map in 48 hours. The score is the benchmark your board shares.' },
-  { title: 'Convert — Growth', body: 'Unlock continuous scoring, the knowledge graph, and the Gateway. Your first agents get governed context instead of hand-built MCP servers.' },
+  { title: 'Land — free', body: 'The Agent-Readiness Audit: connect read-only in an afternoon, get your Agent-Readiness Score and estate map in 48 hours. The score is the benchmark your board shares.' },
+  { title: 'Convert — Growth', body: 'Unlock continuous scoring, the knowledge graph, and the Gateway. Your first agents get governed context instead of hand-built integrations.' },
   { title: 'Expand — Enterprise', body: 'More sources, more agents served, Flows blueprints, in-VPC deployment. Usage grows with your agent adoption — pricing is indexed to the wave itself.' },
 ]
 
 const PRICING_FAQ = [
   { q: 'Do I have to buy the capabilities separately?', a: 'No — there is no à la carte menu, you pick a plan. Growth runs the graph live and serves your agents; Scale adds workflow recommendations and role-based access; Enterprise adds in-VPC deployment and custom policy.' },
   { q: 'What do the usage meters measure?', a: 'Three things: connected sources, graph entities, and Gateway calls. You pay for the estate you connect and the agent traffic you serve — not for seats.' },
-  { q: 'What happens after the free audit?', a: 'You keep the report — estate map, ARS, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
+  { q: 'What happens after the free audit?', a: 'You keep the report — estate map, Agent-Readiness Score, top-10 findings. Teams that convert to Growth typically do so to make the score continuous and put their first agents on the Gateway.' },
   { q: 'Do you require write access to our systems?', a: 'Never to start. Datalith connects with scoped, read-only credentials, and every read is logged. In-VPC deployment is available on Enterprise.' },
   { q: 'How do contracts work?', a: 'Growth and Scale are monthly, cancel anytime. Enterprise is annual with a blended target ACV of $60K in year one — customers typically reach $90K+ by year two as usage expands.' },
 ]
@@ -122,7 +122,7 @@ export function Pricing() {
               Knowledge Graph.
             </Card>
             <Card label="Meter 03" title="Gateway calls">
-              Governed context served to your agents over MCP. More agents working means more
+              Governed context served to your agents through the gateway. More agents working means more
               calls — that is the point.
             </Card>
           </div>

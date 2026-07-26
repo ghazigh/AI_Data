@@ -93,7 +93,7 @@ export function PositioningMap() {
     { x: 120, y: 78, label: 'Collibra · Alation · Atlan' },
     { x: 130, y: 232, label: 'Glean' },
     { x: 400, y: 218, label: 'LlamaIndex · Unstructured' },
-    { x: 418, y: 258, label: 'ad-hoc MCP servers' },
+    { x: 418, y: 258, label: 'ad-hoc integration scripts' },
   ]
   return (
     <figure className="st-svgfig st-posmap" data-reveal>
@@ -167,7 +167,7 @@ const APP_NAV: { section: string; items: { glyph: string; label: string; meta?: 
     items: [{ glyph: 'command', label: 'Command', active: true }],
   },
   {
-    section: 'Modules',
+    section: 'Capabilities',
     items: [
       { glyph: 'connect', label: 'Connect', meta: '23' },
       { glyph: 'graph', label: 'Graph', meta: '4.2M' },
@@ -249,8 +249,8 @@ function ArsSparkline() {
 }
 
 /**
- * The command dashboard, mocked as the real product shell: module sidebar,
- * KPI band, estate table, ARS trend, live audit feed, workflow queue.
+ * The command dashboard, mocked as the real product shell: capability sidebar,
+ * KPI band, estate table, readiness-score trend, live audit feed, workflow queue.
  * Purely presentational — animated by site.js reveal + CSS loops.
  */
 export function DashboardFigure() {
