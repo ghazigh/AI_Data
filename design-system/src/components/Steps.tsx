@@ -8,13 +8,13 @@ export interface StepsProps {
 }
 
 const DEFAULT_STEPS = [
-  { title: 'Connect, read-only', body: 'Hand us scoped read-only credentials. Datalith maps the whole estate — every database, warehouse, wiki and inbox.' },
-  { title: 'One graph, scored', body: 'The Enterprise Knowledge Graph assembles itself: ontology, identities, lineage — and your Agent-Readiness Score, board-ready in 48 hours.' },
-  { title: 'Serve to any agent', body: 'Governed, MCP-native context for every agent — per-agent identity, full audit, and suggested workflows with ROI attached.' },
+  { title: 'Connect, read-only', body: 'Give Datalith scoped read-only credentials. It maps every database, warehouse, wiki and app you run. No migration, nothing written back.' },
+  { title: 'One graph, scored', body: 'Datalith builds a single map of your business across all those systems, and scores how ready it is for agents — board-ready in 48 hours.' },
+  { title: 'Serve to any agent', body: 'Your agents pull governed context through one endpoint, each with its own identity and a full audit log of every query.' },
 ]
 
 /** Numbered how-it-works rows; the numbers are the actual order of operations. */
-export function Steps({ label = 'How it works', title = 'Read-only in. Agent workforce out.', steps = DEFAULT_STEPS }: StepsProps) {
+export function Steps({ label = 'How it works', title = 'Read-only credentials in. Governed context out.', steps = DEFAULT_STEPS }: StepsProps) {
   return (
     <section className="dl-steps">
       <div className="dl-wrap">

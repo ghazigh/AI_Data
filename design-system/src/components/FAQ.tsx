@@ -7,10 +7,11 @@ export interface FAQProps {
 }
 
 const DEFAULT_ITEMS = [
-  { q: 'Is access really read-only?', a: 'Yes. Datalith ingests through scoped, read-only credentials; nothing writes back to your systems, and every read is logged in the audit trail.' },
-  { q: 'What is the Agent-Readiness Score?', a: 'ARS is a 0–100 measure of how consumable your estate is for AI agents — coverage, semantics, governance and freshness, computed per domain and overall.' },
-  { q: 'How is this different from a data catalog?', a: 'Catalogs describe data for humans. Datalith produces governed, agent-ready context and serves it over MCP — with per-agent identity and full audit.' },
-  { q: 'How long does the audit take?', a: '48 hours from credentials to a board-ready readout: estate map, ARS, and the top opportunities sleeping in your data.' },
+  { q: 'What exactly am I buying?', a: 'One platform with six capabilities: connection, the knowledge graph, business definitions, preparation and scoring, governed serving, and workflow recommendations. Every plan includes all six; higher tiers raise the limits and deepen the governance.' },
+  { q: 'How is this different from a data catalog, or from Glean?', a: 'A catalog describes data for people to find. Glean answers employee questions. Datalith prepares data for machines and serves it to agents through a governed endpoint, with per-agent identity and a full audit trail.' },
+  { q: 'Is access really read-only?', a: 'Yes. Datalith connects with scoped, read-only credentials; nothing writes back to your systems, and every read is logged in the audit trail.' },
+  { q: 'What is the Agent-Readiness Score?', a: 'A 0–100 measure of how usable your data is for AI agents — how much of the estate is covered, how well it is defined, how well it is governed, and how fresh it is. Computed per business domain and estate-wide.' },
+  { q: 'How long does the audit take?', a: '48 hours from credentials to a board-ready readout: your estate map, your score, and the top opportunities sleeping in your data.' },
 ]
 
 /** Accordion built on native details/summary — no state, works everywhere. */

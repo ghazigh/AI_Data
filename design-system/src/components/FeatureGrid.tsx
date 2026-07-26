@@ -7,17 +7,17 @@ export interface FeatureGridProps {
   columns?: 2 | 3
 }
 
-const MODULES = [
-  { label: '01 · Connect', title: 'Every source, read-only', body: '150+ connectors; multi-source, multi-platform, multi-modal ingestion.' },
-  { label: '02 · Graph', title: 'One knowledge graph', body: 'Auto-ontology, identity resolution, lineage across the estate.' },
-  { label: '03 · Topics', title: 'A semantic layer', body: 'Domains, canonical metrics, and a glossary agents can trust.' },
-  { label: '04 · Ready', title: 'Agent-Readiness Score', body: 'Preparation engine + ARS 0–100, board-ready in 48 hours.' },
-  { label: '05 · Gateway', title: 'Governed serving', body: 'MCP-native access with per-agent identity and full audit.' },
-  { label: '06 · Flows', title: 'Workflows, ROI attached', body: 'Agentic workflows mined from your own data, ranked by value.' },
+const CAPABILITIES = [
+  { label: '01 · Connect', title: 'Plugs into every system, read-only', body: '150+ connectors across warehouses, databases, SaaS apps, object stores and streams.', value: 'No migration and no engineering project — connected in an afternoon.' },
+  { label: '02 · Graph', title: 'One map of your business across all systems', body: 'The same customer, order or contract recognised across every system you run.', value: 'Agents stop giving contradictory answers from three systems.' },
+  { label: '03 · Topics', title: 'One agreed definition per business metric', body: 'Business domains defined once: canonical metrics, glossary, authoritative source.', value: '"Revenue" means the same thing to every agent, every time.' },
+  { label: '04 · Ready', title: 'Cleans and scores your data for machine use', body: 'Cleaning, deduplication, typing, chunking, masking — measured by the Agent-Readiness Score.', value: 'Removes the 60–75% of agent project effort that goes to data prep.' },
+  { label: '05 · Gateway', title: 'One governed door for every agent', body: 'A single endpoint with per-agent identity, least-privilege scopes and a full audit log.', value: 'Security signs off, because every agent query is identified and logged.' },
+  { label: '06 · Flows', title: 'Ranks which agents to build, by payback', body: 'Datalith mines your own data for automation opportunities and generates deployable blueprints.', value: 'Turns a data cleanup budget into a revenue roadmap.' },
 ]
 
-/** Hairline-divided grid of features — default content is the six Datalith modules. */
-export function FeatureGrid({ label = 'The platform', title = 'Six modules. One monolith.', items = MODULES, columns = 3 }: FeatureGridProps) {
+/** Hairline-divided grid of features — default content is the six Datalith capabilities. */
+export function FeatureGrid({ label = 'What you get', title = 'One platform. Six capabilities.', items = CAPABILITIES, columns = 3 }: FeatureGridProps) {
   return (
     <section className="dl-featuregrid">
       <div className="dl-wrap">

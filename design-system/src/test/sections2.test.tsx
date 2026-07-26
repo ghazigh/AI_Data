@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { StatBand, Steps, Quote, PricingTable } from '../index'
+import { StatBand, Steps, Quote, PricingTable, FeatureGrid, FAQ } from '../index'
 
 test('StatBand renders one cell per stat', () => {
   const { container } = render(<StatBand stats={[
@@ -28,4 +28,18 @@ test('Quote renders blockquote with attribution', () => {
 test('PricingTable marks the featured tier', () => {
   const { container } = render(<PricingTable />)
   expect(container.querySelectorAll('.dl-pricing-tier--featured').length).toBe(1)
+})
+
+test('FeatureGrid defaults describe one platform with six valued capabilities', () => {
+  const { container, getByText } = render(<FeatureGrid />)
+  expect(getByText('One platform. Six capabilities.')).toBeTruthy()
+  expect(container.querySelectorAll('.dl-featuregrid-cell').length).toBe(6)
+  expect(container.querySelectorAll('.dl-featuregrid-value').length).toBe(6)
+  expect(container.textContent).not.toMatch(/monolith|module/i)
+})
+
+test('FAQ defaults answer what the customer is buying', () => {
+  const { container } = render(<FAQ />)
+  expect(container.textContent).toMatch(/What exactly am I buying\?/)
+  expect(container.textContent).toMatch(/Every plan includes all six/)
 })
