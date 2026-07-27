@@ -162,6 +162,9 @@
 
 /* Hero */
 .dl-hero { background: var(--dl-canvas); padding: var(--dl-space-9) 0; }
+/* the hero sits further in than the rest of the site: deliberate breathing
+   room around the first thing anyone sees */
+.dl-hero .dl-wrap { max-width: 980px; }
 /* stretch, not center: the figure column matches the text block's height so
    the artwork shares its top and bottom edge instead of floating inside it */
 .dl-hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: var(--dl-space-7); align-items: stretch; }
@@ -173,7 +176,7 @@
   .dl-hero-grid { grid-template-columns: 1fr; }
   .dl-hero-figure > * { min-height: 0; max-height: 360px; }
 }
-.dl-hero-headline { font-family: var(--dl-font-display); font-size: clamp(2.1rem, 3.8vw, 3rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
+.dl-hero-headline { font-family: var(--dl-font-display); font-size: clamp(2rem, 3.2vw, 2.5rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
 .dl-hero-headline em { font-style: normal; color: var(--dl-blue); }
 .dl-hero-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.6; margin-top: var(--dl-space-5); max-width: 620px; }
 .dl-hero-ctas { display: flex; align-items: center; gap: var(--dl-space-5); margin-top: var(--dl-space-6); flex-wrap: wrap; }
