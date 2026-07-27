@@ -24,17 +24,20 @@ const SOURCES: { name: string; icon?: SimpleIcon }[] = [
  * animation and ink variant carry over.
  */
 export function HeroFigure() {
-  const W = 560
-  const H = 340
-  const mergeX = 392
+  // Portrait canvas: the figure column is taller than it is wide, so the
+  // artwork is authored to roughly that aspect. It then scales ~1:1 instead
+  // of shrinking to 75% and letterboxing inside a landscape viewBox.
+  const W = 440
+  const H = 400
+  const mergeX = 296
   const midY = H / 2
-  const pad = 26
+  const pad = 30
   const rows = SOURCES.length + 1 // final row is the "+144 more" text stream
   const step = (H - pad * 2) / (rows - 1)
-  const ICON = 20 // rendered icon size in viewBox units (icons are 24×24)
+  const ICON = 22 // rendered icon size in viewBox units (icons are 24×24)
   const ICON_X = 6
   return (
-    <figure className="dl-confluence dl-confluence--animated st-herofig" style={{ height: H }}>
+    <figure className="dl-confluence dl-confluence--animated st-herofig">
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
         aria-label={`${SOURCES.map(s => s.name).join(', ')} and 144 more sources merging into one graph`}>
         {SOURCES.map((s, i) => {
@@ -54,7 +57,7 @@ export function HeroFigure() {
               )}
               <path
                 className="dl-confluence-stream"
-                d={`M${startX} ${y} C ${150 + spread * 20} ${y}, ${245 + spread * 20} ${midY}, ${mergeX} ${midY}`}
+                d={`M${startX} ${y} C ${120 + spread * 18} ${y}, ${205 + spread * 18} ${midY}, ${mergeX} ${midY}`}
                 style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }}
               />
             </g>
@@ -65,13 +68,13 @@ export function HeroFigure() {
           return (
             <g>
               <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>+144 more</text>
-              <path className="dl-confluence-stream" d={`M74 ${y} C 170 ${y}, 265 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
+              <path className="dl-confluence-stream" d={`M74 ${y} C 140 ${y}, 220 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
             </g>
           )
         })()}
         <path className="dl-confluence-merge" d={`M${mergeX} ${midY} L${W} ${midY}`} />
-        <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={5.5} />
-        <text className="dl-confluence-mergelabel" x={mergeX + 48} y={midY - 14}>ONE GRAPH</text>
+        <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={6} />
+        <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE GRAPH</text>
       </svg>
     </figure>
   )
