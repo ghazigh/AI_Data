@@ -50,7 +50,7 @@ export function Home() {
         <Hero
           headline={'Make your enterprise data'}
           accent="usable by AI agents."
-          lead="Datalith makes your company Agentic Friendly! It connects every database, warehouse, wiki and app you run into one live dashboard, and shows you exactly what to fix to make that data usable by agents. It builds the governed knowledge graph your agents read from — then proposes the agentic workflows your data makes possible."
+          lead="Datalith makes your company Agentic Friendly! One dashboard over every database, warehouse, wiki and app you run — showing what to fix, building the governed knowledge graph your agents read from, and proposing the workflows your data makes possible."
           primaryCta={{ label: 'Get your free readiness score', href: '#audit' }}
           secondaryCta={{ label: 'see how it works', href: '#how' }}
           note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."

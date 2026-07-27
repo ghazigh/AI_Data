@@ -190,7 +190,13 @@
 .st-dash-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dl-grey-2); flex: none; }
 .st-dash-url { margin-left: 14px; font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-4); border: var(--dl-hairline); border-radius: var(--dl-radius-pill); padding: 3px 14px; background: var(--dl-canvas); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .st-dash-env { margin-left: auto; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--dl-grey-3); white-space: nowrap; }
-@media (max-width: 640px) { .st-dash-env { display: none; } }
+@media (max-width: 640px) {
+  .st-dash-env { display: none; }
+  /* panel meta is nowrap and right-aligned on desktop; let it fall to its
+     own line on phones instead of pushing the mockup past the viewport */
+  .st-app-paneltitle { flex-wrap: wrap; }
+  .st-app-panelmeta { margin-left: 0; white-space: normal; }
+}
 
 /* app shell: sidebar + main */
 .st-app { display: grid; grid-template-columns: 192px 1fr; background: var(--dl-paper); }
