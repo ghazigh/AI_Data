@@ -35,13 +35,13 @@ export function HeroFigure() {
   // Portrait canvas: the figure column is taller than it is wide, so the
   // artwork is authored to roughly that aspect. It then scales ~1:1 instead
   // of shrinking to 75% and letterboxing inside a landscape viewBox.
-  const W = 440
-  const H = 400
-  // merge sits left of centre so the label clears the canvas: "ONE AGENTIC
-  // PLATFORM" needs ~150 units at 10px mono with 0.14em tracking
-  const mergeX = 248
+  const W = 400
+  const H = 450
+  // merge sits left so "ONE AGENTIC PLATFORM" (~148 units at 10px mono,
+  // 0.14em tracking) clears the terminal node at W-12
+  const mergeX = 220
   const midY = H / 2
-  const pad = 30
+  const pad = 16  // tight: the viewBox should wrap the drawing, not pad it
   const rows = SOURCES.length + 1 // final row is the "+144 more" text stream
   const step = (H - pad * 2) / (rows - 1)
   const ICON = 22 // rendered icon size in viewBox units (icons are 24×24)
@@ -62,7 +62,7 @@ export function HeroFigure() {
               </g>
               <path
                 className="dl-confluence-stream"
-                d={`M${startX} ${y} C ${100 + spread * 16} ${y}, ${172 + spread * 16} ${midY}, ${mergeX} ${midY}`}
+                d={`M${startX} ${y} C ${89 + spread * 14} ${y}, ${153 + spread * 14} ${midY}, ${mergeX} ${midY}`}
                 style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }}
               />
             </g>
@@ -73,7 +73,7 @@ export function HeroFigure() {
           return (
             <g>
               <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>+144 more</text>
-              <path className="dl-confluence-stream" d={`M74 ${y} C 117 ${y}, 184 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
+              <path className="dl-confluence-stream" d={`M70 ${y} C 104 ${y}, 163 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
             </g>
           )
         })()}
