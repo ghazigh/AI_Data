@@ -117,7 +117,20 @@ export function Platform() {
         lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next."
       />
 
-      <section className="st-section st-section--tight">
+      {/* command dashboard — the product, before the explanation */}
+      <section className="st-section st-section--tight" id="dashboard">
+        <div className="dl-wrap">
+          <SectionLabel>Command</SectionLabel>
+          <h2 className="dl-h2">Built for the CDO&rsquo;s Monday meeting.</h2>
+          <p className="st-lead">
+            One pane: estate map, readiness-score trends, agent activity, policy violations, and the workflow
+            pipeline with ROI — the whole agentic data program, in a view your board can read.
+          </p>
+          <DashboardFigure />
+        </div>
+      </section>
+
+      <section className="st-section st-section--rule">
         <div className="dl-wrap">
           <SectionLabel>The loop</SectionLabel>
           <h2 className="dl-h2">Connect → Recommend, then back again.</h2>
@@ -143,19 +156,6 @@ export function Platform() {
             </div>
           </article>
         ))}
-      </section>
-
-      {/* command dashboard */}
-      <section className="st-section st-section--rule" id="dashboard">
-        <div className="dl-wrap">
-          <SectionLabel>Command</SectionLabel>
-          <h2 className="dl-h2">Built for the CDO&rsquo;s Monday meeting.</h2>
-          <p className="st-lead">
-            One pane: estate map, readiness-score trends, agent activity, policy violations, and the workflow
-            pipeline with ROI — the whole agentic data program, in a view your board can read.
-          </p>
-          <DashboardFigure />
-        </div>
       </section>
 
       <div data-reveal>
