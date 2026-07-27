@@ -1,16 +1,24 @@
 import {
   siSap, siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
-  type SimpleIcon,
 } from 'simple-icons'
 
 /**
- * The seven headline sources. Icon where a redistributable mark exists,
- * name-only otherwise — simple-icons carries no Amazon/AWS marks, so S3
- * renders as a label, matching the connector marquee on the same page.
+ * S3's bucket silhouette, drawn to the same 24×24 grid as the simple-icons
+ * marks. simple-icons dropped every Amazon/AWS mark over trademark policy,
+ * and AWS's own asset ships under their brand guidelines — so this is our
+ * own monochrome rendering of the bucket form, used nominatively to say
+ * "we connect to this". Two subpaths: outer bucket, inner rim opening.
  */
-const SOURCES: { name: string; icon?: SimpleIcon }[] = [
+const S3_BUCKET =
+  'M12 2C6.48 2 2 3.34 2 5l2.6 14.4C4.85 20.9 8.06 22 12 22s7.15-1.1 7.4-2.6L22 5c0-1.66-4.48-3-10-3z'
+  + 'M12 3.7C7.86 3.7 4.5 4.28 4.5 5s3.36 1.3 7.5 1.3 7.5-.58 7.5-1.3-3.36-1.3-7.5-1.3z'
+
+/** A drawable mark: either a simple-icons entry or one of our own paths. */
+interface Mark { path: string; evenOdd?: boolean }
+
+const SOURCES: { name: string; icon: Mark }[] = [
   { name: 'SAP', icon: siSap },
-  { name: 'AWS S3' },
+  { name: 'AWS S3', icon: { path: S3_BUCKET, evenOdd: true } },
   { name: 'Snowflake', icon: siSnowflake },
   { name: 'Databricks', icon: siDatabricks },
   { name: 'BigQuery', icon: siGooglebigquery },
@@ -43,18 +51,13 @@ export function HeroFigure() {
         {SOURCES.map((s, i) => {
           const y = pad + i * step
           const spread = Math.abs(y - midY) / (H / 2)
-          // text heads are wider than icon heads, so their stream starts further right
-          const startX = s.icon ? ICON_X + ICON + 10 : 64
+          const startX = ICON_X + ICON + 10
           return (
             <g key={s.name}>
-              {s.icon ? (
-                <g className="st-herofig-icon" transform={`translate(${ICON_X} ${y - ICON / 2}) scale(${ICON / 24})`}>
-                  <title>{s.name}</title>
-                  <path d={s.icon.path} />
-                </g>
-              ) : (
-                <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>{s.name}</text>
-              )}
+              <g className="st-herofig-icon" transform={`translate(${ICON_X} ${y - ICON / 2}) scale(${ICON / 24})`}>
+                <title>{s.name}</title>
+                <path d={s.icon.path} fillRule={s.icon.evenOdd ? 'evenodd' : undefined} />
+              </g>
               <path
                 className="dl-confluence-stream"
                 d={`M${startX} ${y} C ${120 + spread * 18} ${y}, ${205 + spread * 18} ${midY}, ${mergeX} ${midY}`}
