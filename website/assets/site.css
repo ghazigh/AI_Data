@@ -73,7 +73,7 @@
   --dl-hairline: 1px solid var(--dl-grey-2);
   --dl-hairline-ink: 1px solid #2A2A30;
   --dl-ease: 0.18s ease;
-  --dl-max-width: 980px;
+  --dl-max-width: 1160px;
 }
 
 
@@ -245,16 +245,19 @@
 
 /* stretch, not center: the figure column matches the text block's height so
    the artwork shares its top and bottom edge instead of floating inside it */
-.dl-hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: var(--dl-space-7); align-items: stretch; }
+/* the hero runs full-bleed: the two columns push out to the left and right
+   edges instead of sitting inside the site's 1160px column */
+.dl-hero .dl-wrap, .dl-navbar .dl-wrap { max-width: none; padding: 0 clamp(28px, 4.5vw, 88px); }
+.dl-hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(40px, 4vw, 80px); align-items: stretch; }
 .dl-hero-figure { display: flex; }
-.dl-hero-figure > * { flex: 1; min-height: 320px; }
+.dl-hero-figure > * { flex: 1; min-height: 320px; max-height: 480px; }
 /* stacked: nothing constrains the stretched figure, so cap it — otherwise it
    scales to the full column width and towers over the copy above it */
 @media (max-width: 900px) {
   .dl-hero-grid { grid-template-columns: 1fr; }
   .dl-hero-figure > * { min-height: 0; max-height: 360px; }
 }
-.dl-hero-headline { font-family: var(--dl-font-display); font-size: clamp(2rem, 3.2vw, 2.5rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
+.dl-hero-headline { font-family: var(--dl-font-display); font-size: clamp(2.1rem, 3.6vw, 3.4rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
 .dl-hero-headline em { font-style: normal; color: var(--dl-blue); }
 .dl-hero-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.6; margin-top: var(--dl-space-5); max-width: 620px; }
 .dl-hero-ctas { display: flex; align-items: center; gap: var(--dl-space-5); margin-top: var(--dl-space-6); flex-wrap: wrap; }

@@ -48,7 +48,7 @@ export function HeroFigure() {
   const ICON_X = 6
   return (
     <figure className="dl-confluence dl-confluence--animated st-herofig">
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMid meet" role="img"
         aria-label={`${SOURCES.map(s => s.name).join(', ')} and 144 more sources merging into one graph`}>
         {SOURCES.map((s, i) => {
           const y = pad + i * step
