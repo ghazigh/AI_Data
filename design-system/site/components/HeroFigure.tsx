@@ -77,8 +77,11 @@ export function HeroFigure() {
             </g>
           )
         })()}
-        <path className="dl-confluence-merge" d={`M${mergeX} ${midY} L${W} ${midY}`} />
+        {/* the served line: a closed segment between two equal nodes, not a
+            stub running off the canvas — inset so the terminal node clears W */}
+        <path className="dl-confluence-merge" d={`M${mergeX} ${midY} L${W - 12} ${midY}`} />
         <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={6} />
+        <circle className="dl-confluence-node" cx={W - 12} cy={midY} r={6} />
         <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE AGENTIC PLATFORM</text>
       </svg>
     </figure>
