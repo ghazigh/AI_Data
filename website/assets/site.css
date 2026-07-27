@@ -73,7 +73,7 @@
   --dl-hairline: 1px solid var(--dl-grey-2);
   --dl-hairline-ink: 1px solid #2A2A30;
   --dl-ease: 0.18s ease;
-  --dl-max-width: 1160px;
+  --dl-max-width: 980px;
 }
 
 
@@ -242,7 +242,7 @@
 .dl-hero { background: var(--dl-canvas); padding: var(--dl-space-9) 0; }
 /* the hero sits further in than the rest of the site: deliberate breathing
    room around the first thing anyone sees */
-.dl-hero .dl-wrap { max-width: 980px; }
+
 /* stretch, not center: the figure column matches the text block's height so
    the artwork shares its top and bottom edge instead of floating inside it */
 .dl-hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: var(--dl-space-7); align-items: stretch; }
