@@ -48,9 +48,9 @@ export function Home() {
       <SiteNav />
       <div className="st-hero-anim">
         <Hero
-          headline={'Make your enterprise data\nusable by AI agents.'}
-          accent="Every source. One graph."
-          lead="Datalith connects every database, warehouse, wiki and app your company runs into one governed knowledge graph — then serves it to any AI agent, with a full audit trail. Built for data and AI leaders at companies running dozens of disconnected systems."
+          headline={'Make your enterprise data'}
+          accent="usable by AI agents."
+          lead="Datalith makes your company Agentic Friendly! It connects every database, warehouse, wiki and app you run into one live dashboard, and shows you exactly what to fix to make that data usable by agents. It builds the governed knowledge graph your agents read from — then proposes the agentic workflows your data makes possible."
           primaryCta={{ label: 'Get your free readiness score', href: '#audit' }}
           secondaryCta={{ label: 'see how it works', href: '#how' }}
           note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."
