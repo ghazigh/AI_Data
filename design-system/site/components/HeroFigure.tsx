@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import {
   siSap, siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
 } from 'simple-icons'
@@ -54,26 +55,28 @@ export function HeroFigure() {
           const y = pad + i * step
           const spread = Math.abs(y - midY) / (H / 2)
           const startX = ICON_X + ICON + 10
+          const d = `M${startX} ${y} C ${210 + spread * 34} ${y}, ${372 + spread * 34} ${midY}, ${mergeX} ${midY}`
           return (
             <g key={s.name}>
               <g className="st-herofig-icon" transform={`translate(${ICON_X} ${y - ICON / 2}) scale(${ICON / 24})`}>
                 <title>{s.name}</title>
                 <path d={s.icon.path} fillRule={s.icon.evenOdd ? 'evenodd' : undefined} />
               </g>
-              <path
-                className="dl-confluence-stream"
-                d={`M${startX} ${y} C ${210 + spread * 34} ${y}, ${372 + spread * 34} ${midY}, ${mergeX} ${midY}`}
-                style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }}
-              />
+              <path className="dl-confluence-stream" d={d} style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }} />
+              {/* the travelling packet: pathLength normalises every stream to
+                  100 units so one keyframe drives them all regardless of curve */}
+              <path className="st-flow" d={d} pathLength={100} style={{ '--i': i } as CSSProperties} />
             </g>
           )
         })}
         {(() => {
           const y = pad + SOURCES.length * step
+          const d = `M92 ${y} C 240 ${y}, 400 ${midY}, ${mergeX} ${midY}`
           return (
             <g>
               <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>+144 more</text>
-              <path className="dl-confluence-stream" d={`M92 ${y} C 240 ${y}, 400 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
+              <path className="dl-confluence-stream" d={d} style={{ opacity: 0.55 }} />
+              <path className="st-flow" d={d} pathLength={100} style={{ '--i': SOURCES.length } as CSSProperties} />
             </g>
           )
         })()}
@@ -83,6 +86,9 @@ export function HeroFigure() {
             stroke-dasharray:200 regardless of how long the line actually is —
             without it, widening the canvas leaves the last stretch undrawn */}
         <path className="dl-confluence-merge" pathLength={200} d={`M${mergeX} ${midY} L${W - 12} ${midY}`} />
+        {/* arrival ring at the platform, then the served highlight travelling out */}
+        <circle className="st-arrival" cx={mergeX} cy={midY} r={6} />
+        <path className="st-flow st-flow--served" pathLength={100} d={`M${mergeX} ${midY} L${W - 12} ${midY}`} />
         <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={6} />
         <circle className="dl-confluence-node" cx={W - 12} cy={midY} r={6} />
         <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE AGENTIC PLATFORM</text>

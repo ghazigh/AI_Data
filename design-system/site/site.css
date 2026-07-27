@@ -73,10 +73,64 @@
 
 /* ===== home: hero figure with connector logos ===== */
 .st-herofig-icon path { fill: var(--dl-grey-4); }
+/* flow packets and the arrival ring are motion-only: with reduced motion they
+   never paint, leaving the static figure exactly as it draws today */
+.st-flow, .st-arrival { display: none; }
 @media (prefers-reduced-motion: no-preference) {
   .st-herofig-icon { opacity: 0; animation: st-fade 0.5s ease 0.9s forwards; }
+
+  /* one loop, three beats: packets run the streams into the platform, the
+     platform rings as they land, a highlight carries the result outward */
+  .st-flow {
+    display: block;
+    fill: none;
+    stroke: var(--dl-blue);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 2.5 200;
+    animation: st-flow-run 3.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation-delay: calc(1.7s + var(--i, 0) * 0.16s);
+  }
+  .st-flow--served {
+    stroke: #fff;
+    stroke-width: 4.5;
+    stroke-dasharray: 4 200;
+    animation-name: st-flow-served;
+    animation-timing-function: cubic-bezier(0.35, 0, 0.2, 1);
+    animation-delay: 3.1s;
+  }
+  .st-arrival {
+    display: block;
+    fill: none;
+    stroke: var(--dl-blue);
+    stroke-width: 1.5;
+    opacity: 0;
+    animation: st-arrival-ring 3.6s ease-out infinite;
+    animation-delay: 2.9s;
+  }
 }
 @keyframes st-fade { to { opacity: 1; } }
+/* travels source -> platform; fades in off the mark and out at the node so the
+   packet never appears to pop out of the icon or pile up on the merge */
+@keyframes st-flow-run {
+  0%   { stroke-dashoffset: 0;      opacity: 0; }
+  10%  { opacity: 1; }
+  62%  { opacity: 1; }
+  72%  { stroke-dashoffset: -102.5; opacity: 0; }
+  100% { stroke-dashoffset: -102.5; opacity: 0; }
+}
+@keyframes st-flow-served {
+  0%   { stroke-dashoffset: 0;    opacity: 0; }
+  8%   { opacity: 0.9; }
+  55%  { opacity: 0.9; }
+  70%  { stroke-dashoffset: -104; opacity: 0; }
+  100% { stroke-dashoffset: -104; opacity: 0; }
+}
+@keyframes st-arrival-ring {
+  0%   { r: 6;  opacity: 0.55; }
+  40%  { r: 17; opacity: 0; }
+  100% { r: 17; opacity: 0; }
+}
 
 /* section that wraps its own FeatureGrid: collapse the grid's outer rhythm */
 .st-section .dl-featuregrid { padding: var(--dl-space-8) 0 0; }
