@@ -236,7 +236,7 @@
 /* the nav takes the middle and spreads its links; margin-left:auto on the
    ul never worked because the ul sits inside a <nav> flex child */
 .dl-navbar-in > nav { flex: 1; }
-.dl-navbar-links { display: flex; justify-content: space-evenly; font-size: var(--dl-text-small); font-weight: 500; color: var(--dl-grey-4); }
+.dl-navbar-links { display: flex; justify-content: center; gap: 28px; font-size: var(--dl-text-small); font-weight: 500; color: var(--dl-grey-4); }
 .dl-navbar-links a { transition: color var(--dl-ease); }
 .dl-navbar-links a:hover { color: var(--dl-ink); }
 @media (max-width: 760px) { .dl-navbar-links { display: none; } }
