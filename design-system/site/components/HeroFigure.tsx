@@ -37,7 +37,9 @@ export function HeroFigure() {
   // of shrinking to 75% and letterboxing inside a landscape viewBox.
   const W = 440
   const H = 400
-  const mergeX = 296
+  // merge sits left of centre so the label clears the canvas: "ONE AGENTIC
+  // PLATFORM" needs ~150 units at 10px mono with 0.14em tracking
+  const mergeX = 248
   const midY = H / 2
   const pad = 30
   const rows = SOURCES.length + 1 // final row is the "+144 more" text stream
@@ -60,7 +62,7 @@ export function HeroFigure() {
               </g>
               <path
                 className="dl-confluence-stream"
-                d={`M${startX} ${y} C ${120 + spread * 18} ${y}, ${205 + spread * 18} ${midY}, ${mergeX} ${midY}`}
+                d={`M${startX} ${y} C ${100 + spread * 16} ${y}, ${172 + spread * 16} ${midY}, ${mergeX} ${midY}`}
                 style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }}
               />
             </g>
@@ -71,13 +73,13 @@ export function HeroFigure() {
           return (
             <g>
               <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>+144 more</text>
-              <path className="dl-confluence-stream" d={`M74 ${y} C 140 ${y}, 220 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
+              <path className="dl-confluence-stream" d={`M74 ${y} C 117 ${y}, 184 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
             </g>
           )
         })()}
         <path className="dl-confluence-merge" d={`M${mergeX} ${midY} L${W} ${midY}`} />
         <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={6} />
-        <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE GRAPH</text>
+        <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE AGENTIC PLATFORM</text>
       </svg>
     </figure>
   )

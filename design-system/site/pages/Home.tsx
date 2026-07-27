@@ -79,7 +79,26 @@ export function Home() {
         </div>
       </section>
 
-      <section className="st-section" id="problem">
+      {/* what the platform provides — the first thing after the hero */}
+      <section id="capabilities" className="st-section">
+        <div className="dl-wrap">
+          <SectionLabel>The agentic platform</SectionLabel>
+          <h2 className="dl-h2">What the Datalith platform gives you.</h2>
+          <p className="st-lead">
+            Six capabilities in one platform: it connects your systems, maps them, agrees the
+            definitions, prepares and scores the data, serves it to your agents under governance,
+            and tells you which agents are worth building next.
+          </p>
+        </div>
+        <div data-reveal>
+          <FeatureGrid label="" title="" />
+          <div className="dl-wrap st-more">
+            <TextLink href="./platform.html">see each capability in depth</TextLink>
+          </div>
+        </div>
+      </section>
+
+      <section className="st-section st-section--rule" id="problem">
         <div className="dl-wrap">
           <SectionLabel>The problem</SectionLabel>
           <h2 className="dl-h2">Most agent projects stall on the data, not the model.</h2>
@@ -92,23 +111,6 @@ export function Home() {
       </section>
 
       <div id="how" data-reveal><Steps /></div>
-
-      <section id="capabilities" className="st-section st-section--rule">
-        <div className="dl-wrap">
-          <SectionLabel>What you get</SectionLabel>
-          <h2 className="dl-h2">One platform. Six capabilities.</h2>
-          <p className="st-lead">
-            You pick a plan, not a shopping list of features. Higher plans connect more sources,
-            serve more agent traffic, and add deeper governance and workflow recommendations.
-          </p>
-        </div>
-        <div data-reveal>
-          <FeatureGrid label="" title="" />
-          <div className="dl-wrap st-more">
-            <TextLink href="./platform.html">see each capability in depth</TextLink>
-          </div>
-        </div>
-      </section>
 
       <section id="value" className="st-section st-section--rule">
         <div className="dl-wrap">
