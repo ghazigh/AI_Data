@@ -232,8 +232,11 @@
 
 /* Navbar */
 .dl-navbar { background: var(--dl-canvas); border-bottom: var(--dl-hairline); position: sticky; top: 0; z-index: 50; }
-.dl-navbar-in { display: flex; align-items: center; gap: 32px; height: 68px; }
-.dl-navbar-links { display: flex; gap: 28px; margin-left: auto; font-size: var(--dl-text-small); font-weight: 500; color: var(--dl-grey-4); }
+.dl-navbar-in { display: flex; align-items: center; gap: 32px; height: 68px; justify-content: space-between; }
+/* the nav takes the middle and spreads its links; margin-left:auto on the
+   ul never worked because the ul sits inside a <nav> flex child */
+.dl-navbar-in > nav { flex: 1; }
+.dl-navbar-links { display: flex; justify-content: space-evenly; font-size: var(--dl-text-small); font-weight: 500; color: var(--dl-grey-4); }
 .dl-navbar-links a { transition: color var(--dl-ease); }
 .dl-navbar-links a:hover { color: var(--dl-ink); }
 @media (max-width: 760px) { .dl-navbar-links { display: none; } }
@@ -248,9 +251,9 @@
 /* the hero runs full-bleed: the two columns push out to the left and right
    edges instead of sitting inside the site's 1160px column */
 .dl-hero .dl-wrap, .dl-navbar .dl-wrap { max-width: none; padding: 0 clamp(28px, 4.5vw, 88px); }
-.dl-hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(40px, 4vw, 80px); align-items: stretch; }
+.dl-hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 4vw, 80px); align-items: stretch; }
 .dl-hero-figure { display: flex; }
-.dl-hero-figure > * { flex: 1; min-height: 320px; max-height: 480px; }
+.dl-hero-figure > * { flex: 1; min-height: 320px; }
 /* stacked: nothing constrains the stretched figure, so cap it — otherwise it
    scales to the full column width and towers over the copy above it */
 @media (max-width: 900px) {

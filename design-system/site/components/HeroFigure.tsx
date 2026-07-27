@@ -32,23 +32,23 @@ const SOURCES: { name: string; icon: Mark }[] = [
  * animation and ink variant carry over.
  */
 export function HeroFigure() {
-  // Portrait canvas: the figure column is taller than it is wide, so the
-  // artwork is authored to roughly that aspect. It then scales ~1:1 instead
-  // of shrinking to 75% and letterboxing inside a landscape viewBox.
-  const W = 400
-  const H = 450
+  // Landscape canvas: the figure now owns the full right half of the hero,
+  // which is wider than it is tall, so the artwork is authored to that
+  // aspect (~1.58) and fills the column instead of letterboxing in it.
+  const W = 760
+  const H = 480
   // merge sits left so "ONE AGENTIC PLATFORM" (~148 units at 10px mono,
   // 0.14em tracking) clears the terminal node at W-12
-  const mergeX = 220
+  const mergeX = 480
   const midY = H / 2
   const pad = 16  // tight: the viewBox should wrap the drawing, not pad it
   const rows = SOURCES.length + 1 // final row is the "+144 more" text stream
   const step = (H - pad * 2) / (rows - 1)
-  const ICON = 22 // rendered icon size in viewBox units (icons are 24×24)
+  const ICON = 26 // rendered icon size in viewBox units (icons are 24×24)
   const ICON_X = 6
   return (
     <figure className="dl-confluence dl-confluence--animated st-herofig">
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMid meet" role="img"
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
         aria-label={`${SOURCES.map(s => s.name).join(', ')} and 144 more sources merging into one graph`}>
         {SOURCES.map((s, i) => {
           const y = pad + i * step
@@ -62,7 +62,7 @@ export function HeroFigure() {
               </g>
               <path
                 className="dl-confluence-stream"
-                d={`M${startX} ${y} C ${89 + spread * 14} ${y}, ${153 + spread * 14} ${midY}, ${mergeX} ${midY}`}
+                d={`M${startX} ${y} C ${210 + spread * 34} ${y}, ${372 + spread * 34} ${midY}, ${mergeX} ${midY}`}
                 style={{ opacity: 0.55 + 0.35 * ((i % 3) / 2) }}
               />
             </g>
@@ -73,13 +73,16 @@ export function HeroFigure() {
           return (
             <g>
               <text className="dl-confluence-srclabel" x={ICON_X} y={y + 3}>+144 more</text>
-              <path className="dl-confluence-stream" d={`M70 ${y} C 104 ${y}, 163 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
+              <path className="dl-confluence-stream" d={`M92 ${y} C 240 ${y}, 400 ${midY}, ${mergeX} ${midY}`} style={{ opacity: 0.55 }} />
             </g>
           )
         })()}
         {/* the served line: a closed segment between two equal nodes, not a
             stub running off the canvas — inset so the terminal node clears W */}
-        <path className="dl-confluence-merge" d={`M${mergeX} ${midY} L${W - 12} ${midY}`} />
+        {/* pathLength pins the draw-in animation to the stylesheet's
+            stroke-dasharray:200 regardless of how long the line actually is —
+            without it, widening the canvas leaves the last stretch undrawn */}
+        <path className="dl-confluence-merge" pathLength={200} d={`M${mergeX} ${midY} L${W - 12} ${midY}`} />
         <circle className="dl-confluence-node" cx={mergeX} cy={midY} r={6} />
         <circle className="dl-confluence-node" cx={W - 12} cy={midY} r={6} />
         <text className="dl-confluence-mergelabel" x={mergeX + 16} y={midY - 16}>ONE AGENTIC PLATFORM</text>
