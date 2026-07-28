@@ -22,7 +22,7 @@ const ROADMAP = [
   },
   {
     phase: 'v1 · The Graph', when: '+3 → +9 months', badge: 'next' as const,
-    body: 'Knowledge graph GA, Topics, Gateway beta, in-VPC deploy, SOC 2 Type I. Ten design partners converting to paid.',
+    body: 'Knowledge graph GA, pipeline plans, use-case recommender in beta, in-VPC deploy, SOC 2 Type I. Ten design partners converting to paid.',
   },
   {
     phase: 'v2 · The Platform', when: '+9 → +18 months', badge: 'horizon' as const,

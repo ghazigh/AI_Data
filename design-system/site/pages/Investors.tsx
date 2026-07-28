@@ -28,8 +28,8 @@ const MILESTONES = [
 const OBJECTIONS = [
   { q: 'Won’t Snowflake or Databricks build this?', a: 'They already do — for their own data. Enterprises average many systems, and cross-source neutrality is the product. Same durable seat dbt, Fivetran and Confluent occupied against warehouse-native tooling.' },
   { q: 'Why not Glean?', a: 'Glean sells answers to employees. We sell infrastructure to agents — open protocols, any framework, governed at the data layer. Different consumer, different architecture, different buyer.' },
-  { q: 'Isn’t this a feature of data catalogs?', a: 'Catalogs describe data for humans. Datalith prepares and serves data to machines, with a runtime (Gateway) and a recommendation engine (Flows). The incumbents’ pivots validate the category; their human-workflow legacy is our opening.' },
-  { q: 'What about MCP churn risk?', a: 'The Gateway is protocol-agnostic — MCP today, A2A and OpenAI tool-calling adapters alongside. The durable asset is the knowledge graph, not the wire format.' },
+  { q: 'Isn’t this a feature of data catalogs?', a: 'Catalogs describe data for humans. Datalith prepares and serves data to machines, with a readiness score, a knowledge graph and a use-case recommender. The incumbents’ pivots validate the category; their human-workflow legacy is our opening.' },
+  { q: 'What about MCP churn risk?', a: 'Serving is protocol-agnostic — MCP today, A2A and OpenAI tool-calling adapters alongside. The durable asset is the knowledge graph, not the wire format.' },
   { q: 'Why will Datalith win?', a: 'Speed to the category name, plus the audit wedge: every free audit generates proprietary readiness-benchmark data nobody else has — which compounds into scoring and recommendation quality.' },
 ]
 

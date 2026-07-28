@@ -7,17 +7,16 @@ export interface FeatureGridProps {
   columns?: 2 | 3
 }
 
-const CAPABILITIES = [
-  { label: '01 · Connect', title: 'Plugs into every system, read-only', body: '150+ connectors across warehouses, databases, SaaS apps, object stores and streams.', value: 'No migration and no engineering project — connected in an afternoon.' },
-  { label: '02 · Graph', title: 'One map of your business across all systems', body: 'The same customer, order or contract recognised across every system you run.', value: 'Agents stop giving contradictory answers from three systems.' },
-  { label: '03 · Topics', title: 'One agreed definition per business metric', body: 'Business domains defined once: canonical metrics, glossary, authoritative source.', value: '"Revenue" means the same thing to every agent, every time.' },
-  { label: '04 · Ready', title: 'Cleans and scores your data for machine use', body: 'Cleaning, deduplication, typing, chunking, masking — measured by the Agent-Readiness Score.', value: 'Removes the 60–75% of agent project effort that goes to data prep.' },
-  { label: '05 · Gateway', title: 'One governed door for every agent', body: 'A single endpoint with per-agent identity, least-privilege scopes and a full audit log.', value: 'Security signs off, because every agent query is identified and logged.' },
-  { label: '06 · Flows', title: 'Ranks which agents to build, by payback', body: 'Datalith mines your own data for automation opportunities and generates deployable blueprints.', value: 'Turns a data cleanup budget into a revenue roadmap.' },
+const STAGES = [
+  { label: '01 · Connect', title: 'Plugs into every system, read-only', body: '150+ connectors across warehouses, databases, SaaS apps, object stores and streams — every modality.', value: 'No migration and no engineering project — connected in an afternoon.' },
+  { label: '02 · Ready', title: 'Scores how ready your data is for agents', body: 'An Agent-Readiness Score per source and per domain, with the red flags a data team can act on.', value: 'Continuous monitoring, not a one-off audit.' },
+  { label: '03 · Pipelines', title: 'Proposes the restructuring your estate needs', body: 'The score becomes a plan: resolution, semantic typing, PII masking, chunking and embedding.', value: 'Built for your data as it is, not a generic template.' },
+  { label: '04 · Graph', title: 'Builds one map of your whole business', body: 'Every system resolved into one knowledge graph, with its topics, domains and expertise named.', value: 'Knowledge bases any agentic AI can read.' },
+  { label: '05 · Use cases', title: 'Tells you which agents are worth building', body: 'Datalith reads the graph and proposes the agent applications your data actually supports.', value: 'You find out what to build before you build it.' },
 ]
 
-/** Hairline-divided grid of features — default content is the six Datalith capabilities. */
-export function FeatureGrid({ label = 'What you get', title = 'One platform. Six capabilities.', items = CAPABILITIES, columns = 3 }: FeatureGridProps) {
+/** Hairline-divided grid of features — default content is the five Datalith stages. */
+export function FeatureGrid({ label = 'What you get', title = 'One platform. Five stages.', items = STAGES, columns = 3 }: FeatureGridProps) {
   return (
     <section className="dl-featuregrid">
       <div className="dl-wrap">

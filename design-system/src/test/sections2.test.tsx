@@ -30,16 +30,22 @@ test('PricingTable marks the featured tier', () => {
   expect(container.querySelectorAll('.dl-pricing-tier--featured').length).toBe(1)
 })
 
-test('FeatureGrid defaults describe one platform with six valued capabilities', () => {
+test('FeatureGrid defaults describe one platform as five valued stages', () => {
   const { container, getByText } = render(<FeatureGrid />)
-  expect(getByText('One platform. Six capabilities.')).toBeTruthy()
-  expect(container.querySelectorAll('.dl-featuregrid-cell').length).toBe(6)
-  expect(container.querySelectorAll('.dl-featuregrid-value').length).toBe(6)
+  expect(getByText('One platform. Five stages.')).toBeTruthy()
+  expect(container.querySelectorAll('.dl-featuregrid-cell').length).toBe(5)
+  expect(container.querySelectorAll('.dl-featuregrid-value').length).toBe(5)
+  // the stages are a sequence, so they must render in order
+  expect([...container.querySelectorAll('.dl-featuregrid-label')].map(e => e.textContent))
+    .toEqual(['01 · Connect', '02 · Ready', '03 · Pipelines', '04 · Graph', '05 · Use cases'])
   expect(container.textContent).not.toMatch(/monolith|module/i)
+  // Topics and Gateway were retired into Graph; they must not come back
+  expect(container.textContent).not.toMatch(/Topics|Gateway/)
 })
 
 test('FAQ defaults answer what the customer is buying', () => {
   const { container } = render(<FAQ />)
   expect(container.textContent).toMatch(/What exactly am I buying\?/)
-  expect(container.textContent).toMatch(/You pick a plan rather than buying capabilities à la carte/)
+  expect(container.textContent).toMatch(/five stages over your estate/)
+  expect(container.textContent).toMatch(/rather than buying stages à la carte/)
 })

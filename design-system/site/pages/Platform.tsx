@@ -5,9 +5,9 @@ import {
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { PageIntro } from '../components/PageIntro'
-import { LoopFigure, GraphFigure, GatewayFigure, DashboardFigure } from '../components/figures'
+import { LoopFigure, GraphFigure, DashboardFigure } from '../components/figures'
 
-interface Module {
+interface Stage {
   id: string
   num: string
   name: string
@@ -18,9 +18,9 @@ interface Module {
   figure?: ReactNode
 }
 
-const MODULES: Module[] = [
+const STAGES: Stage[] = [
   {
-    id: 'connect', num: '01', name: 'Datalith Connect', tagline: 'Every source, read-only',
+    id: 'connect', num: '01', name: 'Connect', tagline: 'Every system you run, read-only',
     body: 'Multi-source, multi-platform, multi-modal ingestion — agentless, incremental, and read-only by default. No migration; Datalith meets the estate where it is.',
     value: 'No migration and no engineering project — connected in an afternoon.',
     points: [
@@ -31,74 +31,63 @@ const MODULES: Module[] = [
     figure: <div data-draw><ConfluenceFigure height={280} /></div>,
   },
   {
-    id: 'graph', num: '02', name: 'Datalith Graph', tagline: 'The Enterprise Knowledge Graph',
-    body: 'An auto-constructed ontology of your business — entities, relationships, and cross-source identity resolution, with column- and chunk-level lineage on every node.',
-    value: 'Agents stop giving contradictory answers from three systems.',
+    id: 'ready', num: '02', name: 'Ready', tagline: 'A score for how usable your data is',
+    body: 'Every source and every business domain is measured for machine consumption — coverage, semantics, governance and freshness — and kept under watch after the first pass.',
+    value: 'Continuous monitoring, not a one-off audit. You see readiness move as the estate changes.',
     points: [
-      '"This Salesforce Account = this Snowflake row = this Zendesk org" — resolved automatically',
-      'Freshness and provenance tracked on every node',
-      'Stewards confirm or correct mappings; corrections retrain the mappers',
+      'Agent-Readiness Score 0–100 per source, per domain, and estate-wide',
+      'Red flags a data team can act on: unmasked PII, duplicates, stale sources',
+      'The board-level KPI for AI programs — and the free-audit wedge',
     ],
-    figure: <GraphFigure />,
+    figure: <div data-scoremeter data-reveal><ScoreMeter value={78} caption="Example score · illustrative" /></div>,
   },
   {
-    id: 'topics', num: '03', name: 'Datalith Topics', tagline: 'Business definitions agents can trust',
-    body: 'Business domains defined once, consistently: canonical metrics, glossary, authoritative sources and freshness targets. Gartner expects 60% of agent analytics projects without this layer to fail by 2028.',
-    value: '"Revenue" means the same thing to every agent, every time.',
+    id: 'pipelines', num: '03', name: 'Pipelines', tagline: 'The restructuring your estate needs',
+    body: 'The score becomes a plan. Datalith designs the preparation your data actually requires — resolution, deduplication, semantic typing, PII masking, chunking and embedding — sized to what the scan found.',
+    value: 'Built for your data as it is, not a generic template someone else’s estate needed.',
     points: [
-      'Auto-defined domains: Revenue, Churn, Inventory, Support…',
-      'One canonical definition per metric — agents stop inventing their own',
-      'Freshness SLAs per topic, enforced and visible',
+      'Each step carries the count that justifies it: 380 columns to type, 12 to mask',
+      'Runs in place; nothing is written back to your source systems',
+      'Re-runs as the estate drifts, so preparation never goes stale',
     ],
     figure: (
       <div className="st-topics" data-reveal>
-        {['Revenue', 'Churn', 'Inventory', 'Support', 'Pipeline', 'Payroll', 'Logistics', 'Contracts'].map((t, i) => (
-          <Badge key={t} tone={i === 0 ? 'blue' : 'neutral'}>{t}</Badge>
+        {['resolve + dedupe', 'semantic typing', 'mask PII', 'chunk + embed'].map((s, i) => (
+          <Badge key={s} tone={i === 0 ? 'blue' : 'neutral'}>{s}</Badge>
         ))}
-        <p className="st-topics-note">revenue · canonical metrics: ARR, NRR, ACV · SLA: 24h · source of truth: snowflake.finance</p>
+        <p className="st-topics-note">generated from your scan · 41K duplicates · 380 untyped columns · 12 unmasked PII</p>
       </div>
     ),
   },
   {
-    id: 'ready', num: '04', name: 'Datalith Ready', tagline: 'The agent-ready data engine',
-    body: 'Preparation for machine consumption — cleaning, deduplication, normalization, semantic typing, chunking, embedding, PII masking — measured by the Agent-Readiness Score.',
-    value: 'Removes the 60–75% of agent project effort that goes to data prep.',
+    id: 'graph', num: '04', name: 'Graph', tagline: 'One map of the whole business',
+    body: 'Every system resolved into a single knowledge graph — entities, relationships and cross-source identity — with the topics, domains and pockets of expertise inside it detected and named, so each becomes a knowledge base in its own right.',
+    value: 'Knowledge bases any agentic AI can read, whatever framework you build on.',
     points: [
-      'Score 0–100 per source, per domain, and estate-wide',
-      'Completeness, freshness, consistency, semantic and governance coverage',
-      'The board-level KPI for AI programs — and the free-audit wedge',
+      '"This Salesforce Account = this Snowflake row = this Zendesk org" — resolved automatically',
+      'Domains surfaced and scored: Customers, Contracts, Support, Supply',
+      'Every fact traceable to the system it came from, with freshness attached',
     ],
-    figure: <div data-scoremeter data-reveal><ScoreMeter value={87} caption="Example score · illustrative" /></div>,
+    figure: <GraphFigure />,
   },
   {
-    id: 'gateway', num: '05', name: 'Datalith Gateway', tagline: 'Governed serving for any agent',
-    body: 'One endpoint for the whole estate, speaking MCP — the standard protocol agents use to pull context. Per-agent identities, least-privilege scopes, row/column/chunk-level policy — and a full audit log of every agent query.',
-    value: 'Security signs off, because every agent query is identified and logged.',
-    points: [
-      'MCP-native; adapters for A2A, OpenAI tool calling, LangChain/CrewAI SDKs',
-      'Sub-second retrieval: semantic search, graph traversal, SQL-over-federation',
-      'The audit artifact that gets security teams to "yes"',
-    ],
-    figure: <GatewayFigure />,
-  },
-  {
-    id: 'flows', num: '06', name: 'Datalith Flows', tagline: 'Workflows, ROI attached',
-    body: 'Datalith mines the graph for automation opportunities and generates deployable agent blueprints — data bindings, guardrails, eval set — exportable to your framework of choice.',
-    value: 'Turns a data cleanup budget into a revenue roadmap.',
+    id: 'usecases', num: '05', name: 'Use cases', tagline: 'Which agents are worth building',
+    body: 'Datalith reads the graph and proposes the agentic applications your data actually supports — the sources each would draw on, the effort, and the payback — including the ones the graph cannot support yet.',
+    value: 'You find out what to build before you spend a quarter building it.',
     points: [
       '"Invoices + contracts + tickets → a collections agent is feasible; projected impact $X"',
       'Blueprints export to LangGraph, CrewAI, OpenAI Agents SDK, n8n',
-      'Turns readiness spend into revenue creation — the expansion engine',
+      'Blocked proposals name the domain holding them back, and its score',
     ],
     figure: (
       <div className="st-flowcards" data-reveal-group>
         {[
           { name: 'Collections follow-up agent', roi: '$340K/yr', src: 'netsuite + sharepoint + zendesk' },
           { name: 'Churn-risk weekly digest', roi: '$120K/yr', src: 'salesforce + product events' },
-          { name: 'Invoice ↔ contract reconciliation', roi: '$95K/yr', src: 'netsuite + drive' },
+          { name: 'Contract renewal agent', roi: 'blocked', src: 'contracts scoring below 60' },
         ].map(f => (
           <Card key={f.name} label={f.src} title={f.name}>
-            <Badge tone="ok">projected {f.roi}</Badge>
+            <Badge tone={f.roi === 'blocked' ? 'warn' : 'ok'}>{f.roi === 'blocked' ? 'blocked' : `projected ${f.roi}`}</Badge>
           </Card>
         ))}
       </div>
@@ -113,8 +102,8 @@ export function Platform() {
       <PageIntro
         label="The platform"
         title={'One platform.'}
-        accent="Six capabilities."
-        lead="Datalith sits between your data estate and your AI agents: it connects every system read-only, builds one map of your business, scores how ready that data is for agents, serves it through a single governed door, and tells you which agents are worth building next."
+        accent="Five stages."
+        lead="Datalith sits between your data estate and your AI agents, in five stages: connect every system read-only, score how ready its data is, propose the restructuring that estate needs, build it into one knowledge graph, then name the agents that graph makes possible."
       />
 
       {/* command dashboard — the product, before the explanation */}
@@ -140,7 +129,7 @@ export function Platform() {
 
       {/* module deep-dives */}
       <section className="st-modules">
-        {MODULES.map((m, i) => (
+        {STAGES.map((m, i) => (
           <article className={`st-module${i % 2 ? ' st-module--flip' : ''}`} id={m.id} key={m.id}>
             <div className="dl-wrap st-module-in" data-reveal>
               <div className="st-module-copy">

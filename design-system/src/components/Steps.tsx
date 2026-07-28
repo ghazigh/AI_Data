@@ -9,8 +9,8 @@ export interface StepsProps {
 
 const DEFAULT_STEPS = [
   { title: 'Connect, read-only', body: 'Give Datalith scoped read-only credentials. It maps every database, warehouse, wiki and app you run. No migration, nothing written back.' },
-  { title: 'One graph, scored', body: 'Datalith builds a single map of your business across all those systems, and scores how ready it is for agents — board-ready in 48 hours.' },
-  { title: 'Serve to any agent', body: 'Your agents pull governed context through one endpoint, each with its own identity and a full audit log of every query.' },
+  { title: 'Scored, then restructured', body: 'Datalith scores how ready that data is for agents — board-ready in 48 hours — then proposes the restructuring your estate actually needs.' },
+  { title: 'Mapped, then acted on', body: 'It builds one knowledge graph of your business, serves it to any agent under governance, and names the agents that graph makes possible.' },
 ]
 
 /** Numbered how-it-works rows; the numbers are the actual order of operations. */

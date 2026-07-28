@@ -167,14 +167,13 @@ const APP_NAV: { section: string; items: { glyph: string; label: string; meta?: 
     items: [{ glyph: 'command', label: 'Command', active: true }],
   },
   {
-    section: 'Capabilities',
+    section: 'Stages',
     items: [
       { glyph: 'connect', label: 'Connect', meta: '23' },
-      { glyph: 'graph', label: 'Graph', meta: '4.2M' },
-      { glyph: 'topics', label: 'Topics', meta: '14' },
       { glyph: 'ready', label: 'Ready', meta: '78' },
-      { glyph: 'gateway', label: 'Gateway', meta: '31' },
-      { glyph: 'flows', label: 'Flows', meta: '3' },
+      { glyph: 'topics', label: 'Pipelines', meta: '4' },
+      { glyph: 'graph', label: 'Graph', meta: '4.2M' },
+      { glyph: 'flows', label: 'Use cases', meta: '3' },
     ],
   },
   {
@@ -221,8 +220,8 @@ const ACTIVITY = [
   '09:54:44 connect synced salesforce · 1,204 rows',
   '09:51:19 agent:churn-digest read accounts.* — allowed',
   '09:49:02 ready masked 36 pii columns in s3 · data-lake',
-  '09:47:38 flows drafted blueprint: invoice reconciliation',
-  '09:45:56 gateway issued scoped key to agent:collections',
+  '09:47:38 use cases: drafted blueprint for invoice reconciliation',
+  '09:45:56 issued scoped read key to agent:collections',
 ]
 
 const FLOWS = [
@@ -255,7 +254,7 @@ function ArsSparkline() {
  */
 export function DashboardFigure() {
   return (
-    <figure className="st-dash" data-reveal aria-label="Datalith command dashboard: capability navigation, estate KPIs, source table with readiness scores, readiness-score trend, live agent audit feed, and recommended workflows">
+    <figure className="st-dash" data-reveal aria-label="Datalith command dashboard: stage navigation, estate KPIs, source table with readiness scores, readiness-score trend, live agent audit feed, and recommended workflows">
       {/* browser chrome */}
       <div className="st-dash-bar">
         <span className="st-dash-dot" /><span className="st-dash-dot" /><span className="st-dash-dot" />
