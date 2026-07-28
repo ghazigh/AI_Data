@@ -2359,11 +2359,17 @@ const PILL: Record<UseCase['status'], { tone: 'ok' | 'warn' | 'neutral'; label: 
   blocked: { tone: 'warn', label: 'Blocked' },
 }
 
-/** The five domains carrying the most connected sources. Ties break on score. */
+/**
+ * The five domains carrying the most connected sources, displayed by score.
+ * Weight decides which five appear — the biggest parts of the estate — but the
+ * only number on screen is the score, so ordering the visible list by anything
+ * else reads as unsorted.
+ */
 const headlineDomains = () =>
   [...DOMAINS]
     .sort((a, b) => weightForDomain(b.key) - weightForDomain(a.key) || b.score - a.score)
     .slice(0, 5)
+    .sort((a, b) => b.score - a.score)
 
 export function Overview() {
   return (
@@ -2396,7 +2402,7 @@ export function Overview() {
         <Panel
           eyebrow="Stage 02 — Ready"
           title="Readiness by business domain"
-          action={<a className="dm-panel-link" href="ready/" data-demo-link>Open Readiness</a>}
+          action={<a className="dm-panel-link" href="ready/" data-demo-link>Open readiness</a>}
         >
           <DomainBars domains={headlineDomains()} />
         </Panel>
