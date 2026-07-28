@@ -257,6 +257,4 @@
 .dm-identity-evidence { padding: 0 var(--dl-space-5) var(--dl-space-4); border-top: var(--dl-hairline); }
 .dm-identity-evidence li { padding: 10px 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; color: var(--dl-grey-4); }
 .dm-identity-evidence li:last-child { border-bottom: 0; }
-.dm-identity-confidence { display: flex; align-items: baseline; gap: 6px; padding: var(--dl-space-4) var(--dl-space-5) var(--dl-space-5); border-top: var(--dl-hairline); }
-.dm-identity-conf-num { display: inline-flex; font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-h2); letter-spacing: -0.03em; color: var(--dl-blue); }
-.dm-identity-confidence > span:last-child { font-family: var(--dl-font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-identity-confidence { padding: var(--dl-space-4) var(--dl-space-5) var(--dl-space-5); border-top: var(--dl-hairline); font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-h3); letter-spacing: -0.02em; color: var(--dl-blue); }

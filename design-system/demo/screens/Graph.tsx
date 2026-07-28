@@ -22,12 +22,6 @@ export function Graph() {
 
       <div className="dm-graph-layout">
         <Panel title="Knowledge bases">
-          {/*
-            The one place this screen states the access claim in plain text —
-            each knowledge-base row below carries the same fact in its own
-            aria-label, but only this line renders it as visible text, so the
-            claim appears exactly once, not once per row.
-          */}
           <p className="dm-kb-note">Every knowledge base here is served to any agent with the right scope.</p>
           <ul className="dm-kblist" aria-label="Knowledge bases">
             {KNOWLEDGE_BASES.map(kb => (
@@ -35,7 +29,6 @@ export function Graph() {
                 <button
                   type="button"
                   className={`dm-kb-btn${domain === kb.domain ? ' is-on' : ''}`}
-                  aria-label={`${kb.name} — ${kb.entities} entities, score ${kb.score}, served to ${kb.servedTo} agents`}
                   onClick={() => setDomain(d => (d === kb.domain ? null : kb.domain))}
                 >
                   <span className="dm-kb-name">{kb.name}</span>
@@ -43,7 +36,7 @@ export function Graph() {
                     <span className="dm-kb-meta">{kb.entities} entities</span>
                     <span className="dm-kb-score">{kb.score}</span>
                   </span>
-                  <span className="dm-kb-meta">{kb.servedTo} agents</span>
+                  <span className="dm-kb-meta">served to {kb.servedTo} agents</span>
                 </button>
               </li>
             ))}

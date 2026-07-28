@@ -9,8 +9,6 @@ import type { IdentityMatch } from '../data/graph'
  * lookalikes.
  */
 export function IdentityPanel({ match }: { match: IdentityMatch }) {
-  const confidence = String(match.confidence)
-
   return (
     <Panel eyebrow="Identity resolution" title="One policyholder, resolved across systems">
       <p className="dm-identity-entity">{match.entity}</p>
@@ -34,22 +32,7 @@ export function IdentityPanel({ match }: { match: IdentityMatch }) {
         ))}
       </ul>
 
-      {/*
-        Rendered as split, aria-hidden digit spans with the real number
-        carried on the aria-label instead of as text: one of this entity's
-        own keys ("pc:contact:41982") happens to contain "98" as a bare
-        substring, so any plain-text rendering of the confidence figure
-        collides with it under a substring query. This keeps the number
-        visually identical while giving it no text node of its own to match.
-      */}
-      <p className="dm-identity-confidence" aria-label={`${confidence}% confidence`}>
-        <span aria-hidden="true" className="dm-identity-conf-num">
-          {confidence.split('').map((d, i) => (
-            <span key={i}>{d}</span>
-          ))}
-        </span>
-        <span aria-hidden="true">% confidence</span>
-      </p>
+      <p className="dm-identity-confidence">{match.confidence}% confidence</p>
     </Panel>
   )
 }

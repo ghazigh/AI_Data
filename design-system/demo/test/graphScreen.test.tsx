@@ -34,11 +34,11 @@ describe('Graph screen', () => {
       expect(within(panel).getByText(r.system)).toBeDefined()
       expect(within(panel).getByText(r.key)).toBeDefined()
     }
-    expect(within(panel).getByText(/98/)).toBeDefined()
+    expect(within(panel).getByText(/98% confidence/)).toBeDefined()
   })
 
   it('states that any agent can read it', () => {
     render(<Graph />)
-    expect(screen.getByText(/served to/i)).toBeDefined()
+    expect(screen.getByText(/served to any agent/i)).toBeDefined()
   })
 })
