@@ -10,7 +10,7 @@ export function TopBar({ route }: TopBarProps) {
   return (
     <div className="dm-topbar">
       <p className="dm-crumb">
-        {TENANT.name} / <b>{route.title}</b>
+        {`${TENANT.name} / `}<b>{route.title}</b>
       </p>
       <div className="dm-search">
         <input
