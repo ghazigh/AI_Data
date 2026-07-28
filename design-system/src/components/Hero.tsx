@@ -14,6 +14,8 @@ export interface HeroProps {
   lead?: string
   primaryCta?: CtaSpec
   secondaryCta?: CtaSpec
+  /** Optional third action, rendered as a ghost button beside the primary. */
+  tertiaryCta?: CtaSpec
   /** Right column; defaults to the ConfluenceFigure. Pass null to omit. */
   figure?: ReactNode
   /** Small mono note under the CTA row, e.g. trial or pricing terms. */
@@ -27,6 +29,7 @@ export function Hero({
   lead = 'Datalith draws every database, warehouse, wiki and inbox into a single governed knowledge graph — then serves it to any agent, audited end to end.',
   primaryCta = { label: 'Begin the audit', href: '#audit' },
   secondaryCta = { label: 'the method', href: '#method' },
+  tertiaryCta,
   figure = <ConfluenceFigure />,
   note,
 }: HeroProps) {
@@ -42,6 +45,7 @@ export function Hero({
           {lead && <p className="dl-hero-lead">{lead}</p>}
           <div className="dl-hero-ctas">
             {primaryCta && <Button variant="ink" size="lg" href={primaryCta.href}>{primaryCta.label}</Button>}
+            {tertiaryCta && <Button variant="ghost" size="lg" href={tertiaryCta.href}>{tertiaryCta.label}</Button>}
             {secondaryCta && <TextLink href={secondaryCta.href}>{secondaryCta.label}</TextLink>}
           </div>
           {note && <p className="dl-hero-note">{note}</p>}

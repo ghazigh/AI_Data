@@ -26,6 +26,9 @@ const { createElement } = await import('react')
 const { renderToStaticMarkup } = await import('react-dom/server')
 
 // ---- assets -----------------------------------------------------------
+// Deletes the whole website/ tree, including website/demo/ which build-demo.mjs
+// writes. Always run build:site BEFORE build:demo — `npm run build:all` does
+// this in the right order. Running build:site alone ships a site with no demo.
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(`${OUT}/assets/fonts`, { recursive: true })
 

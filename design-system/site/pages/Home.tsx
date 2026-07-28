@@ -1,6 +1,6 @@
 import {
   Hero, Steps, FAQ, CTABand,
-  SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card, Button,
+  SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -56,14 +56,10 @@ export function Home() {
           lead="Datalith makes your company Agentic Friendly! One dashboard over every database, warehouse, wiki and app you run — showing what to fix, building the governed knowledge graph your agents read from, and proposing the workflows your data makes possible."
           primaryCta={{ label: 'Get your free readiness score', href: '#audit' }}
           secondaryCta={{ label: 'see how it works', href: '#how' }}
+          tertiaryCta={{ label: 'Explore the product', href: './demo/' }}
           note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."
           figure={<HeroFigure />}
         />
-        <div className="dl-wrap">
-          <div className="dl-hero-ctas">
-            <Button variant="ghost" size="lg" href="./demo/">Explore the product</Button>
-          </div>
-        </div>
       </div>
 
       {/* connector marquee */}
