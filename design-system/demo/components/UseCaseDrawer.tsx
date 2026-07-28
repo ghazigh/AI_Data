@@ -1,9 +1,7 @@
 import { Drawer } from './Drawer'
 import { domainByKey } from '../data/tenant'
-import { SOURCES } from '../data/sources'
+import { sourceName } from '../data/sources'
 import type { UseCase } from '../data/useCases'
-
-const sourceName = (id: string): string => SOURCES.find(s => s.id === id)?.name ?? id
 
 export function UseCaseDrawer({ useCase, onClose }: { useCase: UseCase | null; onClose: () => void }) {
   if (!useCase) return null
@@ -50,7 +48,7 @@ export function UseCaseDrawer({ useCase, onClose }: { useCase: UseCase | null; o
       </ul>
 
       <h3 className="dm-drawer-sub">Eval set</h3>
-      <p className="dm-evalset">142 labelled examples · 89% pass required</p>
+      <p className="dm-evalset">{useCase.evalExamples} labelled examples · {useCase.evalPassRate}% pass required</p>
 
       <h3 className="dm-drawer-sub">Export to</h3>
       <div className="dm-exports">

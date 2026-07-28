@@ -1,9 +1,12 @@
 import { PageHead } from '../components/PageHead'
 import { Panel } from '../components/Panel'
+import { StatTile } from '../components/StatTile'
 import { DataTable, type Column } from '../components/DataTable'
 import { StatusPill } from '../components/StatusPill'
 import { AuditStream } from '../components/AuditStream'
+import { ActivityList } from '../components/ActivityList'
 import { AGENTS, POLICIES, AUDIT, type AgentRecord, type PolicyLevel } from '../data/governance'
+import { ACTIVITY } from '../data/activity'
 import { ESTATE, domainByKey } from '../data/tenant'
 
 const LEVEL_LABEL: Record<PolicyLevel, string> = {
@@ -42,21 +45,12 @@ export function Governance() {
       <PageHead eyebrow="Control" title="Who can touch what, and what they did" />
 
       <div className="dm-tiles is-3">
-        <div className="dm-tile">
-          <p className="dm-eyebrow">Agents registered</p>
-          <p className="dm-tile-v">{AGENTS.length}</p>
-          <p className="dm-tile-sub">Every registered agent scoped to named domains</p>
-        </div>
-        <div className="dm-tile">
-          <p className="dm-eyebrow">Agent calls (30 days)</p>
-          <p className="dm-tile-v">{ESTATE.agentCalls}</p>
-          <p className="dm-tile-sub">100% logged to audit</p>
-        </div>
-        <div className="dm-tile">
-          <p className="dm-eyebrow">Denials</p>
-          <p className="dm-tile-v">{deniedCount}</p>
-          <p className="dm-tile-sub">Every denial cites the policy that blocked it</p>
-        </div>
+        <StatTile label="Agents registered" value={String(AGENTS.length)}
+          sub="Every registered agent scoped to named domains" />
+        <StatTile label="Agent calls (30 days)" value={ESTATE.agentCalls}
+          sub="100% logged to audit" />
+        <StatTile label="Denials" value={String(deniedCount)}
+          sub="Every denial cites the policy that blocked it" />
       </div>
 
       <div className="dm-section">
@@ -95,6 +89,15 @@ export function Governance() {
       <div className="dm-section">
         <Panel title="Audit log">
           <AuditStream entries={AUDIT} />
+        </Panel>
+      </div>
+
+      <div className="dm-section">
+        {/* The full 12-entry feed Overview's "Full stream" link promises —
+            Overview itself only teases the first 7, to keep its two-column
+            layout balanced against the 5-row domain panel beside it. */}
+        <Panel eyebrow="Live" title="Estate activity">
+          <ActivityList entries={ACTIVITY} />
         </Panel>
       </div>
     </>

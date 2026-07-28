@@ -37,9 +37,15 @@ describe('searchEstate', () => {
     expect(hit!.slug).toBe('governance')
   })
 
-  it('is case-insensitive and caps its results', () => {
+  it('is case-insensitive', () => {
     expect(searchEstate('GUIDEWIRE').length).toBeGreaterThan(0)
-    expect(searchEstate('e').length).toBeLessThanOrEqual(8)
+  })
+
+  it('caps its results at 8 even when a query matches more', () => {
+    // "claim" matches across sources, the Claims domain, graph entities, a use
+    // case and an agent — 12 hits before the cap, so this actually exercises
+    // the MAX limit rather than passing because the query happened to be short.
+    expect(searchEstate('claim').length).toBe(8)
   })
 
   it('represents every matching kind rather than filling up with one', () => {

@@ -95,7 +95,7 @@ export const SOURCES: Source[] = [
     modalities: ['streams'], records: 8_920_000, lastSync: '2 min ago',
     readiness: 61, primaryDomain: 'underwriting', domains: ['underwriting', 'reinsurance'], status: 'connected' },
   { id: 'sharepoint-uw-guidelines', name: 'SharePoint Underwriting Guidelines', vendor: 'Microsoft', category: 'saas',
-    modalities: ['documents'], records: 6_700, lastSync: '4 h ago',
+    modalities: ['documents'], records: 6_700, lastSync: '21 days ago',
     readiness: 65, primaryDomain: 'underwriting', domains: ['underwriting'], status: 'connected' },
 
   // ---- reinsurance (3) ----
@@ -204,6 +204,13 @@ export const CATALOGUE: CatalogueEntry[] = [
   { id: 'cat-workfront', name: 'Adobe Workfront', vendor: 'Adobe', category: 'saas',
     modalities: ['tables'], primaryDomain: 'contracts', readiness: 60, records: 64_800 },
 ]
+
+/** A source's display name, defined once so the drawer, the use-case bindings
+ * list and the entity lineage line never disagree about what a source is called. */
+export const sourceName = (id: string): string => SOURCES.find(s => s.id === id)?.name ?? id
+
+/** A source's vendor, defined once for the same reason as sourceName. */
+export const sourceVendor = (id: string): string => SOURCES.find(s => s.id === id)?.vendor ?? id
 
 /** Connected sources weighted into a domain. */
 export const weightForDomain = (key: DomainKey): number =>

@@ -58,10 +58,16 @@ describe('AppShell', () => {
     expect(input.tagName).toBe('INPUT')
   })
 
-  it('offers a way back to the starting state', () => {
-    render(<DemoApp slug="" prefix="" />)
-    const reset = screen.getByRole('button', { name: /reset demo/i })
-    fireEvent.click(reset)
-    expect(reset).toBeDefined()
+  it('returns a connected source to the starting state on reset', () => {
+    render(<DemoApp slug="connect" prefix="" />)
+    fireEvent.click(screen.getByRole('button', { name: /connect a source/i }))
+    const dialog = screen.getByRole('dialog', { name: /connect a source/i })
+    fireEvent.click(within(dialog).getByRole('button', { name: /amazon redshift/i }))
+    fireEvent.change(screen.getByLabelText(/account/i), { target: { value: 'meridian-prod' } })
+    fireEvent.click(screen.getByRole('button', { name: /^connect source$/i }))
+    expect(screen.getByRole('button', { name: 'Amazon Redshift' })).toBeDefined()
+
+    fireEvent.click(screen.getByRole('button', { name: /reset demo/i }))
+    expect(screen.queryByRole('button', { name: 'Amazon Redshift' })).toBeNull()
   })
 })

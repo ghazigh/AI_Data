@@ -19,11 +19,27 @@ const COLUMNS: Column<PipelineRun>[] = [
 
 export function Pipelines() {
   const [progress, setProgress] = useState(LIVE_RUN.progress)
+  // Steps the visitor has clicked "Run step" on, each keyed to its own
+  // scripted progress — same treatment as the live run above, just started
+  // on demand instead of always-on. Empty on first render for both SSR and
+  // the client, so the hydration guard stays byte-identical.
+  const [runningSteps, setRunningSteps] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    const id = setInterval(() => setProgress(p => (p >= 96 ? 96 : p + 2)), 1400)
+    const id = setInterval(() => {
+      setProgress(p => (p >= 96 ? 96 : p + 2))
+      setRunningSteps(prev => {
+        if (Object.keys(prev).length === 0) return prev
+        const next: Record<string, number> = {}
+        for (const [stepId, p] of Object.entries(prev)) next[stepId] = Math.min(p + 4, 96)
+        return next
+      })
+    }, 1400)
     return () => clearInterval(id)
   }, [])
+
+  const runStep = (stepId: string) =>
+    setRunningSteps(prev => (stepId in prev ? prev : { ...prev, [stepId]: 6 }))
 
   const processed = Math.round((LIVE_RUN.total * progress) / 100)
 
@@ -54,6 +70,7 @@ export function Pipelines() {
           <ul className="dm-plan">
             {PLAN.map(s => {
               const domain = domainByKey(s.domain)
+              const stepProgress = runningSteps[s.id]
               return (
                 <li key={s.id}>
                   <div>
@@ -66,7 +83,17 @@ export function Pipelines() {
                   </p>
                   <p className="dm-plan-delta">+{s.delta} {domain?.name ?? s.domain}</p>
                   <p className="dm-plan-runtime">{s.runtime}</p>
-                  <button className="dm-btn is-ghost" type="button">Run step</button>
+                  {stepProgress === undefined ? (
+                    <button className="dm-btn is-ghost" type="button" onClick={() => runStep(s.id)}>Run step</button>
+                  ) : (
+                    <div className="dm-plan-running">
+                      <div className="dm-progress" role="progressbar" aria-label={s.title}
+                        aria-valuenow={stepProgress} aria-valuemin={0} aria-valuemax={100}>
+                        <i style={{ width: `${stepProgress}%` }} />
+                      </div>
+                      <button className="dm-btn is-ghost" type="button" disabled>Running…</button>
+                    </div>
+                  )}
                 </li>
               )
             })}

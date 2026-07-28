@@ -7,7 +7,7 @@ import { TrendLine } from '../components/charts/TrendLine'
 import { DomainBars } from '../components/charts/DomainBars'
 import { DimensionRadar } from '../components/charts/DimensionRadar'
 import { DOMAINS, ESTATE, domainByKey } from '../data/tenant'
-import { SOURCES } from '../data/sources'
+import { sourceName } from '../data/sources'
 import { DIMENSIONS, TREND, RED_FLAGS, type FlagSeverity } from '../data/readiness'
 import type { DomainKey } from '../data/types'
 
@@ -16,8 +16,6 @@ const SEVERITY: Record<FlagSeverity, { tone: PillTone; label: string }> = {
   medium: { tone: 'neutral', label: 'Medium' },
   low: { tone: 'neutral', label: 'Low' },
 }
-
-const sourceName = (id: string): string => SOURCES.find(s => s.id === id)?.name ?? id
 
 export function Ready() {
   const [domain, setDomain] = useState<DomainKey | null>(null)

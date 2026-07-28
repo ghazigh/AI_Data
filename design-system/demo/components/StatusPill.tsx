@@ -1,4 +1,5 @@
 import type { SourceStatus } from '../data/types'
+import type { UseCaseStatus } from '../data/useCases'
 
 export type PillTone = 'ok' | 'warn' | 'neutral' | 'blue'
 
@@ -16,3 +17,13 @@ export const sourceStatusPill = (status: SourceStatus): { tone: PillTone; label:
   status === 'connected' ? { tone: 'ok', label: 'Connected' }
   : status === 'scanning' ? { tone: 'blue', label: 'Scanning' }
   : { tone: 'neutral', label: 'Awaiting credentials' }
+
+/**
+ * How a use case's status looks, defined once. Overview's teaser list and the
+ * full Use cases table show the same opportunities, so they must render the
+ * same pill for the same status.
+ */
+export const useCaseStatusPill = (status: UseCaseStatus): { tone: PillTone; label: string } =>
+  status === 'ready' ? { tone: 'ok', label: 'Ready to build' }
+  : status === 'in-review' ? { tone: 'neutral', label: 'In review' }
+  : { tone: 'warn', label: 'Blocked' }

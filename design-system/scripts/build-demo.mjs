@@ -50,7 +50,7 @@ writeFileSync(
 cpSync('site/assets/favicon.svg', `${OUT}/assets/favicon.svg`)
 
 // ---- 4. one server-rendered file per route -------------------------------
-const { ROUTES, DemoApp } = await import(pathToFileURL('dist-site/demo-app.mjs'))
+const { ROUTES, DemoApp, titleFor } = await import(pathToFileURL('dist-site/demo-app.mjs'))
 const { createElement } = await import('react')
 const { renderToString } = await import('react-dom/server')
 
@@ -63,9 +63,7 @@ for (const route of ROUTES) {
   mkdirSync(dir, { recursive: true })
 
   const body = renderToString(createElement(DemoApp, { slug: route.slug, prefix }))
-  const title = route.slug === ''
-    ? 'Product demo — Datalith'
-    : `${route.title} — Datalith demo`
+  const title = titleFor(route.slug)
 
   writeFileSync(`${dir}/index.html`, `<!DOCTYPE html>
 <html lang="en">
@@ -80,7 +78,7 @@ ${nested ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hre
 <link rel="stylesheet" href="${prefix}assets/demo.css">
 </head>
 <body>
-<div id="dm-app" data-slug="${route.slug}" data-prefix="${prefix}">${body}</div>
+<div id="dm-app" data-slug="${route.slug}">${body}</div>
 <script src="${prefix}assets/demo.js" defer></script>
 </body>
 </html>

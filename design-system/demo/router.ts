@@ -1,4 +1,4 @@
-import { ROUTES, routeForPath } from './routes'
+import { ROUTES, routeForPath, titleFor } from './routes'
 
 /** Path back to /demo/ from a screen's own directory. */
 export const prefixForSlug = (slug: string): string => (slug === '' ? '' : '../')
@@ -22,12 +22,15 @@ export function installRouter(onNavigate: (slug: string) => void): () => void {
       window.history.pushState({ slug: route.slug }, '', url.pathname)
     }
     onNavigate(route.slug)
+    document.title = titleFor(route.slug)
     document.getElementById('dm-content')?.focus?.()
   }
 
   const onPop = () => {
     const route = routeForPath(window.location.pathname)
-    if (route) onNavigate(route.slug)
+    if (!route) return
+    onNavigate(route.slug)
+    document.title = titleFor(route.slug)
   }
 
   document.addEventListener('click', onClick)

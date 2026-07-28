@@ -21,19 +21,23 @@ export function SourceDrawer({ source, onClose }: { source: Source | null; onClo
         <div><dt>Status</dt><dd><StatusPill {...sourceStatusPill(source.status)} /></dd></div>
       </dl>
 
-      <h3 className="dm-drawer-sub">Readiness sub-scores</h3>
-      <ul className="dm-bars">
-        {SUBSCORES.map((label, i) => {
-          const value = Math.max(0, Math.min(100, source.readiness + offsets[i]))
-          return (
-            <li className="dm-bar-row" key={label}>
-              <span className="dm-bar-name">{label}</span>
-              <span className="dm-bar"><i className={`dm-bar-fill${value < 70 ? ' is-under' : ''}`} style={{ width: `${value}%` }} /></span>
-              <span className="dm-bar-score">{value}</span>
-            </li>
-          )
-        })}
-      </ul>
+      {source.readiness > 0 && (
+        <>
+          <h3 className="dm-drawer-sub">Readiness sub-scores</h3>
+          <ul className="dm-bars">
+            {SUBSCORES.map((label, i) => {
+              const value = Math.max(0, Math.min(100, source.readiness + offsets[i]))
+              return (
+                <li className="dm-bar-row" key={label}>
+                  <span className="dm-bar-name">{label}</span>
+                  <span className="dm-bar"><i className={`dm-bar-fill${value < 70 ? ' is-under' : ''}`} style={{ width: `${value}%` }} /></span>
+                  <span className="dm-bar-score">{value}</span>
+                </li>
+              )
+            })}
+          </ul>
+        </>
+      )}
     </Drawer>
   )
 }

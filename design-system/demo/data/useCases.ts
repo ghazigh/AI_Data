@@ -17,6 +17,10 @@ export interface UseCase {
   blockedBy?: DomainKey
   guardrails: string[]
   exports: string[]
+  /** Size of the labelled eval set backing this use case's guardrails. */
+  evalExamples: number
+  /** Minimum pass rate against that eval set before this can ship. */
+  evalPassRate: number
 }
 
 export const USE_CASES: UseCase[] = [
@@ -28,6 +32,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 2_100_000, impact: '$2.1M', effort: '6 weeks', status: 'ready',
     guardrails: ['No reserve above $50K without a human approval', 'PII masked in every prompt', 'Refuses on policies in litigation'],
     exports: ['LangGraph', 'CrewAI', 'OpenAI Agents SDK', 'n8n'],
+    evalExamples: 180, evalPassRate: 90,
   },
   {
     id: 'uc-subrogation-finder',
@@ -37,6 +42,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 1_750_000, impact: '$1.75M', effort: '5 weeks', status: 'ready',
     guardrails: ['Never sends a demand letter — flags for adjuster sign-off only', 'Cites the liability basis for every flagged claim', 'Excludes claims already in litigation'],
     exports: ['LangGraph', 'CrewAI'],
+    evalExamples: 140, evalPassRate: 88,
   },
   {
     id: 'uc-fraud-triage',
@@ -46,6 +52,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 1_450_000, impact: '$1.45M', effort: '7 weeks', status: 'ready',
     guardrails: ['Produces a score and cited signals only — never denies or delays a claim', 'Every SIU referral is reviewed by an analyst before contact', 'Score and rationale logged for regulatory audit'],
     exports: ['LangGraph', 'OpenAI Agents SDK'],
+    evalExamples: 210, evalPassRate: 92,
   },
   {
     id: 'uc-fnol-concierge',
@@ -55,6 +62,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 1_200_000, impact: '$1.2M', effort: '4 weeks', status: 'ready',
     guardrails: ['Never quotes a settlement figure to the policyholder', 'Coverage disputes escalate to a human immediately', 'PII masked before any model call'],
     exports: ['LangGraph', 'n8n'],
+    evalExamples: 120, evalPassRate: 87,
   },
   {
     id: 'uc-renewal-retention',
@@ -64,6 +72,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 980_000, impact: '$980K', effort: '4 weeks', status: 'ready',
     guardrails: ['Drafts outreach only — a retention specialist sends', 'Never alters premium or coverage terms', 'Suppresses outreach on policies already in the cancellation queue'],
     exports: ['CrewAI', 'n8n'],
+    evalExamples: 95, evalPassRate: 85,
   },
   {
     id: 'uc-treaty-reader',
@@ -73,6 +82,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 880_000, impact: '$880K', effort: '8 weeks', status: 'in-review',
     guardrails: ['Cites the treaty clause for every extracted term', 'Flags rather than resolves contradictions'],
     exports: ['LangGraph', 'OpenAI Agents SDK'],
+    evalExamples: 160, evalPassRate: 91,
   },
   {
     id: 'uc-complaint-routing',
@@ -82,6 +92,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 760_000, impact: '$760K', effort: '5 weeks', status: 'in-review',
     guardrails: ['Never auto-closes a regulator-sensitive complaint', 'Full audit trail on every routing decision', 'Escalates ambiguous cases to a supervisor queue'],
     exports: ['LangGraph', 'n8n'],
+    evalExamples: 110, evalPassRate: 86,
   },
   {
     id: 'uc-broker-followup',
@@ -92,6 +103,7 @@ export const USE_CASES: UseCase[] = [
     blockedBy: 'broker-network',
     guardrails: ['Never contacts a broker under review', 'Drafts only — a human sends'],
     exports: ['LangGraph', 'n8n'],
+    evalExamples: 75, evalPassRate: 84,
   },
   {
     id: 'uc-uw-quote-copilot',
@@ -102,6 +114,7 @@ export const USE_CASES: UseCase[] = [
     blockedBy: 'underwriting',
     guardrails: ['Never binds a policy', 'Every rate factor cites its source record', 'Underwriter must approve before a quote issues'],
     exports: ['LangGraph', 'CrewAI'],
+    evalExamples: 200, evalPassRate: 93,
   },
   {
     id: 'uc-contract-clause-extraction',
@@ -112,6 +125,7 @@ export const USE_CASES: UseCase[] = [
     blockedBy: 'contracts',
     guardrails: ['Flags ambiguous clauses rather than interpreting them', 'Legal reviews every extracted obligation before it is relied upon'],
     exports: ['LangGraph', 'OpenAI Agents SDK'],
+    evalExamples: 130, evalPassRate: 89,
   },
   {
     id: 'uc-regulatory-filing',
@@ -122,6 +136,7 @@ export const USE_CASES: UseCase[] = [
     blockedBy: 'compliance',
     guardrails: ['Never submits a filing — a compliance officer signs every draft', 'Every figure cites its source ledger entry'],
     exports: ['LangGraph', 'n8n'],
+    evalExamples: 150, evalPassRate: 94,
   },
   {
     id: 'uc-property-risk-scoring',
@@ -132,6 +147,7 @@ export const USE_CASES: UseCase[] = [
     blockedBy: 'underwriting',
     guardrails: ['Score is advisory only — never overrides underwriter judgment', 'Recalibrated only with underwriting sign-off'],
     exports: ['CrewAI', 'OpenAI Agents SDK'],
+    evalExamples: 105, evalPassRate: 88,
   },
   {
     id: 'uc-support-summarizer',
@@ -141,6 +157,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 340_000, impact: '$340K', effort: '3 weeks', status: 'ready',
     guardrails: ['Summary only — no auto-reply to the policyholder', 'Agent reviews the summary before it is sent'],
     exports: ['LangGraph', 'n8n'],
+    evalExamples: 65, evalPassRate: 83,
   },
   {
     id: 'uc-broker-onboarding',
@@ -150,6 +167,7 @@ export const USE_CASES: UseCase[] = [
     impactValue: 260_000, impact: '$260K', effort: '3 weeks', status: 'ready',
     guardrails: ['Never appoints a broker — routes the packet for human sign-off', 'Flags missing licensure documents rather than guessing'],
     exports: ['CrewAI', 'n8n'],
+    evalExamples: 60, evalPassRate: 82,
   },
 ]
 

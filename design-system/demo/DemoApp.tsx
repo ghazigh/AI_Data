@@ -3,7 +3,7 @@ import { DemoStateProvider } from './state'
 import { ROUTES } from './routes'
 
 // The build script imports both from this one bundle entry.
-export { ROUTES } from './routes'
+export { ROUTES, titleFor } from './routes'
 
 export interface DemoAppProps { slug: string; prefix: string }
 

@@ -2,18 +2,13 @@ import { PageHead } from '../components/PageHead'
 import { StageStrip } from '../components/StageStrip'
 import { Panel } from '../components/Panel'
 import { StatTile } from '../components/StatTile'
-import { StatusPill } from '../components/StatusPill'
+import { StatusPill, useCaseStatusPill } from '../components/StatusPill'
+import { ActivityList } from '../components/ActivityList'
 import { DomainBars } from '../components/charts/DomainBars'
 import { DOMAINS, ESTATE, TENANT } from '../data/tenant'
 import { weightForDomain } from '../data/sources'
 import { ACTIVITY } from '../data/activity'
-import { topUseCases, type UseCase } from '../data/useCases'
-
-const PILL: Record<UseCase['status'], { tone: 'ok' | 'warn' | 'neutral'; label: string }> = {
-  ready: { tone: 'ok', label: 'Ready to build' },
-  'in-review': { tone: 'neutral', label: 'In review' },
-  blocked: { tone: 'warn', label: 'Blocked' },
-}
+import { topUseCases } from '../data/useCases'
 
 /**
  * The five domains carrying the most connected sources, displayed by score.
@@ -33,12 +28,7 @@ export function Overview() {
       <PageHead
         eyebrow={`${TENANT.name} · ${TENANT.scope}`}
         title="Estate overview"
-        actions={
-          <>
-            <button className="dm-btn is-ghost" type="button">Export board report</button>
-            <a className="dm-btn is-ink" href="connect/" data-demo-link>Connect a source</a>
-          </>
-        }
+        actions={<a className="dm-btn is-ink" href="connect/" data-demo-link>Connect a source</a>}
       />
 
       <StageStrip prefix="" />
@@ -66,23 +56,18 @@ export function Overview() {
         <Panel
           eyebrow="Live"
           title="Estate activity"
+          // Overview keeps the teaser to 7 entries so this column stays close
+          // to the 5-row domain panel beside it — 12 would tower over it. The
+          // full 12-entry stream lives on Governance, under the same
+          // "Estate activity" title, so "Full stream" is an honest promise:
+          // it leads somewhere that actually shows the full stream.
           action={<a className="dm-panel-link" href="governance/" data-demo-link>Full stream</a>}
         >
-          <ul className="dm-activity">
-            {ACTIVITY.slice(0, 7).map(a => (
-              <li key={a.id}>
-                <span className={`dm-dot is-${a.tone}`} aria-hidden="true" />
-                <div>
-                  <p><b>{a.subject}</b> {a.detail}</p>
-                  <p className="dm-when">{a.when}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <ActivityList entries={ACTIVITY.slice(0, 7)} />
         </Panel>
       </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div className="dm-section">
         <Panel
           eyebrow="Stage 05 — Use cases"
           title="What the graph already supports"
@@ -96,7 +81,7 @@ export function Overview() {
                   <p className="dm-uc-s">{u.summary}</p>
                 </div>
                 <p className="dm-uc-roi">{u.impact}<em>projected / yr</em></p>
-                <StatusPill tone={PILL[u.status].tone} label={PILL[u.status].label} />
+                <StatusPill {...useCaseStatusPill(u.status)} />
               </li>
             ))}
           </ul>

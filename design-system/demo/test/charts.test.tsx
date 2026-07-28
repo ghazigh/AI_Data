@@ -14,9 +14,16 @@ describe('ScoreMeter', () => {
     expect(screen.getByText('71')).toBeDefined()
   })
 
-  it('signs the delta', () => {
+  it('signs a positive delta with the up glyph', () => {
     render(<ScoreMeter score={71} delta={6} />)
-    expect(screen.getByText(/6/)).toBeDefined()
+    // Asserting the glyph, not just that "6" appears — the old assertion
+    // (/6/) would pass identically whether the meter rendered ▲ or ▼.
+    expect(screen.getByText('▲ 6 since last quarter')).toBeDefined()
+  })
+
+  it('signs a negative delta with the down glyph', () => {
+    render(<ScoreMeter score={65} delta={-4} />)
+    expect(screen.getByText('▼ 4 since last quarter')).toBeDefined()
   })
 })
 

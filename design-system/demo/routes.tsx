@@ -45,3 +45,10 @@ export function routeForPath(pathname: string): DemoRoute | undefined {
   const slug = rest.replace(/^\/+|\/+$/g, '')
   return ROUTES.find(r => r.slug === slug)
 }
+
+/** The document title for a route — one place, so the SSR build and the
+ * client router (which sets document.title on navigation) can't disagree. */
+export const titleFor = (slug: string): string => {
+  const route = ROUTES.find(r => r.slug === slug) ?? ROUTES[0]
+  return route.slug === '' ? 'Product demo — Datalith' : `${route.title} — Datalith demo`
+}

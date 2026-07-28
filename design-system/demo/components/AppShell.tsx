@@ -12,7 +12,7 @@ export function AppShell({ current, prefix, children }: AppShellProps) {
       <Rail current={current} prefix={prefix} />
       <div className="dm-main">
         <TopBar route={route} prefix={prefix} />
-        <main className="dm-content" id="dm-content">{children}</main>
+        <main className="dm-content" id="dm-content" tabIndex={-1}>{children}</main>
       </div>
     </div>
   )

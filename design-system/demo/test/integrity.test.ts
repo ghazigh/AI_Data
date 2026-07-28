@@ -7,7 +7,7 @@ import { SOURCES, estateScore } from '../data/sources'
 import { RED_FLAGS } from '../data/readiness'
 import { PLAN } from '../data/pipelines'
 import { USE_CASES } from '../data/useCases'
-import { GRAPH_NODES, KNOWLEDGE_BASES } from '../data/graph'
+import { GRAPH_NODES, KNOWLEDGE_BASES, parseCount, nodesForDomain } from '../data/graph'
 import { AGENTS, AUDIT, POLICIES } from '../data/governance'
 import { ACTIVITY } from '../data/activity'
 import type { Modality } from '../data/types'
@@ -80,6 +80,18 @@ describe('the numbers agree across screens', () => {
     }
   })
 
+  it('sums the knowledge base entity counts to the estate total', () => {
+    const total = KNOWLEDGE_BASES.reduce((sum, kb) => sum + parseCount(kb.entities), 0)
+    expect(total).toBe(parseCount(ESTATE.entitiesResolved))
+  })
+
+  it('matches each knowledge base entity count to the sum of its own graph nodes', () => {
+    for (const kb of KNOWLEDGE_BASES) {
+      const nodeSum = nodesForDomain(kb.domain).reduce((sum, n) => sum + parseCount(n.count), 0)
+      expect(nodeSum, kb.name).toBe(parseCount(kb.entities))
+    }
+  })
+
   it('covers every domain with at least one graph node', () => {
     const covered = new Set(GRAPH_NODES.map(n => n.domain))
     for (const d of DOMAINS) expect(covered.has(d.key), d.name).toBe(true)
@@ -131,6 +143,16 @@ describe('the numbers agree across screens', () => {
         expect(source.modalities, `"${a.detail}" cites ${a.sourceId}, which has no ${modality}`)
           .toContain(modality)
       }
+    }
+  })
+
+  it('agrees with the source\'s lastSync on staleness', () => {
+    const byId = new Map(SOURCES.map(s => [s.id, s]))
+    for (const f of RED_FLAGS) {
+      if (f.unit !== 'days stale') continue
+      const source = byId.get(f.sourceId)!
+      expect(source.lastSync, `${f.title} claims ${f.count} days stale but ${source.name}'s lastSync reads "${source.lastSync}"`)
+        .toBe(`${f.count} days ago`)
     }
   })
 

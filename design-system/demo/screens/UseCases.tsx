@@ -2,20 +2,14 @@ import { useState } from 'react'
 import { PageHead } from '../components/PageHead'
 import { DataTable, type Column } from '../components/DataTable'
 import { FilterBar } from '../components/FilterBar'
-import { StatusPill } from '../components/StatusPill'
+import { StatusPill, useCaseStatusPill } from '../components/StatusPill'
 import { UseCaseDrawer } from '../components/UseCaseDrawer'
 import { USE_CASES, type UseCase, type UseCaseStatus } from '../data/useCases'
-import { SOURCES } from '../data/sources'
+import { sourceName } from '../data/sources'
 
 const STATUSES: UseCaseStatus[] = ['ready', 'in-review', 'blocked']
 
-const PILL: Record<UseCaseStatus, { tone: 'ok' | 'warn' | 'neutral'; label: string }> = {
-  ready: { tone: 'ok', label: 'Ready to build' },
-  'in-review': { tone: 'neutral', label: 'In review' },
-  blocked: { tone: 'warn', label: 'Blocked' },
-}
-
-const sourceNames = (ids: string[]): string[] => ids.map(id => SOURCES.find(s => s.id === id)?.name ?? id)
+const sourceNames = (ids: string[]): string[] => ids.map(sourceName)
 
 export function UseCases() {
   const [search, setSearch] = useState('')
@@ -40,7 +34,7 @@ export function UseCases() {
     },
     { key: 'impact', header: 'Impact', align: 'end', sortValue: u => u.impactValue, render: u => u.impact },
     { key: 'effort', header: 'Effort', render: u => u.effort },
-    { key: 'status', header: 'Status', render: u => <StatusPill tone={PILL[u.status].tone} label={PILL[u.status].label} /> },
+    { key: 'status', header: 'Status', render: u => <StatusPill {...useCaseStatusPill(u.status)} /> },
   ]
 
   return (

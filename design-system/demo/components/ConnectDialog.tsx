@@ -6,9 +6,12 @@ export interface ConnectDialogProps {
   open: boolean
   onClose: () => void
   onConnect: (entry: CatalogueEntry) => void
+  /** Ids already present in the estate — connected or mid-scan. Picking one
+   * again would silently no-op, so the catalogue disables it instead. */
+  connectedIds: Set<string>
 }
 
-export function ConnectDialog({ open, onClose, onConnect }: ConnectDialogProps) {
+export function ConnectDialog({ open, onClose, onConnect, connectedIds }: ConnectDialogProps) {
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState<CatalogueEntry | null>(null)
   const [account, setAccount] = useState('')
@@ -28,19 +31,23 @@ export function ConnectDialog({ open, onClose, onConnect }: ConnectDialogProps) 
             onChange={e => setQuery(e.target.value)}
           />
           <ul className="dm-catalogue">
-            {shown.map(c => (
-              <li key={c.id}>
-                <button type="button" onClick={() => setPicked(c)}>
-                  <span className="dm-cat-name">{c.name}</span>
-                  <span className="dm-cat-meta">{c.category} · {c.modalities.join(', ')}</span>
-                </button>
-              </li>
-            ))}
+            {shown.map(c => {
+              const isConnected = connectedIds.has(c.id)
+              return (
+                <li key={c.id}>
+                  <button type="button" disabled={isConnected} onClick={() => setPicked(c)}>
+                    <span className="dm-cat-name">{c.name}</span>
+                    <span className="dm-cat-meta">
+                      {c.category} · {c.modalities.join(', ')}{isConnected ? ' · Already connected' : ''}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </>
       ) : (
         <form
-          className="dm-connect-form"
           onSubmit={e => { e.preventDefault(); onConnect(picked); close() }}
         >
           <p className="dm-connect-lead">

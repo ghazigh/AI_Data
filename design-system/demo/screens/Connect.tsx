@@ -35,6 +35,8 @@ export function Connect() {
     timers.current.push(setTimeout(() => settleSource(entry.id, entry.readiness, entry.records), 2200))
   }
 
+  const connectedIds = new Set(sources.map(s => s.id))
+
   const rows = sources.filter(s =>
     `${s.name} ${s.vendor} ${s.category}`.toLowerCase().includes(search.toLowerCase())
     && (!modality || s.modalities.includes(modality as never))
@@ -76,7 +78,10 @@ export function Connect() {
         />
       </div>
       <SourceDrawer source={selected} onClose={() => setSelected(null)} />
-      <ConnectDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onConnect={onConnect} />
+      <ConnectDialog
+        open={dialogOpen} onClose={() => setDialogOpen(false)} onConnect={onConnect}
+        connectedIds={connectedIds}
+      />
     </>
   )
 }

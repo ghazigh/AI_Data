@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { GraphCanvas } from '../components/GraphCanvas'
+import { EntityDetail } from '../components/EntityDetail'
 import { GRAPH_NODES, GRAPH_EDGES, KNOWLEDGE_BASES, IDENTITY_MATCH, nodesForDomain } from '../data/graph'
 import { SOURCES } from '../data/sources'
 import { DOMAINS } from '../data/tenant'
@@ -50,6 +51,31 @@ describe('graph data', () => {
     const ids = new Set(SOURCES.map(s => s.id))
     for (const r of IDENTITY_MATCH.records) expect(ids.has(r.sourceId), r.sourceId).toBe(true)
     expect(IDENTITY_MATCH.evidence.length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('EntityDetail lineage', () => {
+  const byId = new Map(SOURCES.map(s => [s.id, s]))
+
+  it('never claims chunking for a node with no documents source', () => {
+    const byIdNode = new Map(GRAPH_NODES.map(n => [n.id, n]))
+    // Payment (Postgres + Snowflake, both tables-only) is the case named in
+    // the finding: it must not claim the document pipeline.
+    const payment = byIdNode.get('payment')!
+    const { container, unmount } = render(<EntityDetail node={payment} />)
+    expect(container.querySelector('.dm-entity-lineage')!.textContent).not.toMatch(/chunked/)
+    unmount()
+  })
+
+  it('claims chunking only for nodes citing a documents source, for every node in the graph', () => {
+    for (const n of GRAPH_NODES) {
+      const modalities = n.sourceIds.flatMap(id => byId.get(id)?.modalities ?? [])
+      const hasDocuments = modalities.includes('documents')
+      const { container, unmount } = render(<EntityDetail node={n} />)
+      const claimsChunking = /chunked/.test(container.querySelector('.dm-entity-lineage')!.textContent ?? '')
+      expect(claimsChunking, n.label).toBe(hasDocuments)
+      unmount()
+    }
   })
 })
 
