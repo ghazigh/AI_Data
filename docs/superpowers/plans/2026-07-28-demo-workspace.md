@@ -975,7 +975,8 @@ export interface DemoState {
   sources: Source[]
   /** Adds a source in `scanning` state; the caller settles it to `connected`. */
   connectSource: (source: Source) => void
-  settleSource: (id: string, readiness: number) => void
+  /** Completes a scan: a settled source has a score AND a record count. */
+  settleSource: (id: string, readiness: number, records: number) => void
   resetDemo: () => void
 }
 
@@ -987,8 +988,8 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
   const value = useMemo<DemoState>(() => ({
     sources,
     connectSource: s => setSources(prev => (prev.some(p => p.id === s.id) ? prev : [{ ...s, status: 'scanning' }, ...prev])),
-    settleSource: (id, readiness) =>
-      setSources(prev => prev.map(s => (s.id === id ? { ...s, status: 'connected', readiness } : s))),
+    settleSource: (id, readiness, records) =>
+      setSources(prev => prev.map(s => (s.id === id ? { ...s, status: 'connected', readiness, records, lastSync: 'Just now' } : s))),
     resetDemo: () => setSources(SOURCES),
   }), [sources])
 
@@ -1473,11 +1474,24 @@ export function FilterBar({ search, onSearch, placeholder, groups }: FilterBarPr
 - [ ] **Step 8: Write `demo/components/StatusPill.tsx`**
 
 ```tsx
+import type { SourceStatus } from '../data/types'
+
 export type PillTone = 'ok' | 'warn' | 'neutral' | 'blue'
 
 export function StatusPill({ tone, label }: { tone: PillTone; label: string }) {
   return <span className={`dm-pill is-${tone}`}>{label}</span>
 }
+
+/**
+ * How a source's status looks, defined once. The table and the drawer show the
+ * same row, so they must say the same thing about it — a row reading "Scanning"
+ * in blue in the table and "scanning" in grey in its own drawer is the kind of
+ * contradiction that costs a demo its credibility.
+ */
+export const sourceStatusPill = (status: SourceStatus): { tone: PillTone; label: string } =>
+  status === 'connected' ? { tone: 'ok', label: 'Connected' }
+  : status === 'scanning' ? { tone: 'blue', label: 'Scanning' }
+  : { tone: 'neutral', label: 'Awaiting credentials' }
 ```
 
 - [ ] **Step 9: Append the primitive styles to `demo/demo.css`**
@@ -1993,6 +2007,8 @@ export interface CatalogueEntry {
   primaryDomain: DomainKey
   /** Score the scripted scan settles on. */
   readiness: number
+  /** Record count the scan discovers. A settled source with 0 records reads as fake. */
+  records: number
 }
 
 /** Connectors offered in the "Connect a source" catalogue, none of them already live. */
@@ -2790,10 +2806,13 @@ export function Connect() {
   const onConnect = (entry: CatalogueEntry) => {
     connectSource({
       id: entry.id, name: entry.name, vendor: entry.vendor, category: entry.category,
-      modalities: entry.modalities, records: 0, lastSync: 'Scanning…', readiness: 0,
+      // Every unknown field reads as an em dash while scanning, matching how the
+      // records and readiness columns render. "Just now" would contradict the
+      // Scanning pill beside it — and collides with the test's findByText(/scanning/i).
+      modalities: entry.modalities, records: 0, lastSync: '—', readiness: 0,
       primaryDomain: entry.primaryDomain, domains: [entry.primaryDomain], status: 'scanning',
     })
-    timers.current.push(setTimeout(() => settleSource(entry.id, entry.readiness), 2200))
+    timers.current.push(setTimeout(() => settleSource(entry.id, entry.readiness, entry.records), 2200))
   }
 
   const rows = sources.filter(s =>
