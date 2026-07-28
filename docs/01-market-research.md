@@ -57,5 +57,5 @@ Bottom-up TAM: ~50,000 mid-market and enterprise companies globally with ≥5 da
 |---|---|
 | Warehouses (Snowflake, Databricks) build native "agent-ready" layers | We are cross-platform by design — the whole point is that no enterprise lives in one vendor. Neutrality is the moat, same play as dbt/Fivetran vs. warehouse-native tools. |
 | Catalog incumbents pivot into the category | They carry human-workflow legacy products and multi-quarter sales cycles; we are agent-native from day one and land bottom-up with a free readiness audit. |
-| MCP standard churn | Gateway is protocol-agnostic (MCP today; A2A/OpenAI tools adapters); the durable asset is the knowledge graph, not the wire format. |
+| MCP standard churn | Serving is protocol-agnostic (MCP today; A2A/OpenAI tools adapters); the durable asset is the knowledge graph, not the wire format. |
 | AI winter / budget pullback | Positioning is cost-side too: readiness prevents canceled projects (the 40% Gartner number) — we are insurance on AI spend already committed. |

@@ -14,7 +14,7 @@
 
 **5. Solution** — Datalith connects to every data source, builds the Enterprise Knowledge Graph, scores and prepares data for agents, and serves it — governed — to any agent framework. Read-only to start. Live in 48 hours. *"JetScale did this for cloud spend. We do it for the data estate."*
 
-**6. Product** — The loop: **Connect → Graph → Score → Prepare → Serve → Recommend.** Six modules: Connect (150+ sources, multi-modal), Graph (auto-ontology + identity resolution + lineage), Topics (semantic layer), Ready (prep engine + Agent-Readiness Score), Gateway (governed MCP serving + audit), Flows (recommended agentic workflows with ROI estimates).
+**6. Product** — The loop: **Connect → Ready → Pipelines → Graph → Use cases.** Five stages, each consuming the last: Connect (150+ sources, multi-modal, read-only), Ready (Agent-Readiness Score 0–100 + red flags, monitored continuously), Pipelines (the restructuring this estate needs, sized to what the scan found), Graph (auto-ontology, identity resolution, lineage, named knowledge domains, served under governance and audit), Use cases (the agent applications the data supports, with payback — and what is blocked, and why).
 
 **7. Demo / product visual** — Command dashboard: estate map, ARS 0–100 per domain, agents served, recommended workflows queue. (Screenshot/live demo slot.)
 
@@ -26,7 +26,7 @@
 
 **11. Business model** — SaaS + usage (sources, entities, gateway calls). Free audit → Growth $2.5K/mo → Scale $6K/mo → Enterprise $100K+. NRR engine: customers add agents → calls grow → we grow. Target NRR ≥130%.
 
-**12. Traction & roadmap** — (fill with real numbers at send time) Design partners, audits run, sources connected, LOIs. Roadmap: Audit v0 (now) → Graph+Gateway GA (+9mo) → Flows GA (+18mo). Milestones to A: 25 paying, $1M ARR, SOC 2 II.
+**12. Traction & roadmap** — (fill with real numbers at send time) Design partners, audits run, sources connected, LOIs. Roadmap: Audit v0 (now) → Graph + governed serving GA (+9mo) → Use-case recommender GA (+18mo). Milestones to A: 25 paying, $1M ARR, SOC 2 II.
 
 **13. Team** — (founder bios) + why-us: shipped data platforms at scale, lived the agent-grounding pain. Advisors from data infra / agent ecosystem.
 
@@ -37,6 +37,6 @@
 ### Objection prep (Q&A appendix)
 - **"Won't Snowflake/Databricks do this?"** They already do — for their own data. Enterprises average many systems; neutrality is the product (see dbt/Fivetran precedent).
 - **"Why not Glean?"** Glean sells answers to employees. We sell infrastructure to agents — open protocols, any framework, governed at the data layer.
-- **"Is this a feature of catalogs?"** Catalogs describe data for humans. We prepare and *serve* data to machines, with a runtime (Gateway) and a recommendation engine (Flows). Different consumer, different architecture, different buyer urgency.
+- **"Is this a feature of catalogs?"** Catalogs describe data for humans. We prepare and *serve* data to machines, with a readiness score, a governed graph runtime and a use-case recommender. Different consumer, different architecture, different buyer urgency.
 - **"MCP churn risk?"** Protocol-agnostic gateway; the knowledge graph is the durable asset.
 - **"Why will you win?"** Speed to the category name + the audit wedge generates proprietary readiness benchmark data nobody else has.

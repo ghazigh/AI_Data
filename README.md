@@ -29,7 +29,7 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 |---|---|
 | [`docs/01-market-research.md`](docs/01-market-research.md) | Market failure, why-now, market sizing, funding climate, buyer research, risks (sourced) |
 | [`docs/02-competitive-landscape.md`](docs/02-competitive-landscape.md) | Positioning map, competitor-by-competitor analysis, differentiation, moat |
-| [`docs/03-product-strategy.md`](docs/03-product-strategy.md) | The six product capabilities, platform loop, roadmap, success metrics |
+| [`docs/03-product-strategy.md`](docs/03-product-strategy.md) | The five product stages, platform loop, roadmap, success metrics |
 | [`docs/04-gtm-business-plan.md`](docs/04-gtm-business-plan.md) | ICP, land→expand motion, pricing, financial model, the $4M seed ask, 90-day plan |
 | [`docs/05-pitch-deck-narrative.md`](docs/05-pitch-deck-narrative.md) | Slide-by-slide deck script + investor Q&A objection prep |
 | [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404, SEO/OG/sitemap, animations. Open `website/index.html` directly, or deploy via GitHub Pages |
@@ -38,14 +38,21 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 | [`deck/Datalith-Pitch-Deck.pptx`](deck/Datalith-Pitch-Deck.pptx) | 13-slide seed pitch deck (PowerPoint) |
 | [`deck/generate-deck.js`](deck/generate-deck.js) | Deck generator (`node generate-deck.js`, requires `pptxgenjs`) — edit & regenerate |
 
-## The product (one platform, six capabilities)
+## The product (one platform, five stages)
 
-1. **Datalith Connect** — 150+ connectors; multi-source, multi-platform, multi-modal ingestion, read-only.
-2. **Datalith Graph** — the Enterprise Knowledge Graph: auto-ontology, identity resolution, lineage.
-3. **Datalith Topics** — the semantic layer: domains, canonical metrics, glossary.
-4. **Datalith Ready** — preparation engine + the **Agent-Readiness Score (0–100)**.
-5. **Datalith Gateway** — governed MCP-native serving with per-agent identity and full audit.
-6. **Datalith Flows** — recommended agentic workflows mined from your own data, with ROI attached.
+The product is a sequence — each stage consumes the previous one's output.
+
+1. **Connect** — 150+ connectors; multi-source, multi-platform, multi-modal ingestion, read-only. *No migration, no engineering project.*
+2. **Ready** — scores how usable the data is for agents (Agent-Readiness Score 0–100), with red flags, and keeps monitoring it. *Continuous, not a one-off audit.*
+3. **Pipelines** — turns that score into the restructuring this estate actually needs: resolution, semantic typing, PII masking, chunking, embedding. *Sized to what the scan found.*
+4. **Graph** — the Enterprise Knowledge Graph: auto-ontology, identity resolution, lineage, with the topics, domains and expertise inside it named — each a knowledge base, served to any agent under governance and audit. *Readable by any agentic AI.*
+5. **Use cases** — mines the graph for the agent applications the data supports, with sources, effort and payback attached — including what is blocked and why. *Know what to build before you build it.*
+
+Earlier drafts framed this as six modules. Topics folded into Graph (naming a
+domain is something the graph does, not a thing you buy); Gateway became a
+property of the graph rather than a named module, since "how you read the
+graph" was never separately purchasable. Serving is still governed, audited
+and metered.
 
 **Wedge:** a free 48-hour Agent-Readiness Audit (read-only credentials in, board-ready score out) → Growth ($2.5K/mo) → Scale ($6K/mo) → Enterprise ($100K+ ACV). Target NRR ≥130%.
 

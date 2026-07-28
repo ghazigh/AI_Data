@@ -8,3 +8,7 @@ ds-bundle/
 .design-sync/learnings/
 .design-sync/node_modules
 design-system/dist-site/
+
+# local tooling scratch
+.claude/
+.vscode/

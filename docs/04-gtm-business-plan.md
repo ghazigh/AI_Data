@@ -9,7 +9,7 @@
 ## Land → Expand motion
 
 1. **Land (free): the Agent-Readiness Audit.** Connect read-only in an afternoon, get an ARS report and estate map in 48h. Distribution: content ("State of Agent-Ready Data" report), the ARS as a shareable benchmark, integration marketplaces (Snowflake, Databricks, Salesforce), MCP community.
-2. **Convert (Growth plan):** unlock continuous scoring, the knowledge graph, and the Gateway. Sales-assist for 200+ employee accounts.
+2. **Convert (Growth plan):** unlock continuous scoring, the pipeline plans and the live knowledge graph. Sales-assist for 200+ employee accounts.
 3. **Expand (Enterprise):** more sources, more agents served, Flows blueprints, in-VPC, SSO/SCIM, custom policies. Usage grows with the customer's agent adoption — we are indexed to the agent wave itself.
 
 ## Pricing
@@ -17,11 +17,11 @@
 | Tier | Price | Includes |
 |---|---|---|
 | **Audit** | Free | 3 sources, one-time ARS report, estate map |
-| **Growth** | from $2,500/mo | 10 sources, knowledge graph, Topics, Gateway (100K agent calls/mo), continuous ARS |
+| **Growth** | from $2,500/mo | 10 sources, continuous readiness scoring, pipeline plans, live knowledge graph (100K agent queries/mo) |
 | **Scale** | from $6,000/mo | 25 sources, Ready engine, Flows recommendations, RBAC, priority support |
 | **Enterprise** | Custom ($100K+ ACV) | Unlimited sources, in-VPC/self-hosted, audit exports, SSO/SCIM, custom policies, dedicated CSM |
 
-Usage meters: connected sources, graph entities, Gateway calls. Target blended ACV: $60K year one of a paid account, $90K+ by year two (NRR ≥130%).
+Usage meters: connected sources, graph entities, agent queries. Target blended ACV: $60K year one of a paid account, $90K+ by year two (NRR ≥130%).
 
 ## Financial model (summary)
 
@@ -53,4 +53,4 @@ Use of funds: 60% engineering (6 engineers: connectors, graph, gateway), 15% GTM
 
 1. Weeks 1–4: ship Audit v0 (5 connectors: Snowflake, Postgres, Salesforce, Notion, S3), ARS v1, waitlist landing page live.
 2. Weeks 5–8: 15 design-partner audits from warm network; publish "State of Agent-Ready Data 2026" mini-report from anonymized results.
-3. Weeks 9–12: Gateway MCP alpha with 3 design partners' real agents; convert first 5 paid; seed deck in market with live usage data.
+3. Weeks 9–12: governed MCP serving alpha with 3 design partners' real agents; convert first 5 paid; seed deck in market with live usage data.

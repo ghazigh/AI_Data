@@ -21,52 +21,68 @@ Elevator line: *"First we show you what you have. Then we turn it into an agent 
 4. **Protocol-open.** MCP first; adapters for A2A, OpenAI tool calling, LangChain/LlamaIndex/CrewAI SDKs. The graph is the asset; wire formats are commodities.
 5. **Score everything.** If readiness isn't measurable, it isn't manageable. The Agent-Readiness Score (ARS) is the product's heartbeat and the marketing wedge.
 
-## The platform — six modules (as productized on the landing page)
+## The platform — five stages
 
-### 1. Datalith Connect — *every source, one platform*
+The product is a sequence, not a menu. Each stage consumes the previous one's
+output, which is why the order is load-bearing: you cannot propose use cases
+before the graph exists, and you cannot build the graph well before the
+restructuring the score called for has run.
+
+### 1. Connect — *every system you run, read-only*
 - 150+ connectors: warehouses (Snowflake, BigQuery, Databricks, Redshift), OLTP databases (Postgres, MySQL, MongoDB, SQL Server), SaaS (Salesforce, HubSpot, Zendesk, Jira, Notion, Slack, Google Drive, SharePoint), object stores (S3, GCS, Azure Blob), streams (Kafka, Kinesis).
 - Multi-modal: tables, documents, PDFs, wikis, tickets, emails, transcripts, images.
 - Read-only, agentless, incremental sync; deploys as SaaS or in-VPC.
+- **Value:** no migration and no engineering project — connected in an afternoon.
 
-### 2. Datalith Graph — *the Enterprise Knowledge Graph*
+### 2. Ready — *a score for how usable the data is*
+- Prepares the measurement, not yet the fix: completeness, freshness, consistency, semantic coverage, governance coverage.
+- **Agent-Readiness Score (0–100)** per source, per business domain, and estate-wide. The board-level KPI for AI programs — and our free-audit growth wedge.
+- Red flags a data team can act on: unmasked PII, duplicate entities, sources not refreshed.
+- Continuous after the first pass — readiness moves as the estate changes, so this is monitoring rather than an audit.
+- **Value:** you learn where you stand, and keep knowing.
+
+### 3. Pipelines — *the restructuring this estate actually needs*
+- The score becomes a plan. Each proposed step carries the count that justifies it: 41K duplicates to resolve, 380 columns to type, 12 to mask, 22K documents to chunk.
+- Cleaning, deduplication, identity resolution, normalization, semantic typing, chunking, embedding, PII detection and masking.
+- Runs in place; nothing is written back to source systems. Re-runs as the estate drifts.
+- **Value:** built for the data as it is, not a generic template another estate needed.
+
+### 4. Graph — *one map of the whole business*
 - Auto-constructed ontology: entities (customers, products, orders, employees, contracts…), relationships, and cross-source identity resolution ("this Salesforce Account = this Snowflake `dim_customer` row = this Zendesk org").
-- Column- and chunk-level lineage; freshness and provenance on every node.
-- Human curation surface: stewards confirm/correct mappings; corrections retrain the mappers.
+- Detects and names the topics, domains and pockets of expertise inside the graph — Customers, Contracts, Support, Supply — so each becomes a knowledge base in its own right, with its own readiness standing.
+- Column- and chunk-level lineage; freshness and provenance on every node. Stewards confirm or correct mappings; corrections retrain the mappers.
+- Served to any agent under governance: per-agent identity, least-privilege scopes, row/column/chunk-level policy, and a full audit log of every query. MCP today, protocol-agnostic by design.
+- **Value:** knowledge bases any agentic AI can read, whatever framework the team builds on.
 
-### 3. Datalith Topics — *the semantic layer agents can trust*
-- Auto-defined business topics and domains (Revenue, Churn, Inventory, Support…), each bundling: canonical metric definitions, business glossary, authoritative sources, and freshness SLAs.
-- This is the "consistent semantic layer" whose absence Gartner says will kill 60% of MCP-only projects — productized.
-
-### 4. Datalith Ready — *the agent-ready data engine*
-- Prepares data for machine consumption: cleaning, deduplication, normalization, semantic typing, chunking, embedding, PII detection and masking.
-- **Agent-Readiness Score (ARS 0–100)** per source, domain, and estate: completeness, freshness, consistency, semantic coverage, governance coverage. The board-level KPI for AI programs — and our free-audit growth wedge.
-
-### 5. Datalith Flows — *agentic workflow recommendations*
+### 5. Use cases — *which agents are worth building*
 - Mines the graph for automation opportunities: "Invoices in NetSuite + contracts in SharePoint + tickets in Zendesk → a collections-followup agent is feasible; projected impact $X."
 - Generates deployable blueprints (data bindings, guardrails, eval set) exportable to LangGraph, CrewAI, OpenAI Agents SDK, or n8n.
-- Turns Datalith from cost-avoidance into revenue creation — the expansion engine.
+- Names what is *not* yet possible and the domain holding it back, which closes the loop to stage 2's score.
+- **Value:** you find out what to build before spending a quarter building it. This is the expansion engine — it turns Datalith from cost-avoidance into revenue creation.
 
-### 6. Datalith Gateway — *governed serving for any agent*
-- One MCP endpoint for the whole estate; per-agent identities, least-privilege scopes, row/column/chunk-level policy enforcement.
-- Full audit log of every agent query — the artifact that gets security teams to "yes."
-- Sub-second context retrieval APIs: semantic search, graph traversal, SQL-over-federation.
+### What changed from the earlier six-module framing
+Topics folded into Graph: naming a business domain is something the graph
+does, not a separate product a customer buys. Gateway stopped being a named
+module and became a property of the graph — serving is still governed,
+audited and metered, but "how you read the graph" was never a thing anyone
+wanted to buy separately.
 
 ### Command dashboard (the "centralized data dashboard" from the founding notes)
-Single pane: estate map, ARS trends, agent activity, policy violations, workflow pipeline ROI. Built for the CDO's Monday meeting.
+Single pane: estate map, readiness trends, agent activity, policy violations, use-case pipeline ROI. Built for the CDO's Monday meeting.
 
 ## How it works (the loop)
 
-**Connect → Graph → Score → Prepare → Serve → Recommend** — then every agent interaction feeds back into scoring and recommendations. Time-to-value target: first ARS report within 48 hours of connecting read-only credentials.
+**Connect → Ready → Pipelines → Graph → Use cases** — then every agent interaction feeds back into scoring and recommendations. Time-to-value target: first Agent-Readiness Score within 48 hours of connecting read-only credentials.
 
 ## Roadmap
 
 | Phase | Timeline | Scope |
 |---|---|---|
 | **v0 — Readiness Audit** (wedge) | Now → +3 mo | 25 connectors, ARS scoring, estate map. Free tier. Goal: 100 audits run. |
-| **v1 — The Graph** | +3 → +9 mo | Knowledge graph GA, Topics, Gateway (MCP) beta, in-VPC deploy, SOC 2 Type I. 10 design partners → paying. |
+| **v1 — The Graph** | +3 → +9 mo | Knowledge graph GA, pipeline plans, governed serving (MCP) beta, in-VPC deploy, SOC 2 Type I. 10 design partners → paying. |
 | **v2 — The Platform** | +9 → +18 mo | Ready engine GA, Flows recommendations, audit/permissions GA, SOC 2 Type II. $1M+ ARR, Series A metrics. |
 
 ## Success metrics
 - Activation: connected-sources-per-account (target ≥4 within 30 days).
-- Value: ARS improvement per quarter; # agents served via Gateway.
+- Value: readiness improvement per quarter; # agents served from the graph.
 - Revenue: net revenue retention ≥130% via source/usage expansion (Flows drives it).
