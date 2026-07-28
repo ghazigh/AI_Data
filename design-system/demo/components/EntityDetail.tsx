@@ -27,9 +27,9 @@ export function EntityDetail({ node }: { node: GraphNode }) {
         <caption className="dm-sr">{node.label} properties</caption>
         <thead>
           <tr>
-            <th>Property</th>
-            <th>Type</th>
-            <th>Source</th>
+            <th scope="col">Property</th>
+            <th scope="col">Type</th>
+            <th scope="col">Source</th>
           </tr>
         </thead>
         <tbody>
