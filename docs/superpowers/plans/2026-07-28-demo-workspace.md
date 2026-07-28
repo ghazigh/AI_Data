@@ -3954,7 +3954,24 @@ Expected: PASS, 8 governance tests plus everything prior.
 
 **Files:**
 - Create: `design-system/demo/test/integrity.test.ts`
+- Modify: `design-system/demo/test/node-fs.d.ts`
 - Test: itself
+
+Two things Task 3 established that this task inherits. First, `@types/node` is not installed and the no-new-dependencies constraint forbids adding it, so `demo/test/node-fs.d.ts` holds hand-written ambient declarations for exactly the Node functions the tests import. This task imports `readdirSync` and `statSync` from `node:fs` and `join` from `node:path`, so extend that file:
+
+```ts
+declare module 'node:fs' {
+  export function existsSync(path: string): boolean
+  export function readFileSync(path: string, encoding: 'utf8' | 'utf-8'): string
+  export function readdirSync(path: string): string[]
+  export function statSync(path: string): { isDirectory(): boolean }
+}
+declare module 'node:path' {
+  export function join(...parts: string[]): string
+}
+```
+
+Second, this test touches the filesystem, so it must opt out of the suite's default jsdom environment with `// @vitest-environment node` as its first line. Under jsdom, Vite rewrites `new URL(relative, import.meta.url)` into a browser asset reference and the path silently breaks.
 
 **Interfaces:**
 - Consumes: every data module.
