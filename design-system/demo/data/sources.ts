@@ -45,7 +45,7 @@ export const SOURCES: Source[] = [
   // ---- support (4) ----
   { id: 'salesforce-service-cloud', name: 'Salesforce Service Cloud', vendor: 'Salesforce', category: 'saas',
     modalities: ['tickets', 'email'], records: 1_412_700, lastSync: '7 min ago',
-    readiness: 79, primaryDomain: 'support', domains: ['support', 'broker-network'], status: 'connected' },
+    readiness: 79, primaryDomain: 'support', domains: ['support', 'broker-network', 'policies'], status: 'connected' },
   { id: 'outlook-support-inbox', name: 'Outlook Support Inbox', vendor: 'Microsoft', category: 'saas',
     modalities: ['email'], records: 2_108_000, lastSync: '26 min ago',
     readiness: 73, primaryDomain: 'support', domains: ['support'], status: 'connected' },
