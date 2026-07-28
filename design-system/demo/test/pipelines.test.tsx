@@ -89,13 +89,29 @@ describe('Pipelines screen', () => {
     vi.useRealTimers()
   })
 
-  it('clears the running-step interval on unmount without throwing', () => {
+  it('clears every interval on unmount, including the running-step one', () => {
+    // A leaked interval that calls setState after unmount produces a React
+    // console warning, not a thrown error, so asserting `not.toThrow()` here
+    // would pass regardless of whether cleanup actually ran. Spy on
+    // setInterval/clearInterval directly and check the counts line up:
+    // starting a step opens a second interval (ambient live run + this
+    // step), and unmounting must close both.
     vi.useFakeTimers()
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
+    const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
     const { unmount } = render(<Pipelines />)
+    expect(setIntervalSpy).toHaveBeenCalledTimes(1) // ambient live run only, no step started yet
+
     const runButton = screen.getAllByRole('button', { name: /run step/i })[0]
     act(() => { fireEvent.click(runButton) })
+    expect(setIntervalSpy).toHaveBeenCalledTimes(2) // + the running-step interval
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(0)
+
     unmount()
-    expect(() => { act(() => { vi.advanceTimersByTime(50_000) }) }).not.toThrow()
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(2) // both intervals torn down
+
+    setIntervalSpy.mockRestore()
+    clearIntervalSpy.mockRestore()
     vi.useRealTimers()
   })
 })

@@ -110,6 +110,34 @@ describe('EntityDetail lineage', () => {
       ).toBe(true)
     }
   })
+
+  it('names the first cited vendor, not a full source name, for the normalised fallback', () => {
+    // The 'normalised' variant claims no specific modality (none of the
+    // node's cited sources declares documents, transcripts or tables), so
+    // there is no step-specific source to prefer — it should name the same
+    // lead the "Sourced from" line uses: the first cited vendor. Naming the
+    // full source name instead (a bug that shipped briefly: leadSourceFor's
+    // "earned" check is always false when there is no modality to earn,
+    // which fell through to the full-name branch meant for an unreachable
+    // case) would duplicate text already shown once in the properties
+    // table, which is exactly what the vendor-not-full-name convention
+    // (see EntityDetail's top comment) exists to avoid.
+    const nodesWithFallbackLineage = GRAPH_NODES.filter(n => {
+      const modalities = n.sourceIds.flatMap(id => byId.get(id)?.modalities ?? [])
+      return !modalities.includes('documents') && !modalities.includes('transcripts') && !modalities.includes('tables')
+    })
+    expect(nodesWithFallbackLineage.length, 'no node exercises the normalised fallback').toBeGreaterThan(0)
+
+    for (const n of nodesWithFallbackLineage) {
+      const { container, unmount } = render(<EntityDetail node={n} />)
+      const text = container.querySelector('.dm-entity-lineage')!.textContent ?? ''
+      unmount()
+      expect(text, n.label).toMatch(/^.+ → normalised → indexed → served$/)
+      const [, namedLead] = /^(.+?) → /.exec(text) ?? []
+      const expectedVendor = byId.get(n.sourceIds[0])!.vendor
+      expect(namedLead, `${n.label}: lineage reads "${text}"`).toBe(expectedVendor)
+    }
+  })
 })
 
 describe('GraphCanvas', () => {

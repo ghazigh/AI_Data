@@ -38,15 +38,23 @@ const lineageFor = (modalities: Set<Modality>): { modality: Modality | null; tex
  * from the *union* of every cited source's modalities, so a node can cite a
  * source that supports none of it (e.g. FNOL cites Azure FNOL Intake,
  * streams-only, alongside Guidewire ClaimCenter, which has documents); this
- * picks the one that does. If somehow none does — unreachable given how
- * `lineageFor` derives the step from these same sources, but guarded anyway
- * — the caller falls back to the source's full name rather than naming a
- * vendor that cannot perform the step.
+ * picks the one that does.
+ *
+ * Only call this with a non-null `modality` — the caller is responsible for
+ * the `normalised` fallback (see EntityDetail below), which claims no
+ * specific modality and so has no step-specific source to prefer. Given a
+ * real modality, some cited source is always guaranteed to earn it, because
+ * `lineageFor` derived that same modality from the union of these same
+ * sources' modalities — so `earned` is always true here in practice; it is
+ * still returned, rather than assumed, so a future change to `lineageFor`
+ * that broke that guarantee would show up as a source name instead of a
+ * silently wrong vendor, not as a passing test that isn't actually checking
+ * anything.
  */
-const leadSourceFor = (sourceIds: string[], modality: Modality | null) => {
+const leadSourceFor = (sourceIds: string[], modality: Modality) => {
   const byId = new Map(SOURCES.map(s => [s.id, s]))
   const sources = sourceIds.map(id => byId.get(id)).filter((s): s is NonNullable<typeof s> => s != null)
-  const earns = modality != null ? sources.find(s => s.modalities.includes(modality)) : undefined
+  const earns = sources.find(s => s.modalities.includes(modality))
   return { source: earns ?? sources[0], earned: earns != null }
 }
 
@@ -63,11 +71,16 @@ export function EntityDetail({ node }: { node: GraphNode }) {
   // same text two independent matches for anything querying by that string.
   const vendors = [...new Set(node.sourceIds.map(sourceVendor))]
   const lineage = lineageFor(modalitiesFor(node.sourceIds))
-  const { source: leadSource, earned } = leadSourceFor(node.sourceIds, lineage.modality)
-  // Name the vendor when the lead source actually earns the claimed step;
-  // otherwise (unreachable in practice, see leadSourceFor) name the source
-  // itself rather than a vendor that cannot perform it.
-  const lead = leadSource ? (earned ? sourceVendor(leadSource.id) : sourceName(leadSource.id)) : vendors[0]
+  // The `normalised` fallback (lineage.modality === null) claims no specific
+  // modality, so there is no step-specific source to prefer — name the
+  // first cited vendor, same as the "Sourced from" line above it. Only the
+  // modality-driven claims (chunked/transcribed/typed) go through
+  // leadSourceFor to find a source that actually earns that claim.
+  const lead = (() => {
+    if (lineage.modality == null) return vendors[0]
+    const { source, earned } = leadSourceFor(node.sourceIds, lineage.modality)
+    return earned ? sourceVendor(source.id) : sourceName(source.id)
+  })()
 
   return (
     <Panel title={node.label}>
