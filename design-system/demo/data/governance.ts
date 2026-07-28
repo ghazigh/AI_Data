@@ -13,7 +13,7 @@ export interface AgentRecord {
 
 export const AGENTS: AgentRecord[] = [
   { id: 'claims-triage-01', name: 'claims-triage-01', owner: 'Claims Ops', framework: 'LangGraph',
-    scopes: ['claims', 'policies'], calls: '84.2K', denials: 1, lastSeen: '4 min ago' },
+    scopes: ['claims', 'policies'], calls: '78.2K', denials: 1, lastSeen: '4 min ago' },
   { id: 'treaty-reader-02', name: 'treaty-reader-02', owner: 'Reinsurance', framework: 'OpenAI Agents SDK',
     scopes: ['reinsurance', 'contracts'], calls: '31.6K', denials: 0, lastSeen: '18 min ago' },
   { id: 'support-summary-01', name: 'support-summary-01', owner: 'Customer Care', framework: 'CrewAI',
@@ -22,6 +22,8 @@ export const AGENTS: AgentRecord[] = [
     scopes: ['compliance'], calls: '12.4K', denials: 0, lastSeen: '1 h ago' },
   { id: 'broker-insights-01', name: 'broker-insights-01', owner: 'Distribution', framework: 'n8n',
     scopes: ['broker-network'], calls: '8.9K', denials: 0, lastSeen: 'yesterday' },
+  { id: 'legal-review', name: 'legal-review', owner: 'Legal', framework: 'LangGraph',
+    scopes: ['claims', 'compliance'], calls: '6.0K', denials: 0, lastSeen: '3 h ago' },
 ]
 
 export type PolicyLevel = 'row' | 'column' | 'chunk'
@@ -54,7 +56,7 @@ export interface AuditEntry {
 }
 
 export const AUDIT: AuditEntry[] = [
-  { id: 'l1', when: '14:22:07', agentId: 'claims-triage-01', query: 'claim(number=CL-88421) → policy → coverage', entities: 'Claim, Policy, Coverage', decision: 'allowed' },
+  { id: 'l1', when: '14:22:07', agentId: 'claims-triage-01', query: 'policy(number=PL-88421) → claim → coverage', entities: 'Policy, Claim, Coverage', decision: 'allowed' },
   { id: 'l2', when: '14:21:58', agentId: 'support-summary-01', query: 'policyholder(id=884201).national_id', entities: 'Policyholder', decision: 'denied', policyId: 'pol-pii' },
   { id: 'l3', when: '14:21:40', agentId: 'treaty-reader-02', query: 'treaty(id=RT-2291) → cession', entities: 'Treaty, Cession', decision: 'allowed' },
   { id: 'l4', when: '14:20:55', agentId: 'compliance-watch-01', query: 'audit-finding(id=AF-50231) → policy', entities: 'Audit finding, Policy', decision: 'allowed' },
@@ -74,4 +76,5 @@ export const AUDIT: AuditEntry[] = [
   { id: 'l18', when: '13:29:55', agentId: 'broker-insights-01', query: 'submission(id=SB-33012) → quote', entities: 'Submission, Quote', decision: 'allowed' },
   { id: 'l19', when: '13:24:08', agentId: 'treaty-reader-02', query: 'treaty(id=RT-2004) → retention-class', entities: 'Treaty, Retention class', decision: 'allowed' },
   { id: 'l20', when: '13:18:41', agentId: 'claims-triage-01', query: 'claim(number=CL-61175) → adjuster', entities: 'Claim, Adjuster', decision: 'allowed' },
+  { id: 'l21', when: '13:11:26', agentId: 'legal-review', query: 'claim(number=CL-77310) → fnol.loss_description', entities: 'Claim, FNOL document', decision: 'allowed' },
 ]

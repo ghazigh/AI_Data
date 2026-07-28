@@ -67,7 +67,7 @@ export function Governance() {
 
       <div className="dm-section">
         <Panel title="Policies">
-          <div className="dm-policies">
+          <div>
             {LEVELS.map(level => {
               const rules = POLICIES.filter(p => p.level === level)
               if (rules.length === 0) return null
