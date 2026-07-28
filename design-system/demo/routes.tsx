@@ -5,6 +5,7 @@ import { Ready } from './screens/Ready'
 import { Pipelines } from './screens/Pipelines'
 import { Graph } from './screens/Graph'
 import { UseCases } from './screens/UseCases'
+import { Governance } from './screens/Governance'
 
 export interface DemoRoute {
   /** Path segment under /demo/. The Overview screen is the empty string. */
@@ -16,12 +17,6 @@ export interface DemoRoute {
   Component: ComponentType
 }
 
-const Stub = (name: string) => {
-  const S = () => <div data-stub={name} />
-  S.displayName = `Stub(${name})`
-  return S
-}
-
 export const ROUTES: DemoRoute[] = [
   { slug: '', title: 'Estate overview', Component: Overview },
   { slug: 'connect', title: 'Connect', stage: '01', Component: Connect },
@@ -29,7 +24,7 @@ export const ROUTES: DemoRoute[] = [
   { slug: 'pipelines', title: 'Pipelines', stage: '03', Component: Pipelines },
   { slug: 'graph', title: 'Graph', stage: '04', Component: Graph },
   { slug: 'use-cases', title: 'Use cases', stage: '05', Component: UseCases },
-  { slug: 'governance', title: 'Governance & audit', Component: Stub('Governance') },
+  { slug: 'governance', title: 'Governance & audit', Component: Governance },
 ]
 
 /** Base path the demo is served under, relative to the site root. */
