@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { PageHead } from '../components/PageHead'
 import { DataTable, type Column } from '../components/DataTable'
 import { FilterBar } from '../components/FilterBar'
-import { StatusPill } from '../components/StatusPill'
+import { StatusPill, sourceStatusPill } from '../components/StatusPill'
 import { SourceDrawer } from '../components/SourceDrawer'
 import { ConnectDialog } from '../components/ConnectDialog'
 import { useDemoState } from '../state'
@@ -11,11 +11,6 @@ import type { CatalogueEntry } from '../data/sources'
 
 const MODALITIES = ['tables', 'documents', 'tickets', 'email', 'transcripts', 'images', 'streams']
 const CATEGORIES = ['warehouse', 'oltp', 'saas', 'object-store', 'stream']
-
-const STATUS_PILL = (s: Source['status']) =>
-  s === 'connected' ? { tone: 'ok' as const, label: 'Connected' }
-  : s === 'scanning' ? { tone: 'blue' as const, label: 'Scanning' }
-  : { tone: 'neutral' as const, label: 'Awaiting credentials' }
 
 export function Connect() {
   const { sources, connectSource, settleSource } = useDemoState()
@@ -31,10 +26,13 @@ export function Connect() {
   const onConnect = (entry: CatalogueEntry) => {
     connectSource({
       id: entry.id, name: entry.name, vendor: entry.vendor, category: entry.category,
-      modalities: entry.modalities, records: 0, lastSync: 'Just now', readiness: 0,
+      // Every unknown field reads as an em dash while scanning, matching how the
+      // records and readiness columns render. "Just now" would contradict the
+      // Scanning pill beside it — and collides with the test's findByText(/scanning/i).
+      modalities: entry.modalities, records: 0, lastSync: '—', readiness: 0,
       primaryDomain: entry.primaryDomain, domains: [entry.primaryDomain], status: 'scanning',
     })
-    timers.current.push(setTimeout(() => settleSource(entry.id, entry.readiness), 2200))
+    timers.current.push(setTimeout(() => settleSource(entry.id, entry.readiness, entry.records), 2200))
   }
 
   const rows = sources.filter(s =>
@@ -51,7 +49,7 @@ export function Connect() {
     { key: 'lastSync', header: 'Last sync', render: s => <span className="dm-muted">{s.lastSync}</span> },
     { key: 'readiness', header: 'Readiness', align: 'end', sortValue: s => s.readiness,
       render: s => (s.readiness ? s.readiness : '—') },
-    { key: 'status', header: 'Status', render: s => <StatusPill {...STATUS_PILL(s.status)} /> },
+    { key: 'status', header: 'Status', render: s => <StatusPill {...sourceStatusPill(s.status)} /> },
   ]
 
   return (

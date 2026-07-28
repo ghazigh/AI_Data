@@ -54,7 +54,18 @@ describe('Connect screen', () => {
     await waitFor(() => expect(screen.queryByText(/scanning/i)).toBeNull(), { timeout: 4000 })
 
     const table = screen.getByRole('table', { name: /sources/i })
-    expect(within(table).getByRole('button', { name: 'Amazon Redshift' })).toBeDefined()
+    const nameButton = within(table).getByRole('button', { name: 'Amazon Redshift' })
+    expect(nameButton).toBeDefined()
+
+    // The row settled — its own drawer must agree: a real record count, a
+    // "Connected" pill (not a lowercase "scanning" left over from mid-scan),
+    // and a last-sync value that isn't still the placeholder em dash.
+    fireEvent.click(nameButton)
+    const drawer = screen.getByRole('dialog', { name: /amazon redshift/i })
+    expect(within(drawer).getByText('Connected')).toBeDefined()
+    expect(within(drawer).queryByText('0')).toBeNull()
+    expect(within(drawer).queryByText('—')).toBeNull()
+    expect(within(drawer).getByText('Just now')).toBeDefined()
   })
 
   it('asks only for read-only credentials', () => {

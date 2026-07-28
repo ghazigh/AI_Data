@@ -1,5 +1,5 @@
 import { Drawer } from './Drawer'
-import { StatusPill } from './StatusPill'
+import { StatusPill, sourceStatusPill } from './StatusPill'
 import { domainByKey } from '../data/tenant'
 import type { Source } from '../data/types'
 
@@ -18,7 +18,7 @@ export function SourceDrawer({ source, onClose }: { source: Source | null; onClo
         <div><dt>Records</dt><dd>{source.records.toLocaleString('en-US')}</dd></div>
         <div><dt>Last sync</dt><dd>{source.lastSync}</dd></div>
         <div><dt>Domains</dt><dd>{source.domains.map(d => domainByKey(d)?.name).join(' · ')}</dd></div>
-        <div><dt>Status</dt><dd><StatusPill tone={source.status === 'connected' ? 'ok' : 'neutral'} label={source.status.replace('-', ' ')} /></dd></div>
+        <div><dt>Status</dt><dd><StatusPill {...sourceStatusPill(source.status)} /></dd></div>
       </dl>
 
       <h3 className="dm-drawer-sub">Readiness sub-scores</h3>

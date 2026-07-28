@@ -6,7 +6,8 @@ export interface DemoState {
   sources: Source[]
   /** Adds a source in `scanning` state; the caller settles it to `connected`. */
   connectSource: (source: Source) => void
-  settleSource: (id: string, readiness: number) => void
+  /** Completes a scan: a settled source has a score AND a record count. */
+  settleSource: (id: string, readiness: number, records: number) => void
   resetDemo: () => void
 }
 
@@ -18,8 +19,8 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
   const value = useMemo<DemoState>(() => ({
     sources,
     connectSource: s => setSources(prev => (prev.some(p => p.id === s.id) ? prev : [{ ...s, status: 'scanning' }, ...prev])),
-    settleSource: (id, readiness) =>
-      setSources(prev => prev.map(s => (s.id === id ? { ...s, status: 'connected', readiness } : s))),
+    settleSource: (id, readiness, records) =>
+      setSources(prev => prev.map(s => (s.id === id ? { ...s, status: 'connected', readiness, records, lastSync: 'Just now' } : s))),
     resetDemo: () => setSources(SOURCES),
   }), [sources])
 
