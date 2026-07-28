@@ -4102,6 +4102,17 @@ describe('the numbers agree across screens', () => {
     for (const d of DOMAINS) expect(covered.has(d.key), d.name).toBe(true)
   })
 
+  it('cites only sources that serve the node\'s own domain', () => {
+    const byId = new Map(SOURCES.map(s => [s.id, s]))
+    for (const n of GRAPH_NODES) {
+      for (const id of n.sourceIds) {
+        const source = byId.get(id)!
+        expect(source.domains, `${n.label} cites ${id}, which does not serve ${n.domain}`)
+          .toContain(n.domain)
+      }
+    }
+  })
+
   it('matches audit denials to the headline denial count', () => {
     expect(AUDIT.filter(e => e.decision === 'denied')).toHaveLength(ESTATE.agentCallsDenied)
   })
