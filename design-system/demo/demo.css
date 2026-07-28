@@ -56,9 +56,9 @@
 .dm-tiles { display: grid; grid-template-columns: repeat(4, 1fr); border: var(--dl-hairline); background: var(--dl-paper); }
 .dm-tile { padding: 20px 22px 22px; }
 .dm-tiles > .dm-tile + .dm-tile { border-left: var(--dl-hairline); }
-.dm-tile-v { margin-top: 14px; font-family: var(--dl-font-display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.035em; }
-.dm-tile-v small { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--dl-grey-3); }
-.dm-tile-sub { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-tile-v { margin-top: 14px; font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-h2); line-height: 1; letter-spacing: -0.035em; }
+.dm-tile-v small { font-size: var(--dl-text-body); font-weight: 600; letter-spacing: -0.01em; color: var(--dl-grey-3); }
+.dm-tile-sub { margin-top: 10px; font-size: var(--dl-text-label); line-height: 1.5; color: var(--dl-grey-4); }
 .dm-ticks { position: relative; height: 14px; margin-top: 12px;
   background: repeating-linear-gradient(90deg, var(--dl-grey-2) 0 1px, transparent 1px 4%) left top / 100% 7px no-repeat,
               repeating-linear-gradient(90deg, var(--dl-ink) 0 1px, transparent 1px 20%) left top / 100% 100% no-repeat; }

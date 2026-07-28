@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import { Panel } from '../components/Panel'
@@ -100,6 +101,37 @@ describe('Drawer', () => {
   it('moves focus into itself when it opens', () => {
     render(<Drawer open title="Source" onClose={() => {}}><p>detail</p></Drawer>)
     expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true)
+  })
+
+  it('restores focus to the opener when it closes', () => {
+    const opener = document.createElement('button')
+    document.body.appendChild(opener)
+    opener.focus()
+    const { unmount } = render(<Drawer open title="Source" onClose={() => {}}><button>inner</button></Drawer>)
+    expect(document.activeElement).not.toBe(opener)
+    unmount()
+    expect(document.activeElement).toBe(opener)
+    opener.remove()
+  })
+
+  it('keeps focus where the user put it when the parent re-renders', () => {
+    function Host() {
+      const [, bump] = useState(0)
+      return (
+        <>
+          <button onClick={() => bump(n => n + 1)}>bump</button>
+          <Drawer open title="Source" onClose={() => {}}>
+            <button>first</button>
+            <button>second</button>
+          </Drawer>
+        </>
+      )
+    }
+    render(<Host />)
+    const second = screen.getByRole('button', { name: 'second' })
+    second.focus()
+    fireEvent.click(screen.getByRole('button', { name: 'bump' }))
+    expect(document.activeElement).toBe(second)
   })
 })
 
