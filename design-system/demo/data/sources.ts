@@ -64,7 +64,7 @@ export const SOURCES: Source[] = [
     modalities: ['documents'], records: 88_400, lastSync: '3 h ago',
     readiness: 62, primaryDomain: 'contracts', domains: ['contracts', 'broker-network'], status: 'connected' },
   { id: 'docusign-treaty-docs', name: 'DocuSign Treaty Documents', vendor: 'DocuSign', category: 'saas',
-    modalities: ['documents'], records: 15_200, lastSync: '1 h ago',
+    modalities: ['documents'], records: 28_400, lastSync: '1 h ago',
     readiness: 75, primaryDomain: 'contracts', domains: ['contracts', 'reinsurance'], status: 'connected' },
   { id: 'oracle-contracts-db', name: 'Oracle Contracts DB', vendor: 'Oracle', category: 'oltp',
     modalities: ['tables'], records: 402_100, lastSync: 'yesterday',

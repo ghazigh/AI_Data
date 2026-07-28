@@ -23,6 +23,7 @@ export function Ready() {
   const [domain, setDomain] = useState<DomainKey | null>(null)
   const flags = domain ? RED_FLAGS.filter(f => f.domain === domain) : RED_FLAGS
   const onSelect = (key: DomainKey) => setDomain(d => (d === key ? null : key))
+  const selected = domain ? domainByKey(domain) : undefined
 
   return (
     <>
@@ -39,17 +40,17 @@ export function Ready() {
         </Panel>
       </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div className="dm-section">
         <Panel title="Readiness by domain">
           <DomainBars domains={DOMAINS} onSelect={onSelect} />
         </Panel>
       </div>
 
-      <div style={{ marginTop: 18 }}>
+      <div className="dm-section">
         <Panel title="Red flags">
-          {domain && (
+          {selected && (
             <p className="dm-flags-heading">
-              Filtered to <b>{domainByKey(domain)?.name}</b>
+              Filtered to <b>{selected.name}</b>
             </p>
           )}
           <ul className="dm-flags">
@@ -67,6 +68,17 @@ export function Ready() {
                 <a className="dm-panel-link" href="../pipelines/" data-demo-link>Send to pipelines</a>
               </li>
             ))}
+            {selected && flags.length === 0 && (
+              <li className="dm-flags-empty">
+                <p>
+                  No red flags in {selected.name}. Its readiness score of {selected.score} reflects
+                  coverage and freshness rather than defects to fix.
+                </p>
+                <button className="dm-panel-link" type="button" onClick={() => setDomain(null)}>
+                  Show all red flags
+                </button>
+              </li>
+            )}
           </ul>
         </Panel>
       </div>

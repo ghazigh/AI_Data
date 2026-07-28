@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, fireEvent } from '@testing-library/react'
 import { Ready } from '../screens/Ready'
 import { DIMENSIONS, TREND, RED_FLAGS } from '../data/readiness'
 import { DOMAINS, ESTATE } from '../data/tenant'
@@ -49,5 +49,21 @@ describe('Ready screen', () => {
     render(<Ready />)
     const panel = screen.getByRole('region', { name: /red flags/i })
     expect(within(panel).getAllByRole('link', { name: /send to pipelines/i }).length).toBe(RED_FLAGS.length)
+  })
+
+  it('shows an informative empty state for a domain with no red flags, and clears back', () => {
+    render(<Ready />)
+    // 'Support' carries none of the seeded red flags.
+    expect(RED_FLAGS.some(f => f.domain === 'support')).toBe(false)
+
+    const domainPanel = screen.getByRole('region', { name: /readiness by domain/i })
+    fireEvent.click(within(domainPanel).getByRole('button', { name: /^support$/i }))
+
+    const flagsPanel = screen.getByRole('region', { name: /red flags/i })
+    expect(within(flagsPanel).getByText(/no red flags in support/i)).toBeDefined()
+    expect(within(flagsPanel).queryAllByRole('link', { name: /send to pipelines/i })).toHaveLength(0)
+
+    fireEvent.click(within(flagsPanel).getByRole('button', { name: /show all red flags/i }))
+    expect(within(flagsPanel).getAllByRole('link', { name: /send to pipelines/i }).length).toBe(RED_FLAGS.length)
   })
 })
