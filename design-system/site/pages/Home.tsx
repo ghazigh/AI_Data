@@ -106,6 +106,7 @@ export function Home() {
         title="Scores how ready your data is for agents."
         lead="Every source and every business domain gets an Agent-Readiness Score out of 100 — coverage, definitions, governance, freshness — and Datalith keeps watching it after the first pass."
         value="Continuous monitoring, not a one-off audit. You see readiness move as your estate changes."
+        note="Console shows an illustrative estate. Datalith is pre-launch; these are not customer figures."
         figure={<ReadyFigure />}
       />
       <StageSection

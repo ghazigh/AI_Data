@@ -111,31 +111,85 @@ export function ConnectFigure() {
   )
 }
 
-/** 02 — the readiness score resolving, per domain, then held under watch. */
+/**
+ * 02 — the readiness console: the headline score, the estate stats behind it,
+ * per-domain breakdown, the flags a data team would act on, and the trend
+ * that proves it is watched rather than sampled once.
+ */
+const KPIS = [
+  { v: '23', l: 'sources scanned' },
+  { v: '4.2M', l: 'entities seen' },
+  { v: '61%', l: 'typed columns' },
+  { v: '3', l: 'stale sources' },
+]
+const DOMAINS = [
+  { n: 'Revenue', v: 88 }, { n: 'Support', v: 64 },
+  { n: 'Supply', v: 79 }, { n: 'Contracts', v: 41 },
+]
+const FLAGS = [
+  { sev: 'high', t: '12 PII columns unmasked', s: 'salesforce, zendesk' },
+  { sev: 'high', t: '41K duplicate customer records', s: 'across 4 systems' },
+  { sev: 'mid', t: '3 sources not refreshed in 30d', s: 'netsuite, drive, jira' },
+]
+const TREND = [42, 48, 46, 55, 59, 57, 64, 68, 66, 73, 75, 78]
+
 export function ReadyFigure() {
-  const domains = [
-    { n: 'Revenue', v: 88 }, { n: 'Support', v: 64 },
-    { n: 'Supply', v: 79 }, { n: 'Contracts', v: 41 },
-  ]
+  const tx = (i: number) => 392 + i * 21
+  const ty = (v: number) => 356 - ((v - 35) / 50) * 62
+  const line = TREND.map((v, i) => `${i ? 'L' : 'M'}${tx(i)} ${ty(v)}`).join(' ')
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
-      <path className="st-sf-arcbg" d="M52 232 A 116 116 0 0 1 284 232" />
-      <path className="st-sf-arc" pathLength={100} d="M52 232 A 116 116 0 0 1 284 232" />
-      <text className="st-sf-score" x={168} y={228} textAnchor="middle">78</text>
-      <text className="st-sf-scorecap" x={168} y={258} textAnchor="middle">AGENT-READINESS</text>
-      {domains.map((d, i) => (
-        <g key={d.n} className="st-sf-row" style={s(i)}>
-          <text className="st-sf-rowlabel" x={344} y={78 + i * 46}>{d.n}</text>
-          <rect className="st-sf-track" x={344} y={90 + i * 46} width={252} height={8} rx={4} />
-          <rect className="st-sf-fill" x={344} y={90 + i * 46} height={8} rx={4}
-            style={{ '--w': `${(252 * d.v) / 100}px` } as CSSProperties} />
-          <text className="st-sf-rowval" x={604} y={99 + i * 46} textAnchor="end">{d.v}</text>
+      {/* header */}
+      <text className="st-sf-dashcap" x={14} y={21}>AGENT-READINESS CONSOLE</text>
+      <circle className="st-sf-livedot" cx={556} cy={17} r={4} />
+      <text className="st-sf-dashcap" x={568} y={21}>LIVE</text>
+      <path className="st-sf-rule" d="M0 34 H640" />
+
+      {/* headline score */}
+      <path className="st-sf-arcbg" d="M34 176 A 62 62 0 0 1 158 176" />
+      <path className="st-sf-arc" pathLength={100} d="M34 176 A 62 62 0 0 1 158 176" />
+      <text className="st-sf-score" x={96} y={172} textAnchor="middle">78</text>
+      <text className="st-sf-scorecap" x={96} y={196} textAnchor="middle">OUT OF 100</text>
+      <text className="st-sf-delta" x={96} y={222} textAnchor="middle">▲ 6 pts this week</text>
+      <path className="st-sf-rule" d="M186 44 V236" />
+
+      {/* estate stats */}
+      {KPIS.map((k, i) => (
+        <g key={k.l} className="st-sf-kpi" style={s(i)}>
+          <text className="st-sf-kpival" x={212 + i * 108} y={74}>{k.v}</text>
+          <text className="st-sf-kpilabel" x={212 + i * 108} y={90}>{k.l}</text>
         </g>
       ))}
-      <path className="st-sf-trace" pathLength={100}
-        d="M344 328 L380 316 L416 334 L452 306 L488 320 L524 292 L560 300 L596 276" />
-      <circle className="st-sf-tracedot" cx={596} cy={276} r={5} />
-      <text className="st-sf-tagsub" x={344} y={356}>monitored continuously</text>
+      <path className="st-sf-rule" d="M204 106 H626" />
+
+      {/* per-domain readiness */}
+      {DOMAINS.map((d, i) => (
+        <g key={d.n} className="st-sf-row" style={s(i)}>
+          <text className="st-sf-rowlabel" x={212} y={140 + i * 26}>{d.n}</text>
+          <rect className="st-sf-track" x={300} y={132 + i * 26} width={278} height={7} rx={3.5} />
+          <rect className={`st-sf-fill${d.v < 50 ? ' st-sf-fill--low' : ''}`} x={300} y={132 + i * 26}
+            height={7} rx={3.5} style={{ '--w': `${(278 * d.v) / 100}px` } as CSSProperties} />
+          <text className="st-sf-rowval" x={626} y={140 + i * 26} textAnchor="end">{d.v}</text>
+        </g>
+      ))}
+      <path className="st-sf-rule" d="M0 250 H640" />
+
+      {/* flags a data team would act on */}
+      <text className="st-sf-dashcap" x={14} y={274}>RED FLAGS · 3 OPEN</text>
+      {FLAGS.map((f, i) => (
+        <g key={f.t} className="st-sf-flagrow" style={s(i)}>
+          <circle className={`st-sf-flagdot st-sf-flagdot--${f.sev}`} cx={20} cy={297 + i * 30} r={4} />
+          <text className="st-sf-flagtext" x={34} y={301 + i * 30}>{f.t}</text>
+          <text className="st-sf-flagsrc" x={34} y={313 + i * 30}>{f.s}</text>
+        </g>
+      ))}
+      <path className="st-sf-rule" d="M370 264 V366" />
+
+      {/* the trend that proves it is monitored */}
+      <text className="st-sf-dashcap" x={392} y={286}>READINESS · 12 WEEKS</text>
+      <path className="st-sf-area" d={`${line} L${tx(11)} 366 L${tx(0)} 366 Z`} />
+      <path className="st-sf-trace" pathLength={100} d={line} />
+      <circle className="st-sf-tracedot" cx={tx(11)} cy={ty(78)} r={4.5} />
     </svg>
   )
 }
