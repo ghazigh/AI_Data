@@ -258,3 +258,23 @@
 .dm-identity-evidence li { padding: 10px 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; color: var(--dl-grey-4); }
 .dm-identity-evidence li:last-child { border-bottom: 0; }
 .dm-identity-confidence { padding: var(--dl-space-4) var(--dl-space-5) var(--dl-space-5); border-top: var(--dl-hairline); font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-h3); letter-spacing: -0.02em; color: var(--dl-blue); }
+
+.dm-blocked { padding: var(--dl-space-4); margin-bottom: var(--dl-space-5); background: #F8EFDD; border-left: 3px solid var(--dl-warn); }
+.dm-blocked .dm-eyebrow { color: var(--dl-warn); }
+.dm-blocked p:not(.dm-eyebrow) { margin-top: var(--dl-space-2); font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-blocked b { color: var(--dl-ink); }
+.dm-blocked .dm-panel-link { display: inline-block; margin-top: var(--dl-space-3); }
+
+.dm-uc-summary { margin: 0 0 var(--dl-space-5); font-size: 13px; line-height: 1.5; color: var(--dl-grey-4); }
+
+.dm-bindings, .dm-guardrails { margin: 0 0 var(--dl-space-5); }
+.dm-bindings li, .dm-guardrails li { position: relative; padding: 7px 0 7px var(--dl-space-4); border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-bindings li:last-child, .dm-guardrails li:last-child { border-bottom: 0; }
+.dm-bindings li::before, .dm-guardrails li::before { content: ''; position: absolute; left: 0; top: 13px; width: 5px; height: 5px; border-radius: var(--dl-radius-pill); background: var(--dl-grey-3); }
+
+.dm-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dl-space-4); padding: var(--dl-space-4) 0; margin-bottom: var(--dl-space-2); border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); }
+.dm-stat-v { margin-top: var(--dl-space-2); font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-lead); letter-spacing: -0.02em; }
+
+.dm-evalset { margin: 0 0 var(--dl-space-5); font-size: 12.5px; color: var(--dl-grey-4); }
+
+.dm-exports { display: flex; flex-wrap: wrap; gap: var(--dl-space-2); }
