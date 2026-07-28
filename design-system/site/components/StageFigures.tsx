@@ -1,4 +1,9 @@
 import type { CSSProperties } from 'react'
+import {
+  siSnowflake, siPostgresql, siGooglebigquery, siMysql, siMongodb,
+  siApachekafka, siSap, siJira, siZendesk, siConfluence, siNotion,
+} from 'simple-icons'
+import { S3_BUCKET } from './HeroFigure'
 
 /**
  * One large figure per platform stage. Each animates the transformation it
@@ -12,32 +17,96 @@ import type { CSSProperties } from 'react'
 
 const s = (i: number) => ({ '--i': i } as CSSProperties)
 
-/** 01 — a wall of systems wiring itself into one read-only port. */
+/**
+ * 01 — a wall of real systems, each showing who it is and what shape its data
+ * comes in. Modality drives the accent so "multi-modal" is legible at a
+ * glance rather than asserted: structured blue, unstructured amber, streams
+ * and object stores green.
+ */
+type Modality = 'struct' | 'doc' | 'event'
+interface Src { name: string; path: string; kind: string; mode: Modality; evenOdd?: boolean }
+
+const SYSTEMS: Src[] = [
+  { name: 'Snowflake', path: siSnowflake.path, kind: 'tables', mode: 'struct' },
+  { name: 'Postgres', path: siPostgresql.path, kind: 'tables', mode: 'struct' },
+  { name: 'BigQuery', path: siGooglebigquery.path, kind: 'tables', mode: 'struct' },
+  { name: 'MySQL', path: siMysql.path, kind: 'tables', mode: 'struct' },
+  { name: 'SAP', path: siSap.path, kind: 'records', mode: 'struct' },
+  { name: 'MongoDB', path: siMongodb.path, kind: 'documents', mode: 'doc' },
+  { name: 'Confluence', path: siConfluence.path, kind: 'wiki pages', mode: 'doc' },
+  { name: 'Notion', path: siNotion.path, kind: 'wiki pages', mode: 'doc' },
+  { name: 'Jira', path: siJira.path, kind: 'tickets', mode: 'doc' },
+  { name: 'Zendesk', path: siZendesk.path, kind: 'tickets', mode: 'doc' },
+  { name: 'Kafka', path: siApachekafka.path, kind: 'event stream', mode: 'event' },
+  { name: 'AWS S3', path: S3_BUCKET, kind: 'objects', mode: 'event', evenOdd: true },
+]
+
+/** tiny modality glyph, drawn in a 12×12 box at (x, y) */
+function ModeGlyph({ mode, x, y }: { mode: Modality; x: number; y: number }) {
+  if (mode === 'struct') {
+    return (
+      <g transform={`translate(${x} ${y})`}>
+        <rect width={11} height={2} rx={1} /><rect y={4} width={11} height={2} rx={1} />
+        <rect y={8} width={7} height={2} rx={1} />
+      </g>
+    )
+  }
+  if (mode === 'doc') {
+    return (
+      <g transform={`translate(${x} ${y})`}>
+        <path d="M0 0 h7 l3 3 v8 h-10 z" />
+      </g>
+    )
+  }
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <path d="M0 8 q2.75 -6 5.5 0 t5.5 0" fill="none" strokeWidth={2} strokeLinecap="round" />
+    </g>
+  )
+}
+
 export function ConnectFigure() {
-  const tiles = Array.from({ length: 12 }, (_, i) => ({
-    x: 24 + (i % 3) * 96, y: 40 + Math.floor(i / 3) * 78, i,
-  }))
+  const COLS = 3, TW = 130, TH = 72, GX = 8, GY = 13, X0 = 6, Y0 = 12
+  const PORT_X = 470, PORT_Y = 190
+  const pos = (i: number) => ({
+    x: X0 + (i % COLS) * (TW + GX),
+    y: Y0 + Math.floor(i / COLS) * (TH + GY),
+  })
+  const wire = (i: number) => {
+    const { x, y } = pos(i)
+    const cy = y + TH / 2
+    return `M${x + TW} ${cy} C ${x + TW + 70} ${cy}, ${PORT_X - 80} ${PORT_Y}, ${PORT_X} ${PORT_Y}`
+  }
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
-      {tiles.map(t => (
-        <g key={t.i} className="st-sf-tile" style={s(t.i)}>
-          <rect x={t.x} y={t.y} width={78} height={54} rx={6} />
-          <rect className="st-sf-tilebar" x={t.x + 12} y={t.y + 16} width={34} height={5} rx={2.5} />
-          <rect className="st-sf-tilebar" x={t.x + 12} y={t.y + 30} width={22} height={5} rx={2.5} />
+      {/* wiring is drawn first so it runs behind the wall of systems rather
+          than crossing over the tiles it passes */}
+      {SYSTEMS.map((sys, i) => (
+        <g key={`w${sys.name}`} className={`st-sf-sys--${sys.mode}`}>
+          <path className="st-sf-wire" pathLength={100} style={s(i)} d={wire(i)} />
+          <path className="st-sf-packet" pathLength={100} style={s(i)} d={wire(i)} />
         </g>
       ))}
-      {tiles.map(t => (
-        <path key={`w${t.i}`} className="st-sf-wire" pathLength={100} style={s(t.i)}
-          d={`M${t.x + 78} ${t.y + 27} C ${t.x + 150} ${t.y + 27}, 430 190, 496 190`} />
-      ))}
-      {tiles.map(t => (
-        <path key={`p${t.i}`} className="st-sf-packet" pathLength={100} style={s(t.i)}
-          d={`M${t.x + 78} ${t.y + 27} C ${t.x + 150} ${t.y + 27}, 430 190, 496 190`} />
-      ))}
-      <rect className="st-sf-port" x={496} y={140} width={26} height={100} rx={7} />
-      <circle className="st-sf-portdot" cx={509} cy={190} r={7} />
-      <text className="st-sf-tag" x={540} y={186}>DATALITH</text>
-      <text className="st-sf-tagsub" x={540} y={204}>read-only</text>
+      {SYSTEMS.map((sys, i) => {
+        const { x, y } = pos(i)
+        return (
+          <g key={sys.name} className={`st-sf-sys st-sf-sys--${sys.mode}`} style={s(i)}>
+            <rect className="st-sf-systile" x={x} y={y} width={TW} height={TH} rx={7} />
+            <g className="st-sf-sysmark" transform={`translate(${x + 11} ${y + 12}) scale(0.72)`}>
+              <path d={sys.path} fillRule={sys.evenOdd ? 'evenodd' : undefined} />
+            </g>
+            <text className="st-sf-sysname" x={x + 35} y={y + 23}>{sys.name}</text>
+            <g className="st-sf-sysmode">
+              <ModeGlyph mode={sys.mode} x={x + 11} y={y + 45} />
+              <text className="st-sf-syskind" x={x + 28} y={y + 54}>{sys.kind}</text>
+            </g>
+          </g>
+        )
+      })}
+      <rect className="st-sf-port" x={PORT_X} y={PORT_Y - 50} width={24} height={100} rx={7} />
+      <circle className="st-sf-portdot" cx={PORT_X + 12} cy={PORT_Y} r={6} />
+      <text className="st-sf-tag" x={PORT_X + 36} y={PORT_Y - 4}>DATALITH</text>
+      <text className="st-sf-tagsub" x={PORT_X + 36} y={PORT_Y + 13}>read-only</text>
     </svg>
   )
 }

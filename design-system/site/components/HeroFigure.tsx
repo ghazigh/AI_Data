@@ -10,7 +10,7 @@ import {
  * own monochrome rendering of the bucket form, used nominatively to say
  * "we connect to this". Two subpaths: outer bucket, inner rim opening.
  */
-const S3_BUCKET =
+export const S3_BUCKET =
   'M12 2C6.48 2 2 3.34 2 5l2.6 14.4C4.85 20.9 8.06 22 12 22s7.15-1.1 7.4-2.6L22 5c0-1.66-4.48-3-10-3z'
   + 'M12 3.7C7.86 3.7 4.5 4.28 4.5 5s3.36 1.3 7.5 1.3 7.5-.58 7.5-1.3-3.36-1.3-7.5-1.3z'
 
