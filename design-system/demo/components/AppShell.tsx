@@ -11,7 +11,7 @@ export function AppShell({ current, prefix, children }: AppShellProps) {
     <div className="dm-root">
       <Rail current={current} prefix={prefix} />
       <div className="dm-main">
-        <TopBar route={route} />
+        <TopBar route={route} prefix={prefix} />
         <main className="dm-content" id="dm-content">{children}</main>
       </div>
     </div>
