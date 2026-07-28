@@ -17,7 +17,7 @@ export const ACTIVITY: ActivityEntry[] = [
   { id: 'a3', tone: 'ok', subject: 'Applied Epic', detail: 'identity resolution merged 12,470 duplicate broker records', sourceId: 'applied-epic', when: '3 h ago' },
   { id: 'a4', tone: 'info', subject: 'claims-triage-01', detail: 'served 8,412 graph queries', sourceId: 'snowflake-claims-mart', when: '5 h ago' },
   { id: 'a5', tone: 'warn', subject: 'SharePoint Underwriting Guidelines', detail: 'not refreshed in 21 days — freshness score falling', sourceId: 'sharepoint-uw-guidelines', when: 'yesterday' },
-  { id: 'a6', tone: 'ok', subject: 'Semantic typing', detail: 'confirmed on 380 columns by D. Okafor', sourceId: 'snowflake-policy-mart', when: 'yesterday' },
+  { id: 'a6', tone: 'ok', subject: 'Semantic typing', detail: 'confirmed on 264 columns by D. Okafor', sourceId: 'snowflake-policy-mart', when: 'yesterday' },
   { id: 'a7', tone: 'info', subject: 'ReinsuranceCloud Treaty Register', detail: 'chunked 4,180 treaty statements for retrieval', sourceId: 'reinsurancecloud-treaties', when: 'yesterday' },
   { id: 'a8', tone: 'ok', subject: 'Genesys Claim Calls', detail: 'transcribed and embedded 12,900 calls', sourceId: 'genesys-claim-calls', when: '2 days ago' },
   { id: 'a9', tone: 'info', subject: 'DocuSign Treaty Documents', detail: 'reconciled 212 treaty cession terms against bordereaux', sourceId: 'docusign-treaty-docs', when: '2 days ago' },

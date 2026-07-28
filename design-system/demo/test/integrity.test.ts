@@ -8,7 +8,9 @@ import { RED_FLAGS } from '../data/readiness'
 import { PLAN } from '../data/pipelines'
 import { USE_CASES } from '../data/useCases'
 import { GRAPH_NODES, KNOWLEDGE_BASES } from '../data/graph'
-import { AGENTS, AUDIT } from '../data/governance'
+import { AGENTS, AUDIT, POLICIES } from '../data/governance'
+import { ACTIVITY } from '../data/activity'
+import type { Modality } from '../data/types'
 
 const DEMO = new URL('..', import.meta.url).pathname
 
@@ -110,6 +112,46 @@ describe('the numbers agree across screens', () => {
   it('blocks use cases only on domains below 70', () => {
     for (const u of USE_CASES.filter(u => u.status === 'blocked')) {
       expect(DOMAINS.find(d => d.key === u.blockedBy)!.score).toBeLessThan(70)
+    }
+  })
+
+  it('claims only operations the cited source can support', () => {
+    const byId = new Map(SOURCES.map(s => [s.id, s]))
+    const NEEDS: { pattern: RegExp; modality: Modality }[] = [
+      { pattern: /column/i, modality: 'tables' },
+      { pattern: /chunk/i, modality: 'documents' },
+      { pattern: /transcrib/i, modality: 'transcripts' },
+      { pattern: /ticket/i, modality: 'tickets' },
+    ]
+    for (const a of ACTIVITY) {
+      const source = byId.get(a.sourceId)!
+      const text = `${a.subject} ${a.detail}`
+      for (const { pattern, modality } of NEEDS) {
+        if (!pattern.test(text)) continue
+        expect(source.modalities, `"${a.detail}" cites ${a.sourceId}, which has no ${modality}`)
+          .toContain(modality)
+      }
+    }
+  })
+
+  it('never claims more records or documents than the source holds', () => {
+    const byId = new Map(SOURCES.map(s => [s.id, s]))
+    for (const f of RED_FLAGS) {
+      if (f.unit !== 'records' && f.unit !== 'documents') continue
+      const source = byId.get(f.sourceId)!
+      expect(f.count, `${f.title} claims ${f.count} ${f.unit} from ${source.name}, which holds ${source.records}`)
+        .toBeLessThan(source.records)
+    }
+  })
+
+  it('names only registered agents in policy scope text', () => {
+    const ids = new Set(AGENTS.map(a => a.id))
+    const AGENT_ID = /[a-z]+-[a-z]+(?:-\d+)?/g
+    for (const p of POLICIES) {
+      const mentioned = p.applies.match(AGENT_ID) ?? []
+      for (const token of mentioned) {
+        expect(ids.has(token), `policy "${p.rule}" names ${token}, which is not a registered agent`).toBe(true)
+      }
     }
   })
 })
