@@ -12,6 +12,28 @@ describe('prefixForSlug', () => {
   })
 })
 
+// Inline `style` attributes hit a second serializer asymmetry, distinct from the
+// void-element one below: react-dom/server writes the style attribute as a raw
+// string ("left:71%"), which jsdom echoes back verbatim when it's parsed from
+// markup. The client renderer instead sets each property through the live
+// CSSStyleDeclaration, which jsdom always re-serializes in canonical form
+// ("left: 71%;"). Same computed style, two different serializers — not a real
+// hydration hazard — so canonicalize every style attribute the same way on both
+// sides before comparing.
+const normalizeStyleAttrs = (html: string): string =>
+  html.replace(/ style="([^"]*)"/g, (_match, decls: string) => {
+    const canonical = decls
+      .split(';')
+      .map(d => d.trim())
+      .filter(Boolean)
+      .map(d => {
+        const i = d.indexOf(':')
+        return `${d.slice(0, i).trim()}: ${d.slice(i + 1).trim()};`
+      })
+      .join(' ')
+    return ` style="${canonical}"`
+  })
+
 describe('SSR and client agree', () => {
   for (const route of ROUTES) {
     it(`renders identical markup for "${route.slug || 'index'}"`, () => {
@@ -25,7 +47,7 @@ describe('SSR and client agree', () => {
       const normalized = document.createElement('div')
       normalized.innerHTML = server
       const { container } = render(<DemoApp slug={route.slug} prefix={prefix} />)
-      expect(container.innerHTML).toBe(normalized.innerHTML)
+      expect(normalizeStyleAttrs(container.innerHTML)).toBe(normalizeStyleAttrs(normalized.innerHTML))
     })
   }
 })

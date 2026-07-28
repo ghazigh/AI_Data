@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { Overview } from './screens/Overview'
 
 export interface DemoRoute {
   /** Path segment under /demo/. The Overview screen is the empty string. */
@@ -17,7 +18,7 @@ const Stub = (name: string) => {
 }
 
 export const ROUTES: DemoRoute[] = [
-  { slug: '', title: 'Estate overview', Component: Stub('Overview') },
+  { slug: '', title: 'Estate overview', Component: Overview },
   { slug: 'connect', title: 'Connect', stage: '01', Component: Stub('Connect') },
   { slug: 'ready', title: 'Ready', stage: '02', Component: Stub('Ready') },
   { slug: 'pipelines', title: 'Pipelines', stage: '03', Component: Stub('Pipelines') },
