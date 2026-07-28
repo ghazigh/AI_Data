@@ -3652,12 +3652,15 @@ describe('Graph screen', () => {
       expect(within(panel).getByText(r.system)).toBeDefined()
       expect(within(panel).getByText(r.key)).toBeDefined()
     }
-    expect(within(panel).getByText(/98/)).toBeDefined()
+    // Anchor on the whole phrase. A bare /98/ also matches the Guidewire key
+    // pc:contact:41982, and a query that collides with the data it is checking
+    // pressures the component into contorting its markup to dodge it.
+    expect(within(panel).getByText(/98% confidence/)).toBeDefined()
   })
 
   it('states that any agent can read it', () => {
     render(<Graph />)
-    expect(screen.getByText(/served to/i)).toBeDefined()
+    expect(screen.getByText(/served to any agent/i)).toBeDefined()
   })
 })
 ```
@@ -3673,7 +3676,9 @@ A `Panel` titled with the node label, containing: `count` entities and `freshnes
 
 - [ ] **Step 4: Write `demo/components/IdentityPanel.tsx`**
 
-A `Panel` with `eyebrow="Identity resolution"` and `title="One policyholder, resolved across systems"`. Renders the three `IDENTITY_MATCH.records` as columns joined by `=`, each showing system, key and label; the `evidence` list beneath; and the confidence as `{confidence}% confidence`.
+A `Panel` with `eyebrow="Identity resolution"` and `title="One policyholder, resolved across systems"`. Renders the three `IDENTITY_MATCH.records` as columns joined by `=`, each showing system, key and label; the `evidence` list beneath; and the confidence as plain text — `<p className="dm-identity-confidence">{match.confidence}% confidence</p>`.
+
+Render every one of those as ordinary text. If a test query collides with the data, fix the query — never split a number into spans, hide it behind `aria-hidden`, or move it into an `aria-label` to dodge a selector. Markup shaped around a test selector is worse for real users than the test was ever worth: a number split into per-digit spans cannot be selected, copied, or read by anything that walks text.
 
 This is the screen's argument. Give it the space — full panel width, the three systems on one row, the equals signs in blue display type.
 
