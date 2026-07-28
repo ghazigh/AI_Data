@@ -1823,7 +1823,7 @@ export function DimensionRadar({ dimensions }: { dimensions: Dimension[] }) {
 .dm-bar { position: relative; height: 5px; background: var(--dl-grey-1); }
 .dm-bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--dl-ink); }
 .dm-bar-fill.is-under { background: var(--dl-warn); }
-.dm-bar-score { font-family: var(--dl-font-display); font-weight: 700; font-size: 16px; letter-spacing: -0.02em; text-align: right; }
+.dm-bar-score { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
 
 .dm-radar { display: flex; align-items: center; gap: var(--dl-space-6); margin: 0; padding: 18px; }
 .dm-radar svg { width: 260px; flex: none; }
