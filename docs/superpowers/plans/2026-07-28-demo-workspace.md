@@ -23,6 +23,7 @@
 - **Copy rules:** sentence case for all UI text. Buttons name the action that happens (`Connect source`, not `Submit`). The action keeps its name through the flow.
 - **Accessibility floor:** visible keyboard focus everywhere; drawers trap focus and close on Escape; real `<table>`/`<th scope>` semantics; `prefers-reduced-motion` respected.
 - **Commit after every task.** Conventional commit prefixes (`feat:`, `test:`, `chore:`).
+- **Never commit `website/` before Task 18.** Tasks run `npm run build:demo` to verify the build works, but the generated output — including a minified bundle — is committed once, in Tasks 18 and 19. Committing it every task would bury each review in generated diff.
 
 ## The data canon
 
@@ -857,7 +858,7 @@ Expected: PASS, 5 tests, none skipped.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add design-system/ website/demo/
+git add design-system/
 git commit -m "feat(demo): build script rendering each screen to its own file"
 ```
 
@@ -1047,7 +1048,7 @@ Expected: clean typecheck; the build now emits a real `demo.js` larger than the 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add design-system/ website/demo/
+git add design-system/
 git commit -m "feat(demo): client router, hydration entry and demo state"
 ```
 
@@ -2474,7 +2475,7 @@ Expected: all green, seven files written. The hydration test from Task 4 now exe
 - [ ] **Step 8: Commit**
 
 ```bash
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): overview screen with estate tiles, domains and use cases"
 ```
 
@@ -2858,7 +2859,7 @@ In `demo/routes.ts`, import `Connect` and replace its stub. Append to `demo/demo
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): connect screen, connector catalogue and scan flow"
 ```
 
@@ -3025,7 +3026,7 @@ const flags = domain ? RED_FLAGS.filter(f => f.domain === domain) : RED_FLAGS
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): ready screen with dimensions, trend and red flags"
 ```
 
@@ -3240,7 +3241,7 @@ The plan renders each `PlanStep` as a row: title and detail on the left, the cou
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): pipelines screen with the plan, a live run and history"
 ```
 
@@ -3660,7 +3661,7 @@ Layout: `PageHead` (eyebrow `Stage 04 — Graph`, title *One map of the whole bu
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): graph screen with knowledge bases and identity resolution"
 ```
 
@@ -3768,7 +3769,7 @@ That block is the loop closing back to stage 02, and it is the reason a blocked 
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): use cases screen with blueprints and blocked reasons"
 ```
 
@@ -3941,7 +3942,7 @@ A `DataTable` with caption "Audit log", columns: time (mono), agent (mono), quer
 
 ```bash
 npm test && npm run typecheck && npm run build:demo
-git add design-system/demo/ website/demo/
+git add design-system/demo/
 git commit -m "feat(demo): governance screen with agent scopes, policies and audit log"
 ```
 
