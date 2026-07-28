@@ -27,23 +27,39 @@ export function searchEstate(query: string): SearchResult[] {
   const q = query.trim().toLowerCase()
   if (q.length < MIN_QUERY) return []
 
-  const results: SearchResult[] = [
-    ...SOURCES
+  const byKind: SearchResult[][] = [
+    SOURCES
       .filter(s => `${s.name} ${s.vendor}`.toLowerCase().includes(q))
       .map(s => ({ id: `source-${s.id}`, label: s.name, sublabel: `${s.vendor} · source`, kind: 'source' as const, slug: 'connect' })),
-    ...DOMAINS
+    DOMAINS
       .filter(d => d.name.toLowerCase().includes(q))
       .map(d => ({ id: `domain-${d.key}`, label: d.name, sublabel: `Knowledge base · scores ${d.score}`, kind: 'domain' as const, slug: 'ready' })),
-    ...GRAPH_NODES
+    GRAPH_NODES
       .filter(n => n.label.toLowerCase().includes(q))
       .map(n => ({ id: `entity-${n.id}`, label: n.label, sublabel: `${n.count} in the graph`, kind: 'entity' as const, slug: 'graph' })),
-    ...USE_CASES
+    USE_CASES
       .filter(u => u.name.toLowerCase().includes(q))
       .map(u => ({ id: `uc-${u.id}`, label: u.name, sublabel: `${u.impact} projected · ${u.status}`, kind: 'use-case' as const, slug: 'use-cases' })),
-    ...AGENTS
+    AGENTS
       .filter(a => `${a.name} ${a.owner}`.toLowerCase().includes(q))
       .map(a => ({ id: `agent-${a.id}`, label: a.name, sublabel: `${a.owner} · ${a.calls} calls`, kind: 'agent' as const, slug: 'governance' })),
   ]
 
-  return results.slice(0, MAX)
+  // Round-robin across the kinds rather than concatenating them. Concatenation
+  // plus a hard cap means one crowded kind swallows the rest: "claim" matches
+  // seven sources and the Claims domain, which fills all eight slots and hides
+  // the Claim entity, the claims triage use case and the claims agent — the
+  // three things a person typing "claim" most likely wants.
+  const out: SearchResult[] = []
+  for (let round = 0; out.length < MAX; round++) {
+    let addedThisRound = false
+    for (const group of byKind) {
+      if (round >= group.length) continue
+      out.push(group[round])
+      addedThisRound = true
+      if (out.length === MAX) return out
+    }
+    if (!addedThisRound) break
+  }
+  return out
 }

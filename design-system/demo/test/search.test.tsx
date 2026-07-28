@@ -41,6 +41,14 @@ describe('searchEstate', () => {
     expect(searchEstate('GUIDEWIRE').length).toBeGreaterThan(0)
     expect(searchEstate('e').length).toBeLessThanOrEqual(8)
   })
+
+  it('represents every matching kind rather than filling up with one', () => {
+    const kinds = new Set(searchEstate('claim').map(r => r.kind))
+    expect(kinds.has('source')).toBe(true)
+    expect(kinds.has('entity')).toBe(true)
+    expect(kinds.has('use-case')).toBe(true)
+    expect(kinds.has('agent')).toBe(true)
+  })
 })
 
 describe('TopBar search', () => {
@@ -55,7 +63,7 @@ describe('TopBar search', () => {
   it('shows results as you type and links each one', () => {
     bar()
     fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'guidewire' } })
-    const results = screen.getByRole('listbox', { name: /search results/i })
+    const results = screen.getByRole('list', { name: /search results/i })
     const links = within(results).getAllByRole('link')
     expect(links.length).toBeGreaterThan(0)
     expect(links[0].getAttribute('href')).toContain('connect')
@@ -73,7 +81,7 @@ describe('TopBar search', () => {
     fireEvent.change(input, { target: { value: 'guidewire' } })
     fireEvent.keyDown(input, { key: 'Escape' })
     expect((input as HTMLInputElement).value).toBe('')
-    expect(screen.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('list')).toBeNull()
   })
 
   it('focuses the input on the advertised shortcut', () => {

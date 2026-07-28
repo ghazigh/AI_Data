@@ -40,9 +40,9 @@ export function TopBar({ route, prefix }: TopBarProps) {
         <kbd aria-hidden="true">⌘K</kbd>
         {searching && (
           results.length > 0 ? (
-            <ul className="dm-results" role="listbox" aria-label="Search results">
+            <ul className="dm-results" aria-label="Search results">
               {results.map(r => (
-                <li key={r.id} role="option" aria-selected="false">
+                <li key={r.id}>
                   <a href={hrefFor(r.slug, prefix)} data-demo-link onClick={() => setQuery('')}>
                     <span className="dm-result-label">{r.label}</span>
                     <span className="dm-result-sub">{r.sublabel}</span>
