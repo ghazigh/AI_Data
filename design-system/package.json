@@ -25,6 +25,7 @@
     "build:landing": "node scripts/build-landing.mjs",
     "build:site": "node scripts/build-site.mjs",
     "build:demo": "node scripts/build-demo.mjs",
+    "build:all": "npm run build:site && npm run build:demo",
     "build:og": "node scripts/build-og.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

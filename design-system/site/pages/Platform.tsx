@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import {
-  SectionLabel, ScoreMeter, ConfluenceFigure, Card, Badge, CTABand, Quote,
+  SectionLabel, ScoreMeter, ConfluenceFigure, Card, Badge, CTABand, Quote, Button,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -104,7 +104,11 @@ export function Platform() {
         title={'One platform.'}
         accent="Five stages."
         lead="Datalith sits between your data estate and your AI agents, in five stages: connect every system read-only, score how ready its data is, propose the restructuring that estate needs, build it into one knowledge graph, then name the agents that graph makes possible."
-      />
+      >
+        <div className="dl-hero-ctas">
+          <Button variant="ghost" size="lg" href="./demo/">Explore the product</Button>
+        </div>
+      </PageIntro>
 
       {/* command dashboard — the product, before the explanation */}
       <section className="st-section st-section--tight" id="dashboard">

@@ -1,6 +1,6 @@
 import {
   Hero, Steps, FAQ, CTABand,
-  SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card,
+  SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card, Button,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -59,6 +59,11 @@ export function Home() {
           note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."
           figure={<HeroFigure />}
         />
+        <div className="dl-wrap">
+          <div className="dl-hero-ctas">
+            <Button variant="ghost" size="lg" href="./demo/">Explore the product</Button>
+          </div>
+        </div>
       </div>
 
       {/* connector marquee */}
