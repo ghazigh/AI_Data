@@ -1073,7 +1073,7 @@ git commit -m "feat(demo): client router, hydration entry and demo state"
   - `<StatTile label value unit? sub? meter? />` where `meter` is a 0–100 number
   - `<DataTable caption columns rows rowKey onRowClick? initialSort? />` with `Column<T> = { key, header, align?, sortValue?, render }`
   - `<Drawer open title onClose children />`
-  - `<FilterBar search onSearch groups />` where `groups: FilterGroup[]`
+  - `<FilterBar search onSearch placeholder groups />` where `groups: FilterGroup[]`
   - `<StatusPill tone label />` with `tone: 'ok' | 'warn' | 'neutral' | 'blue'`
 
 - [ ] **Step 1: Write the failing test**
@@ -1369,6 +1369,14 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [ta
 export function Drawer({ open, title, onClose, children }: DrawerProps) {
   const ref = useRef<HTMLDivElement>(null)
 
+  // onClose lives in a ref so the effect below depends only on `open`. Callers
+  // pass inline handlers — `onClose={() => setSelected(null)}` is the idiomatic
+  // spelling — which change identity on every parent render. With onClose in the
+  // dep array, an unrelated re-render tears the effect down and re-runs it,
+  // yanking focus back to the close button while the user is typing inside.
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
   useEffect(() => {
     if (!open) return
     const panel = ref.current
@@ -1376,7 +1384,7 @@ export function Drawer({ open, title, onClose, children }: DrawerProps) {
     panel?.querySelector<HTMLElement>(FOCUSABLE)?.focus()
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { onClose(); return }
+      if (e.key === 'Escape') { onCloseRef.current(); return }
       if (e.key !== 'Tab' || !panel) return
       const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE))
       if (items.length === 0) return
@@ -1387,7 +1395,7 @@ export function Drawer({ open, title, onClose, children }: DrawerProps) {
 
     document.addEventListener('keydown', onKeyDown)
     return () => { document.removeEventListener('keydown', onKeyDown); previous?.focus?.() }
-  }, [open, onClose])
+  }, [open])
 
   if (!open) return null
 
@@ -1482,9 +1490,9 @@ export function StatusPill({ tone, label }: { tone: PillTone; label: string }) {
 .dm-tiles { display: grid; grid-template-columns: repeat(4, 1fr); border: var(--dl-hairline); background: var(--dl-paper); }
 .dm-tile { padding: 20px 22px 22px; }
 .dm-tiles > .dm-tile + .dm-tile { border-left: var(--dl-hairline); }
-.dm-tile-v { margin-top: 14px; font-family: var(--dl-font-display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.035em; }
-.dm-tile-v small { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--dl-grey-3); }
-.dm-tile-sub { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-tile-v { margin-top: 14px; font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-h2); line-height: 1; letter-spacing: -0.035em; }
+.dm-tile-v small { font-size: var(--dl-text-body); font-weight: 600; letter-spacing: -0.01em; color: var(--dl-grey-3); }
+.dm-tile-sub { margin-top: 10px; font-size: var(--dl-text-label); line-height: 1.5; color: var(--dl-grey-4); }
 .dm-ticks { position: relative; height: 14px; margin-top: 12px;
   background: repeating-linear-gradient(90deg, var(--dl-grey-2) 0 1px, transparent 1px 4%) left top / 100% 7px no-repeat,
               repeating-linear-gradient(90deg, var(--dl-ink) 0 1px, transparent 1px 20%) left top / 100% 100% no-repeat; }
