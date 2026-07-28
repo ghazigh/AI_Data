@@ -15,7 +15,7 @@
 - **No `Math.random()` anywhere in `demo/`.** A test enforces this.
 - **No live clock in data.** Timestamps are fixed display strings (`'14 min ago'`). No `Date.now()`, no `new Date()` in `demo/data/` or in any component render path. Both rules exist so SSR and client markup match exactly.
 - **Graph node positions are precomputed literals.** No physics simulation at runtime.
-- **Design tokens come from `src/tokens.css`.** Never redeclare a colour, font or spacing value; use the CSS custom properties. App-specific CSS lives in `demo/demo.css`.
+- **Design tokens come from `src/tokens.css`.** Never redeclare a font size or spacing value that already has a token; use the custom properties. The demo's ink rail needs dark-surface greys the token set lacks — those are added to `tokens.css` as `--dl-rail-*`, not inlined. A bare `#fff` is permitted where the existing `src/styles.css` already uses one. App-specific CSS lives in `demo/demo.css`.
 - **Class prefix is `dm-`** for all demo components, so demo CSS can never collide with the marketing site's `dl-` and `st-` prefixes.
 - **Zero border-radius except pills** (`var(--dl-radius-pill)`), matching the marketing site.
 - **Stage numbering `01`–`05` is reserved for the five product stages.** Never number anything else — domains, red flags, use cases and audit rows are sets, not sequences.
@@ -4336,6 +4336,278 @@ git commit -m "feat(demo): accessibility guards and visual review pass"
 
 ---
 
+---
+
+### Task 20: Estate search
+
+**Runs after Task 16**, when every data module and screen exists — search needs somewhere to send you. Added after Task 2's review found the top bar's search box was decorative chrome carrying an ARIA landmark that did nothing.
+
+**Files:**
+- Create: `design-system/demo/search.ts`
+- Modify: `design-system/demo/components/TopBar.tsx`, `design-system/demo/components/AppShell.tsx` (thread `prefix` into `TopBar`), `design-system/demo/demo.css`
+- Test: `design-system/demo/test/search.test.tsx`
+
+**Interfaces:**
+- Consumes: `SOURCES`, `DOMAINS`, `GRAPH_NODES`, `USE_CASES`, `AGENTS`, `hrefFor`.
+- Produces: `searchEstate(query: string): SearchResult[]`, and a `TopBar` that takes `{ route, prefix }`.
+
+- [ ] **Step 1: Write the failing test**
+
+Create `design-system/demo/test/search.test.tsx`:
+
+```tsx
+import { describe, it, expect } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { searchEstate } from '../search'
+import { TopBar } from '../components/TopBar'
+import { ROUTES } from '../routes'
+
+describe('searchEstate', () => {
+  it('returns nothing for an empty or one-character query', () => {
+    expect(searchEstate('')).toEqual([])
+    expect(searchEstate('a')).toEqual([])
+  })
+
+  it('finds a source and points at the connect screen', () => {
+    const hit = searchEstate('guidewire').find(r => r.kind === 'source')
+    expect(hit).toBeDefined()
+    expect(hit!.slug).toBe('connect')
+  })
+
+  it('finds a domain and points at the ready screen', () => {
+    const hit = searchEstate('underwriting').find(r => r.kind === 'domain')
+    expect(hit!.slug).toBe('ready')
+  })
+
+  it('finds a graph entity and points at the graph screen', () => {
+    const hit = searchEstate('policyholder').find(r => r.kind === 'entity')
+    expect(hit!.slug).toBe('graph')
+  })
+
+  it('finds a use case and points at the use-cases screen', () => {
+    const hit = searchEstate('triage').find(r => r.kind === 'use-case')
+    expect(hit!.slug).toBe('use-cases')
+  })
+
+  it('finds an agent and points at governance', () => {
+    const hit = searchEstate('claims-triage-01').find(r => r.kind === 'agent')
+    expect(hit!.slug).toBe('governance')
+  })
+
+  it('is case-insensitive and caps its results', () => {
+    expect(searchEstate('GUIDEWIRE').length).toBeGreaterThan(0)
+    expect(searchEstate('e').length).toBeLessThanOrEqual(8)
+  })
+})
+
+describe('TopBar search', () => {
+  const bar = () => render(<TopBar route={ROUTES[0]} prefix="" />)
+
+  it('is a real labelled search control', () => {
+    bar()
+    const input = screen.getByRole('searchbox', { name: /search the estate/i })
+    expect(input.tagName).toBe('INPUT')
+  })
+
+  it('shows results as you type and links each one', () => {
+    bar()
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'guidewire' } })
+    const results = screen.getByRole('listbox', { name: /search results/i })
+    const links = within(results).getAllByRole('link')
+    expect(links.length).toBeGreaterThan(0)
+    expect(links[0].getAttribute('href')).toContain('connect')
+  })
+
+  it('shows a spoken message when nothing matches', () => {
+    bar()
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'zzzznope' } })
+    expect(screen.getByText(/nothing in the estate matches/i)).toBeDefined()
+  })
+
+  it('clears on Escape', () => {
+    bar()
+    const input = screen.getByRole('searchbox')
+    fireEvent.change(input, { target: { value: 'guidewire' } })
+    fireEvent.keyDown(input, { key: 'Escape' })
+    expect((input as HTMLInputElement).value).toBe('')
+    expect(screen.queryByRole('listbox')).toBeNull()
+  })
+
+  it('focuses the input on the advertised shortcut', () => {
+    bar()
+    fireEvent.keyDown(document, { key: 'k', metaKey: true })
+    expect(document.activeElement).toBe(screen.getByRole('searchbox'))
+  })
+})
+```
+
+Add `within` to the Testing Library import.
+
+- [ ] **Step 2: Run it and watch it fail**
+
+Run: `npm test -- demo/test/search.test.tsx`
+Expected: FAIL — cannot resolve `../search`.
+
+- [ ] **Step 3: Write `demo/search.ts`**
+
+```ts
+import { SOURCES } from './data/sources'
+import { DOMAINS } from './data/tenant'
+import { GRAPH_NODES } from './data/graph'
+import { USE_CASES } from './data/useCases'
+import { AGENTS } from './data/governance'
+
+export type ResultKind = 'source' | 'domain' | 'entity' | 'use-case' | 'agent'
+
+export interface SearchResult {
+  id: string
+  label: string
+  sublabel: string
+  kind: ResultKind
+  /** Route slug this result lives on. */
+  slug: string
+}
+
+const MAX = 8
+const MIN_QUERY = 2
+
+/**
+ * Substring search across the estate. Deliberately plain: a prospect typing a
+ * system name wants that system, and fuzzy ranking would make results reorder
+ * unpredictably as they type.
+ */
+export function searchEstate(query: string): SearchResult[] {
+  const q = query.trim().toLowerCase()
+  if (q.length < MIN_QUERY) return []
+
+  const results: SearchResult[] = [
+    ...SOURCES
+      .filter(s => `${s.name} ${s.vendor}`.toLowerCase().includes(q))
+      .map(s => ({ id: `source-${s.id}`, label: s.name, sublabel: `${s.vendor} · source`, kind: 'source' as const, slug: 'connect' })),
+    ...DOMAINS
+      .filter(d => d.name.toLowerCase().includes(q))
+      .map(d => ({ id: `domain-${d.key}`, label: d.name, sublabel: `Knowledge base · scores ${d.score}`, kind: 'domain' as const, slug: 'ready' })),
+    ...GRAPH_NODES
+      .filter(n => n.label.toLowerCase().includes(q))
+      .map(n => ({ id: `entity-${n.id}`, label: n.label, sublabel: `${n.count} in the graph`, kind: 'entity' as const, slug: 'graph' })),
+    ...USE_CASES
+      .filter(u => u.name.toLowerCase().includes(q))
+      .map(u => ({ id: `uc-${u.id}`, label: u.name, sublabel: `${u.impact} projected · ${u.status}`, kind: 'use-case' as const, slug: 'use-cases' })),
+    ...AGENTS
+      .filter(a => `${a.name} ${a.owner}`.toLowerCase().includes(q))
+      .map(a => ({ id: `agent-${a.id}`, label: a.name, sublabel: `${a.owner} · ${a.calls} calls`, kind: 'agent' as const, slug: 'governance' })),
+  ]
+
+  return results.slice(0, MAX)
+}
+```
+
+- [ ] **Step 4: Rewrite `demo/components/TopBar.tsx`**
+
+```tsx
+import { useEffect, useRef, useState } from 'react'
+import type { DemoRoute } from '../routes'
+import { hrefFor } from '../routes'
+import { TENANT, ESTATE } from '../data/tenant'
+import { searchEstate } from '../search'
+import { useDemoState } from '../state'
+
+export interface TopBarProps { route: DemoRoute; prefix: string }
+
+export function TopBar({ route, prefix }: TopBarProps) {
+  const { resetDemo } = useDemoState()
+  const [query, setQuery] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const results = searchEstate(query)
+  const searching = query.trim().length >= 2
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); inputRef.current?.focus() }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [])
+
+  return (
+    <div className="dm-topbar">
+      <p className="dm-crumb">{TENANT.name} / <b>{route.title}</b></p>
+
+      <div className="dm-search">
+        <input
+          ref={inputRef}
+          type="search"
+          className="dm-search-input"
+          value={query}
+          placeholder="Search the estate…"
+          aria-label="Search the estate"
+          onChange={e => setQuery(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Escape') setQuery('') }}
+        />
+        <kbd aria-hidden="true">⌘K</kbd>
+        {searching && (
+          results.length > 0 ? (
+            <ul className="dm-results" role="listbox" aria-label="Search results">
+              {results.map(r => (
+                <li key={r.id} role="option" aria-selected="false">
+                  <a href={hrefFor(r.slug, prefix)} data-demo-link onClick={() => setQuery('')}>
+                    <span className="dm-result-label">{r.label}</span>
+                    <span className="dm-result-sub">{r.sublabel}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="dm-results dm-results-empty" role="status">
+              Nothing in the estate matches “{query.trim()}”.
+            </p>
+          )
+        )}
+      </div>
+
+      <p className="dm-chip">Readiness <b>{ESTATE.score}</b></p>
+      <button className="dm-reset" type="button" onClick={resetDemo}>Reset demo</button>
+    </div>
+  )
+}
+```
+
+The empty state names what was searched rather than saying "no results" — it tells the visitor the estate was searched and came back empty, which is information, where a bare "no results" is only an absence.
+
+- [ ] **Step 5: Thread `prefix` into `TopBar`**
+
+In `demo/components/AppShell.tsx`, change the render to `<TopBar route={route} prefix={prefix} />`.
+
+- [ ] **Step 6: Append the search styles**
+
+```css
+/* ===== estate search ===== */
+.dm-search { position: relative; display: flex; align-items: center; width: 300px; }
+.dm-search-input { width: 100%; padding: 7px 42px 7px 14px; border: var(--dl-hairline); border-radius: 0; background: var(--dl-paper); font-size: 12px; color: var(--dl-ink); }
+.dm-search-input::placeholder { color: var(--dl-grey-3); }
+.dm-search-input:focus { border-color: var(--dl-blue); outline: none; }
+.dm-search kbd { position: absolute; right: 12px; font-family: var(--dl-font-mono); font-size: 11px; color: var(--dl-grey-3); pointer-events: none; }
+.dm-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 70; border: var(--dl-hairline); background: var(--dl-paper); box-shadow: 0 8px 24px rgba(16, 16, 19, 0.08); }
+.dm-results li + li { border-top: 1px solid var(--dl-grey-1); }
+.dm-results a { display: block; padding: 9px 14px; }
+.dm-results a:hover { background: var(--dl-blue-wash); }
+.dm-result-label { display: block; font-size: 12.5px; font-weight: 600; }
+.dm-result-sub { display: block; margin-top: 2px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-results-empty { padding: 11px 14px; font-size: 12.5px; color: var(--dl-grey-4); }
+```
+
+- [ ] **Step 7: Run the tests, typecheck, build, commit**
+
+```bash
+npm test && npm run typecheck && npm run build:demo
+git add design-system/demo/
+git commit -m "feat(demo): estate search across sources, domains, entities and agents"
+```
+
+Expected: PASS, 12 search tests plus everything prior.
+
+---
+
 ## Verification checklist
 
 Run before calling this done:
@@ -4349,4 +4621,5 @@ Run before calling this done:
 - [ ] Back button works: navigate three screens deep, then go back
 - [ ] The connect flow works: add a source, watch it scan and settle
 - [ ] Reset demo returns the estate to its 38 starting rows
+- [ ] Estate search finds a source, a domain, an entity, a use case and an agent
 - [ ] JavaScript disabled: every screen still renders its content
