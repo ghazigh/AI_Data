@@ -227,7 +227,7 @@
 .dm-canvas-controls button:hover { background: var(--dl-blue-wash); }
 
 /* ===== graph screen ===== */
-.dm-graph-layout { display: grid; grid-template-columns: 240px 1fr; gap: 18px; margin-top: 18px; }
+.dm-graph-layout { display: grid; grid-template-columns: 240px 1fr; align-items: start; gap: 18px; margin-top: 18px; }
 .dm-graph-detail { grid-column: 1 / -1; }
 
 .dm-kb-note { padding: 13px 18px 0; font-size: var(--dl-text-label); line-height: 1.5; color: var(--dl-grey-4); }

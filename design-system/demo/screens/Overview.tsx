@@ -69,7 +69,7 @@ export function Overview() {
           action={<a className="dm-panel-link" href="governance/" data-demo-link>Full stream</a>}
         >
           <ul className="dm-activity">
-            {ACTIVITY.map(a => (
+            {ACTIVITY.slice(0, 7).map(a => (
               <li key={a.id}>
                 <span className={`dm-dot is-${a.tone}`} aria-hidden="true" />
                 <div>
