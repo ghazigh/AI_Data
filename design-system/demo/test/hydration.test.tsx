@@ -34,6 +34,16 @@ const normalizeStyleAttrs = (html: string): string =>
     return ` style="${canonical}"`
   })
 
+// A third serializer asymmetry: react-dom/server inserts an empty `<!-- -->`
+// comment between two adjacent text-like JSX children (e.g. `<b>{x}</b> {y}`) to
+// mark the node boundary for hydration. A fresh client mount never produces that
+// comment, so it appears only on the server side. An *empty* comment carries no
+// text, no attribute and no element content — it cannot encode a clock, a random
+// value or a measured layout — so stripping exactly `<!-- -->` costs nothing in
+// strictness. A comment with any content inside is left untouched and still
+// compared, since that could carry a real divergence.
+const stripEmptyComments = (html: string): string => html.split('<!-- -->').join('')
+
 describe('SSR and client agree', () => {
   for (const route of ROUTES) {
     it(`renders identical markup for "${route.slug || 'index'}"`, () => {
@@ -47,7 +57,22 @@ describe('SSR and client agree', () => {
       const normalized = document.createElement('div')
       normalized.innerHTML = server
       const { container } = render(<DemoApp slug={route.slug} prefix={prefix} />)
-      expect(normalizeStyleAttrs(container.innerHTML)).toBe(normalizeStyleAttrs(normalized.innerHTML))
+      const clean = (html: string) => stripEmptyComments(normalizeStyleAttrs(html))
+      expect(clean(container.innerHTML)).toBe(clean(normalized.innerHTML))
     })
   }
 })
+
+// A fourth, deliberately *not* normalized here: React's useId(). This guard compares
+// a renderToString() output against a separate fresh mount, not a real hydrateRoot()
+// — production hydration reconciles server and client ids onto the same DOM, but two
+// independent render passes each get their own id-counter salt (":R0:" server vs
+// ":r0:" client), so useId legitimately differs across this specific harness even
+// though it never would in the browser. That's why `Panel` no longer uses it: the id
+// was purely decorative (aria-labelledby duplicating the title text), so it was
+// replaced with aria-label={title} — same accessible name, no id to diverge. Where an
+// id is load-bearing instead — e.g. `src/components/Input.tsx`'s useId() links a
+// <label htmlFor> to its <input>, and deleting that association would break
+// click-the-label-to-focus — do not repeat the Panel fix. Normalize the id in the
+// test (the same way style attributes are canonicalized above) rather than removing
+// the label/control association.
