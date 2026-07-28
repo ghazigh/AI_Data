@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, fireEvent } from '@testing-library/react'
 import { AppShell } from '../components/AppShell'
+import { DemoStateProvider } from '../state'
+import { DemoApp } from '../DemoApp'
 import { ROUTES } from '../routes'
 
 const shell = (current = '') =>
-  render(<AppShell current={current} prefix=""><p>content</p></AppShell>)
+  render(<DemoStateProvider><AppShell current={current} prefix=""><p>content</p></AppShell></DemoStateProvider>)
 
 describe('AppShell', () => {
   it('renders its children', () => {
@@ -45,7 +47,7 @@ describe('AppShell', () => {
   })
 
   it('prefixes nested links so no href is absolute', () => {
-    render(<AppShell current="graph" prefix="../"><p>c</p></AppShell>)
+    render(<DemoStateProvider><AppShell current="graph" prefix="../"><p>c</p></AppShell></DemoStateProvider>)
     const link = screen.getByRole('link', { name: /use cases/i })
     expect(link.getAttribute('href')).toBe('../use-cases/')
   })
@@ -54,5 +56,12 @@ describe('AppShell', () => {
     shell()
     const input = screen.getByRole('searchbox', { name: /search the estate/i })
     expect(input.tagName).toBe('INPUT')
+  })
+
+  it('offers a way back to the starting state', () => {
+    render(<DemoApp slug="" prefix="" />)
+    const reset = screen.getByRole('button', { name: /reset demo/i })
+    fireEvent.click(reset)
+    expect(reset).toBeDefined()
   })
 })

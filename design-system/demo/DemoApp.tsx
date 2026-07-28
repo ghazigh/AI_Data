@@ -1,4 +1,5 @@
 import { AppShell } from './components/AppShell'
+import { DemoStateProvider } from './state'
 import { ROUTES } from './routes'
 
 // The build script imports both from this one bundle entry.
@@ -11,8 +12,10 @@ export function DemoApp({ slug, prefix }: DemoAppProps) {
   const route = ROUTES.find(r => r.slug === slug) ?? ROUTES[0]
   const { Component } = route
   return (
-    <AppShell current={route.slug} prefix={prefix}>
-      <Component />
-    </AppShell>
+    <DemoStateProvider>
+      <AppShell current={route.slug} prefix={prefix}>
+        <Component />
+      </AppShell>
+    </DemoStateProvider>
   )
 }

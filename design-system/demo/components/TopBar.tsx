@@ -2,11 +2,13 @@ import { useState } from 'react'
 import type { DemoRoute } from '../routes'
 import { TENANT } from '../data/tenant'
 import { ESTATE } from '../data/tenant'
+import { useDemoState } from '../state'
 
 export interface TopBarProps { route: DemoRoute }
 
 export function TopBar({ route }: TopBarProps) {
   const [query, setQuery] = useState('')
+  const { resetDemo } = useDemoState()
   return (
     <div className="dm-topbar">
       <p className="dm-crumb">
@@ -24,6 +26,7 @@ export function TopBar({ route }: TopBarProps) {
         <kbd aria-hidden="true">⌘K</kbd>
       </div>
       <p className="dm-chip">Readiness <b>{ESTATE.score}</b></p>
+      <button className="dm-reset" type="button" onClick={resetDemo}>Reset demo</button>
     </div>
   )
 }
