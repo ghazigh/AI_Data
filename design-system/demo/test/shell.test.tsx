@@ -49,4 +49,10 @@ describe('AppShell', () => {
     const link = screen.getByRole('link', { name: /use cases/i })
     expect(link.getAttribute('href')).toBe('../use-cases/')
   })
+
+  it('offers a real labelled search control', () => {
+    shell()
+    const input = screen.getByRole('searchbox', { name: /search the estate/i })
+    expect(input.tagName).toBe('INPUT')
+  })
 })
