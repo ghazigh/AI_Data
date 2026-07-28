@@ -1,13 +1,15 @@
 import {
-  Hero, StatBand, Steps, FAQ, CTABand,
+  Hero, Steps, FAQ, CTABand,
   SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { HeroFigure } from '../components/HeroFigure'
 import { DashboardFigure } from '../components/figures'
-import { KnowledgeGraph } from '../components/KnowledgeGraph'
-import { CapabilityFlow } from '../components/CapabilityFlow'
+import { StageSection } from '../components/StageSection'
+import {
+  ConnectFigure, ReadyFigure, PipelineFigure, GraphStageFigure, UseCaseFigure,
+} from '../components/StageFigures'
 import {
   siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
   siMongodb, siRedis, siClickhouse, siApachekafka, siHubspot, siZendesk,
@@ -80,34 +82,58 @@ export function Home() {
         </div>
       </section>
 
-      {/* what the platform provides — the first thing after the hero */}
+      {/* what the platform provides — one section per stage */}
       <section id="capabilities" className="st-section">
         <div className="dl-wrap">
           <SectionLabel>The agentic platform</SectionLabel>
           <h2 className="dl-h2">What the Datalith platform gives you.</h2>
           <p className="st-lead">
-            Five stages, in order. We connect to your systems, score how ready their data is for
-            agents, propose the restructuring that estate actually needs, build it into one
-            knowledge graph of your business — then tell you which agents that graph makes possible.
+            Five stages, in order — from the systems you already run to the agents your data
+            makes possible.
           </p>
-        </div>
-        <CapabilityFlow />
-        <div className="dl-wrap st-more">
-          <TextLink href="./platform.html">see each stage in depth</TextLink>
         </div>
       </section>
 
-      <section className="st-section st-section--rule" id="problem">
-        <div className="dl-wrap">
-          <SectionLabel>The problem</SectionLabel>
-          <h2 className="dl-h2">Most agent projects stall on the data, not the model.</h2>
-          <p className="st-lead">
-            Teams buy the model, pick the framework, then spend the next two quarters discovering
-            their data isn&rsquo;t in a shape any agent can use.
-          </p>
-        </div>
-        <div data-reveal><StatBand /></div>
-      </section>
+      <StageSection
+        id="connect" num="01" name="Connect"
+        title="Plugs into every database you run."
+        lead="Warehouses, OLTP databases, SaaS apps, object stores, streams — connected with scoped read-only credentials, in an afternoon."
+        value="No migration and no engineering project. Nothing is ever written back to your systems."
+        figure={<ConnectFigure />}
+      />
+      <StageSection
+        id="ready" num="02" name="Ready" flip
+        title="Scores how ready your data is for agents."
+        lead="Every source and every business domain gets an Agent-Readiness Score out of 100 — coverage, definitions, governance, freshness — and Datalith keeps watching it after the first pass."
+        value="Continuous monitoring, not a one-off audit. You see readiness move as your estate changes."
+        figure={<ReadyFigure />}
+      />
+      <StageSection
+        id="pipelines" num="03" name="Pipelines"
+        title="Proposes the restructuring your estate actually needs."
+        lead="Based on what the score found, Datalith designs the pipelines that take your data from the state it is in today to a shape agents can consume — deduplicated, typed, chunked, masked."
+        value="Built for your data as it is, not a generic template someone else's estate needed."
+        figure={<PipelineFigure />}
+      />
+      <StageSection
+        id="graph" num="04" name="Graph" flip
+        title="Builds one map of your whole business."
+        lead="Every system resolved into a single knowledge graph, with the topics, domains and pockets of expertise inside it detected and named — so each becomes a knowledge base in its own right."
+        value="Knowledge bases any agentic AI can read, whatever framework you build on."
+        figure={<GraphStageFigure />}
+      />
+      <StageSection
+        id="usecases" num="05" name="Use cases"
+        title="Tells you which agents are worth building."
+        lead="Datalith reads the graph and proposes the agentic applications your data actually supports — what each one would need, and what it would be worth."
+        value="You find out what to build before you spend a quarter building it."
+        note="Example workflows and payback figures are modelled, not customer results. Datalith is pre-launch."
+        figure={<UseCaseFigure />}
+      />
+
+      <div className="dl-wrap st-more">
+        <TextLink href="./platform.html">see each stage in depth</TextLink>
+      </div>
 
       <div id="how" data-reveal><Steps /></div>
 
@@ -135,39 +161,6 @@ export function Home() {
           <p className="st-footnote">
             Illustrative model based on published industry benchmarks, not customer results.
             Datalith is pre-launch; the first design-partner cohort is open.
-          </p>
-        </div>
-      </section>
-
-      {/* the knowledge graph */}
-      <section id="graph" className="st-section st-section--rule">
-        <div className="dl-wrap">
-          <SectionLabel>The knowledge graph</SectionLabel>
-          <h2 className="dl-h2">One customer. One record. Across every system.</h2>
-          <p className="st-lead">
-            Datalith doesn&rsquo;t just connect your sources — it works out which records in one
-            system are the same thing as records in another. You can trace every fact back to the
-            system it came from, and every agent inherits that map.
-          </p>
-          <KnowledgeGraph />
-          <div className="st-kg-stats" data-reveal-group>
-            <div className="st-kg-stat">
-              <span className="st-kg-statvalue"><span data-countup="23">23</span></span>
-              <span className="st-kg-statlabel">sources connected</span>
-            </div>
-            <div className="st-kg-stat">
-              <span className="st-kg-statvalue"><span data-countup="4.2" data-decimals="1">4.2</span>M</span>
-              <span className="st-kg-statlabel">entities resolved</span>
-            </div>
-            <div className="st-kg-stat">
-              <span className="st-kg-statvalue"><span data-countup="18">18</span>M</span>
-              <span className="st-kg-statlabel">relationships mapped, each traceable to its source</span>
-            </div>
-            <TextLink href="./platform.html#graph">how the graph is built</TextLink>
-          </div>
-          <p className="st-footnote">
-            Figures illustrate a representative estate, not a customer deployment. Datalith is
-            pre-launch.
           </p>
         </div>
       </section>

@@ -1,9 +1,10 @@
 import {
-  SectionLabel, FeatureGrid, Quote, CTABand, Card, Badge,
+  SectionLabel, FeatureGrid, Quote, CTABand, Card, Badge, TextLink,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { PageIntro } from '../components/PageIntro'
+import { KnowledgeGraph } from '../components/KnowledgeGraph'
 
 const PRINCIPLES = [
   { label: 'Principle 01', title: 'Agent-native, human-governed', body: 'Agents are the primary consumers; humans set policy, review, and approve.' },
@@ -58,6 +59,39 @@ export function Company() {
       </div>
 
       {/* roadmap */}
+      {/* the knowledge graph */}
+      <section id="graph" className="st-section st-section--rule">
+        <div className="dl-wrap">
+          <SectionLabel>The knowledge graph</SectionLabel>
+          <h2 className="dl-h2">One customer. One record. Across every system.</h2>
+          <p className="st-lead">
+            Datalith doesn&rsquo;t just connect your sources — it works out which records in one
+            system are the same thing as records in another. You can trace every fact back to the
+            system it came from, and every agent inherits that map.
+          </p>
+          <KnowledgeGraph />
+          <div className="st-kg-stats" data-reveal-group>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="23">23</span></span>
+              <span className="st-kg-statlabel">sources connected</span>
+            </div>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="4.2" data-decimals="1">4.2</span>M</span>
+              <span className="st-kg-statlabel">entities resolved</span>
+            </div>
+            <div className="st-kg-stat">
+              <span className="st-kg-statvalue"><span data-countup="18">18</span>M</span>
+              <span className="st-kg-statlabel">relationships mapped, each traceable to its source</span>
+            </div>
+            <TextLink href="./platform.html#graph">how the graph is built</TextLink>
+          </div>
+          <p className="st-footnote">
+            Figures illustrate a representative estate, not a customer deployment. Datalith is
+            pre-launch.
+          </p>
+        </div>
+      </section>
+
       <section className="st-section st-section--rule" id="roadmap">
         <div className="dl-wrap">
           <SectionLabel>Roadmap</SectionLabel>
