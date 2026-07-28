@@ -209,3 +209,18 @@
 .dm-plan-delta { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-blue); text-align: right; }
 .dm-plan-runtime { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-4); text-align: right; }
 .dm-plan .dm-btn { padding: 7px 14px; font-size: 11.5px; }
+
+/* ===== graph canvas ===== */
+.dm-canvas { position: relative; border: var(--dl-hairline); background: var(--dl-paper); }
+.dm-canvas svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+.dm-edge { stroke: var(--dl-grey-2); stroke-width: 1.2; }
+.dm-node { fill: var(--dl-ink); transition: r var(--dl-ease); }
+.dm-node.is-document { fill: var(--dl-grey-4); }
+.dm-node.is-event { fill: var(--dl-warn); }
+.dm-node.is-on { fill: var(--dl-blue); }
+.dm-node-hit { fill: transparent; cursor: pointer; }
+.dm-node-hit:focus-visible { outline: 2px solid var(--dl-blue); }
+.dm-node-label { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.05em; fill: var(--dl-grey-4); }
+.dm-canvas-controls { position: absolute; right: 14px; bottom: 14px; display: flex; gap: 6px; }
+.dm-canvas-controls button { padding: 6px 12px; border: var(--dl-hairline); background: var(--dl-paper); font-family: var(--dl-font-mono); font-size: 11px; cursor: pointer; }
+.dm-canvas-controls button:hover { background: var(--dl-blue-wash); }
