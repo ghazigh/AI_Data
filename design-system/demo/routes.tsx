@@ -3,6 +3,7 @@ import { Overview } from './screens/Overview'
 import { Connect } from './screens/Connect'
 import { Ready } from './screens/Ready'
 import { Pipelines } from './screens/Pipelines'
+import { Graph } from './screens/Graph'
 
 export interface DemoRoute {
   /** Path segment under /demo/. The Overview screen is the empty string. */
@@ -25,7 +26,7 @@ export const ROUTES: DemoRoute[] = [
   { slug: 'connect', title: 'Connect', stage: '01', Component: Connect },
   { slug: 'ready', title: 'Ready', stage: '02', Component: Ready },
   { slug: 'pipelines', title: 'Pipelines', stage: '03', Component: Pipelines },
-  { slug: 'graph', title: 'Graph', stage: '04', Component: Stub('Graph') },
+  { slug: 'graph', title: 'Graph', stage: '04', Component: Graph },
   { slug: 'use-cases', title: 'Use cases', stage: '05', Component: Stub('UseCases') },
   { slug: 'governance', title: 'Governance & audit', Component: Stub('Governance') },
 ]
