@@ -1,5 +1,5 @@
 import {
-  Hero, StatBand, FeatureGrid, Steps, FAQ, CTABand,
+  Hero, StatBand, Steps, FAQ, CTABand,
   SectionLabel, ScoreMeter, ConfluenceFigure, TextLink, Stat, Card,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
@@ -7,6 +7,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { HeroFigure } from '../components/HeroFigure'
 import { DashboardFigure } from '../components/figures'
 import { KnowledgeGraph } from '../components/KnowledgeGraph'
+import { CapabilityFlow } from '../components/CapabilityFlow'
 import {
   siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
   siMongodb, siRedis, siClickhouse, siApachekafka, siHubspot, siZendesk,
@@ -85,16 +86,14 @@ export function Home() {
           <SectionLabel>The agentic platform</SectionLabel>
           <h2 className="dl-h2">What the Datalith platform gives you.</h2>
           <p className="st-lead">
-            Six capabilities in one platform: it connects your systems, maps them, agrees the
-            definitions, prepares and scores the data, serves it to your agents under governance,
-            and tells you which agents are worth building next.
+            Five stages, in order. We connect to your systems, score how ready their data is for
+            agents, propose the restructuring that estate actually needs, build it into one
+            knowledge graph of your business — then tell you which agents that graph makes possible.
           </p>
         </div>
-        <div data-reveal>
-          <FeatureGrid label="" title="" />
-          <div className="dl-wrap st-more">
-            <TextLink href="./platform.html">see each capability in depth</TextLink>
-          </div>
+        <CapabilityFlow />
+        <div className="dl-wrap st-more">
+          <TextLink href="./platform.html">see each stage in depth</TextLink>
         </div>
       </section>
 
