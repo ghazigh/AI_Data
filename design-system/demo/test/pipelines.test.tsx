@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, within, act } from '@testing-library/react'
+import { render, screen, within, act, fireEvent } from '@testing-library/react'
 import { Pipelines } from '../screens/Pipelines'
 import { PLAN, RUNS, LIVE_RUN } from '../data/pipelines'
 import { DOMAINS } from '../data/tenant'
@@ -62,5 +62,40 @@ describe('Pipelines screen', () => {
   it('lists run history', () => {
     render(<Pipelines />)
     expect(screen.getByRole('table', { name: /run history/i })).toBeDefined()
+  })
+
+  it('runs a started step to completion instead of stalling at 96', () => {
+    vi.useFakeTimers()
+    render(<Pipelines />)
+    const panel = screen.getByRole('region', { name: /the plan/i })
+    const runButton = within(panel).getAllByRole('button', { name: /run step/i })[0]
+    act(() => { fireEvent.click(runButton) })
+
+    // Progress starts at 6 and climbs by 4 every 1400ms — 24 ticks comfortably
+    // clears 100 (6 + 24*4 = 102, capped at 100).
+    act(() => { vi.advanceTimersByTime(24 * 1400) })
+
+    const doneButton = within(panel).getAllByRole('button', { name: /^done$/i })[0] as HTMLButtonElement
+    expect(doneButton.disabled).toBe(true)
+    const bar = within(panel).getAllByRole('progressbar')[0]
+    expect(Number(bar.getAttribute('aria-valuenow'))).toBe(100)
+
+    // The step's interval must be cleared once it completes: advancing far
+    // further must not change anything (and must not throw from a dangling
+    // timer touching an unmounted tree).
+    act(() => { vi.advanceTimersByTime(50_000) })
+    expect(Number(within(panel).getAllByRole('progressbar')[0].getAttribute('aria-valuenow'))).toBe(100)
+
+    vi.useRealTimers()
+  })
+
+  it('clears the running-step interval on unmount without throwing', () => {
+    vi.useFakeTimers()
+    const { unmount } = render(<Pipelines />)
+    const runButton = screen.getAllByRole('button', { name: /run step/i })[0]
+    act(() => { fireEvent.click(runButton) })
+    unmount()
+    expect(() => { act(() => { vi.advanceTimersByTime(50_000) }) }).not.toThrow()
+    vi.useRealTimers()
   })
 })

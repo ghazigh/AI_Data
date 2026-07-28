@@ -77,6 +77,39 @@ describe('EntityDetail lineage', () => {
       unmount()
     }
   })
+
+  it('names a lead vendor that can actually perform the claimed lineage step, for every node in the graph', () => {
+    // The lineage line reads "{vendor} → {step}". The step is claimed from
+    // the *union* of every cited source's modalities, so the vendor named
+    // must belong to one of the cited sources that individually declares
+    // the modality the step claims — not just whichever source is cited
+    // first (the bug this guards: e.g. FNOL used to read "Microsoft →
+    // chunked" although Azure FNOL Intake, Microsoft's source here, is
+    // streams-only; Guidewire ClaimCenter, the other cited source, is the
+    // one that actually has documents).
+    const STEP_MODALITY: Record<string, string> = {
+      chunked: 'documents',
+      transcribed: 'transcripts',
+      typed: 'tables',
+    }
+    for (const n of GRAPH_NODES) {
+      const { container, unmount } = render(<EntityDetail node={n} />)
+      const text = container.querySelector('.dm-entity-lineage')!.textContent ?? ''
+      unmount()
+      const [, namedVendor, step] = /^(.+?) → (\w+)/.exec(text) ?? []
+      expect(namedVendor, `${n.label}: could not parse lineage text "${text}"`).toBeTruthy()
+      const modality = STEP_MODALITY[step]
+      if (!modality) continue // the 'normalised' fallback claims no specific modality
+      const sourcesNamed = n.sourceIds
+        .map(id => byId.get(id)!)
+        .filter(s => s.vendor === namedVendor)
+      expect(sourcesNamed.length, `${n.label}: no cited source has vendor "${namedVendor}"`).toBeGreaterThan(0)
+      expect(
+        sourcesNamed.some(s => s.modalities.includes(modality as never)),
+        `${n.label}: lineage claims "${step}" (needs ${modality}) and names ${namedVendor}, but no source with vendor ${namedVendor} among ${n.sourceIds.join(', ')} declares ${modality}`,
+      ).toBe(true)
+    }
+  })
 })
 
 describe('GraphCanvas', () => {
@@ -107,4 +140,12 @@ describe('GraphCanvas', () => {
     fireEvent.click(screen.getByRole('button', { name: /zoom in/i }))
     expect(container.querySelector('svg g')!.getAttribute('transform')).not.toBe(before)
   })
+
+  // Pan-clamp reachability at max zoom (the MAX_SHIFT_X finding) is verified
+  // analytically in the parked-fix report rather than here: this jsdom
+  // environment has no PointerEvent constructor, so the drag interaction
+  // GraphCanvas relies on (onPointerDown/onPointerMove reading e.clientX)
+  // cannot be driven through fireEvent — clientX comes back undefined and
+  // pan never changes, which would make a drag-based test fail (or pass)
+  // for reasons unrelated to MAX_SHIFT_X.
 })

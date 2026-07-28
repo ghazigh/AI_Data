@@ -15,7 +15,7 @@ const ZOOM_MIN = 0.6, ZOOM_MAX = 2.4
 // centred scale (see the transform below), so the same pan delta produces a
 // bigger screen-space shift at higher zoom — dividing by zoom keeps the
 // on-screen drift bounded to this constant at every zoom level.
-const MAX_SHIFT_X = W * 0.5
+const MAX_SHIFT_X = W * 0.65
 const MAX_SHIFT_Y = H * 0.5
 
 const nodeById = (nodes: GraphNode[], id: string) => nodes.find(n => n.id === id)

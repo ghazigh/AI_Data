@@ -166,6 +166,15 @@ describe('the numbers agree across screens', () => {
     }
   })
 
+  it('never claims more entities for a graph node than its cited sources hold', () => {
+    const byId = new Map(SOURCES.map(s => [s.id, s]))
+    for (const n of GRAPH_NODES) {
+      const capacity = n.sourceIds.reduce((sum, id) => sum + (byId.get(id)?.records ?? 0), 0)
+      expect(parseCount(n.count), `${n.label} claims ${n.count} but its cited sources hold only ${capacity} records`)
+        .toBeLessThanOrEqual(capacity)
+    }
+  })
+
   it('names only registered agents in policy scope text', () => {
     const ids = new Set(AGENTS.map(a => a.id))
     const AGENT_ID = /[a-z]+-[a-z]+(?:-\d+)?/g

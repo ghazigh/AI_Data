@@ -123,13 +123,13 @@ export const GRAPH_NODES: GraphNode[] = [
       { name: 'hazard_score', type: 'score', source: 'Verisk Risk & Telematics Feed' },
     ] },
   { id: 'risk-inspection', label: 'Risk inspection', kind: 'event', domain: 'underwriting', x: 440, y: 110,
-    count: '58K', sourceIds: ['s3-inspection-images', 'verisk-risk-data'], freshness: 'synced 1 h ago',
+    count: '59K', sourceIds: ['s3-inspection-images', 'verisk-risk-data'], freshness: 'synced 1 h ago',
     properties: [
       { name: 'inspection_id', type: 'identifier', source: 'S3 Property Inspection Images' },
       { name: 'condition_rating', type: 'score', source: 'Verisk Risk & Telematics Feed' },
     ] },
   { id: 'underwriting-guideline', label: 'Underwriting guideline', kind: 'document', domain: 'underwriting', x: 520, y: 140,
-    count: '6,936', sourceIds: ['sharepoint-uw-guidelines'], freshness: 'synced 21 days ago',
+    count: '5,936', sourceIds: ['sharepoint-uw-guidelines'], freshness: 'synced 21 days ago',
     properties: [
       { name: 'guideline_id', type: 'identifier', source: 'SharePoint Underwriting Guidelines' },
       { name: 'line_of_business', type: 'category', source: 'SharePoint Underwriting Guidelines' },

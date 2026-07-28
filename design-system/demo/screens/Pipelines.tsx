@@ -23,20 +23,40 @@ export function Pipelines() {
   // scripted progress — same treatment as the live run above, just started
   // on demand instead of always-on. Empty on first render for both SSR and
   // the client, so the hydration guard stays byte-identical.
+  //
+  // Unlike the ambient live run, which caps at 96 forever (a run that
+  // finishes leaves the screen motionless), a step the visitor explicitly
+  // started runs all the way to 100 and settles into a completed state —
+  // they started it to see it happen.
   const [runningSteps, setRunningSteps] = useState<Record<string, number>>({})
 
+  // Ambient live run: ticks for as long as the screen is mounted, same as
+  // before this fix. Deliberately independent of runningSteps below, so
+  // clearing that interval once every started step finishes never affects
+  // this one.
   useEffect(() => {
     const id = setInterval(() => {
       setProgress(p => (p >= 96 ? 96 : p + 2))
+    }, 1400)
+    return () => clearInterval(id)
+  }, [])
+
+  // User-started steps: only runs while at least one step hasn't reached
+  // 100 yet, so the interval is cleared as soon as the last running step
+  // completes (the effect re-runs with hasRunningStep false, which tears
+  // down without starting a new one), and on unmount either way.
+  const hasRunningStep = Object.values(runningSteps).some(p => p < 100)
+  useEffect(() => {
+    if (!hasRunningStep) return
+    const id = setInterval(() => {
       setRunningSteps(prev => {
-        if (Object.keys(prev).length === 0) return prev
         const next: Record<string, number> = {}
-        for (const [stepId, p] of Object.entries(prev)) next[stepId] = Math.min(p + 4, 96)
+        for (const [stepId, p] of Object.entries(prev)) next[stepId] = Math.min(p + 4, 100)
         return next
       })
     }, 1400)
     return () => clearInterval(id)
-  }, [])
+  }, [hasRunningStep])
 
   const runStep = (stepId: string) =>
     setRunningSteps(prev => (stepId in prev ? prev : { ...prev, [stepId]: 6 }))
@@ -91,7 +111,9 @@ export function Pipelines() {
                         aria-valuenow={stepProgress} aria-valuemin={0} aria-valuemax={100}>
                         <i style={{ width: `${stepProgress}%` }} />
                       </div>
-                      <button className="dm-btn is-ghost" type="button" disabled>Running…</button>
+                      <button className="dm-btn is-ghost" type="button" disabled>
+                        {stepProgress >= 100 ? 'Done' : 'Running…'}
+                      </button>
                     </div>
                   )}
                 </li>
