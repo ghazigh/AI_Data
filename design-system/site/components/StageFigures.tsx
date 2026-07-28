@@ -194,101 +194,157 @@ export function ReadyFigure() {
   )
 }
 
-/** 03 — ragged records passing through the proposed pipeline, coming out typed. */
+/**
+ * 03 — the pipeline plan generated from this estate's own scan: what was
+ * found, the steps proposed to fix it, and the resulting shape. The counts
+ * on the left drive the steps in the middle, which is the whole point.
+ */
+const FOUND = [
+  { t: 'duplicate records', v: '41K' },
+  { t: 'untyped columns', v: '380' },
+  { t: 'unmasked PII', v: '12' },
+  { t: 'unchunked documents', v: '22K' },
+]
+const STEPS = [
+  { n: 'resolve + dedupe', d: 'match across 4 systems' },
+  { n: 'semantic typing', d: 'infer 380 column types' },
+  { n: 'mask PII', d: '12 columns, policy-driven' },
+  { n: 'chunk + embed', d: '22K docs to 1.8M chunks' },
+]
+const AFTER = [
+  '4.2M entities resolved', '100% columns typed',
+  'PII masked at source', '1.8M chunks embedded',
+]
+
 export function PipelineFigure() {
-  const rows = [0, 1, 2, 3, 4]
-  const steps = ['dedupe', 'type', 'chunk']
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
-      <text className="st-sf-colcap" x={16} y={40}>AS FOUND</text>
-      {rows.map(r => (
-        <g key={`i${r}`} className="st-sf-raw" style={s(r)}>
-          <rect x={16} y={64 + r * 40} width={40 + (r % 3) * 34} height={14} rx={3} />
-          <rect className="st-sf-flag" x={124} y={64 + r * 40} width={14} height={14} rx={3}
-            opacity={r % 2 ? 1 : 0} />
+      <text className="st-sf-dashcap" x={14} y={21}>PIPELINE PLAN &#183; GENERATED FROM YOUR SCAN</text>
+      <path className="st-sf-rule" d="M0 34 H640" />
+
+      <text className="st-sf-colcap" x={14} y={62}>FOUND</text>
+      {FOUND.map((f, i) => (
+        <g key={f.t} className="st-sf-raw" style={s(i)}>
+          <text className="st-sf-foundval" x={14} y={100 + i * 50}>{f.v}</text>
+          <text className="st-sf-foundlabel" x={14} y={114 + i * 50}>{f.t}</text>
         </g>
       ))}
-      {steps.map((st, i) => (
-        <g key={st} className="st-sf-step" style={s(i)}>
-          <rect x={200} y={70 + i * 88} width={148} height={62} rx={8} />
-          <text className="st-sf-steplabel" x={274} y={106 + i * 88} textAnchor="middle">{st}</text>
+      <path className="st-sf-rule" d="M172 46 V366" />
+
+      {STEPS.map((st, i) => (
+        <g key={st.n} className="st-sf-step" style={s(i)}>
+          <rect x={196} y={62 + i * 78} width={236} height={56} rx={8} />
+          <circle className="st-sf-stepnum" cx={218} cy={90 + i * 78} r={9} />
+          <text className="st-sf-stepidx" x={218} y={94 + i * 78} textAnchor="middle">{i + 1}</text>
+          <text className="st-sf-stepname" x={236} y={86 + i * 78}>{st.n}</text>
+          <text className="st-sf-stepdetail" x={236} y={102 + i * 78}>{st.d}</text>
         </g>
       ))}
-      {rows.map(r => (
-        <path key={`p${r}`} className="st-sf-run" pathLength={100} style={s(r)}
-          d={`M160 ${71 + r * 40} C 210 ${71 + r * 40}, 340 ${80 + r * 46}, 420 ${80 + r * 46}`} />
+      {[0, 1, 2].map(i => (
+        <g key={'c' + i}>
+          <path className="st-sf-chain" pathLength={100} style={s(i)} d={'M314 ' + (118 + i * 78) + ' V ' + (140 + i * 78)} />
+          <path className="st-sf-run" pathLength={100} style={s(i)} d={'M314 ' + (118 + i * 78) + ' V ' + (140 + i * 78)} />
+        </g>
       ))}
-      <text className="st-sf-colcap" x={432} y={40}>AGENT-READY</text>
-      {rows.map(r => (
-        <g key={`o${r}`} className="st-sf-clean" style={s(r)}>
-          <rect x={432} y={64 + r * 40} width={132} height={14} rx={3} />
-          <path className="st-sf-check" pathLength={100} style={s(r)}
-            d={`M578 ${71 + r * 40} l6 6 l12 -13`} />
+
+      <path className="st-sf-rule" d="M456 46 V366" />
+      <text className="st-sf-colcap" x={478} y={62}>AFTER</text>
+      {AFTER.map((a, i) => (
+        <g key={a} className="st-sf-clean" style={s(i)}>
+          <path className="st-sf-check" pathLength={100} style={s(i)} d={'M478 ' + (102 + i * 50) + ' l5 5 l11 -12'} />
+          <text className="st-sf-aftertext" x={500} y={107 + i * 50}>{a}</text>
         </g>
       ))}
     </svg>
   )
 }
 
-/** 04 — the graph assembling, then resolving into named knowledge domains. */
+/**
+ * 04 — the graph as something you can read: named domains sized by what they
+ * hold, the cross-domain links that only exist once systems are resolved into
+ * each other, and each domain's standing as a knowledge base.
+ */
+const DOMAINS4 = [
+  { label: 'Customers', cx: 136, cy: 122, r: 60, n: '1.2M', ready: true },
+  { label: 'Contracts', cx: 320, cy: 96, r: 44, n: '340K', ready: true },
+  { label: 'Support', cx: 258, cy: 268, r: 66, n: '2.1M', ready: true },
+  { label: 'Supply', cx: 104, cy: 274, r: 46, n: '560K', ready: false },
+]
+
 export function GraphStageFigure() {
-  const clusters = [
-    { label: 'Customers', cx: 150, cy: 108, r: 74, n: [[0, 0], [40, -26], [30, 32], [-34, 20], [-18, -34]] },
-    { label: 'Contracts', cx: 452, cy: 92, r: 66, n: [[0, 0], [38, 20], [-30, 26], [16, -32]] },
-    { label: 'Support', cx: 208, cy: 282, r: 64, n: [[0, 0], [36, 22], [-28, 24], [8, -30]] },
-    { label: 'Supply', cx: 484, cy: 268, r: 68, n: [[0, 0], [-32, 28], [34, 18], [10, -30]] },
-  ]
-  const bridges = [
-    'M200 120 L400 100', 'M170 170 L200 240', 'M300 300 L440 280',
-    'M440 140 L470 216', 'M240 130 L420 250',
-  ]
+  const bridges = ['M194 112 L278 100', 'M156 178 L228 226', 'M304 138 L278 208', 'M128 218 L110 230']
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
+      <text className="st-sf-dashcap" x={14} y={21}>KNOWLEDGE GRAPH &#183; 4.2M ENTITIES &#183; 18M RELATIONSHIPS</text>
+      <path className="st-sf-rule" d="M0 34 H640" />
       {bridges.map((d, i) => (
         <path key={i} className="st-sf-bridge" pathLength={100} style={s(i)} d={d} />
       ))}
-      {clusters.map((c, ci) => (
+      {DOMAINS4.map((c, ci) => (
         <g key={c.label}>
           <circle className="st-sf-halo" cx={c.cx} cy={c.cy} r={c.r} style={s(ci)} />
-          {c.n.map(([dx, dy], i) => (
-            <circle key={i} className="st-sf-gnode" cx={c.cx + dx} cy={c.cy + dy} r={7}
-              style={s(ci * 5 + i)} />
-          ))}
-          <text className="st-sf-halolabel" x={c.cx} y={c.cy + c.r + 20} textAnchor="middle"
-            style={s(ci)}>{c.label}</text>
+          {Array.from({ length: 5 }, (_, i) => {
+            const a = (i / 5) * Math.PI * 2 + ci
+            return (
+              <circle key={i} className="st-sf-gnode" style={s(ci * 5 + i)} r={5}
+                cx={c.cx + Math.cos(a) * c.r * 0.8} cy={c.cy + Math.sin(a) * c.r * 0.8} />
+            )
+          })}
+          <text className="st-sf-halolabel" x={c.cx} y={c.cy + 4} textAnchor="middle" style={s(ci)}>{c.label}</text>
+        </g>
+      ))}
+      <path className="st-sf-rule" d="M412 46 V366" />
+      <text className="st-sf-colcap" x={436} y={62}>KNOWLEDGE BASES</text>
+      {DOMAINS4.map((d, i) => (
+        <g key={'r' + d.label} className="st-sf-kbrow" style={s(i)}>
+          <text className="st-sf-kbname" x={436} y={104 + i * 62}>{d.label}</text>
+          <text className="st-sf-kbcount" x={436} y={120 + i * 62}>{d.n} entities</text>
+          <g className={'st-sf-kbbadge st-sf-kbbadge--' + (d.ready ? 'ok' : 'wait')}>
+            <rect x={436} y={128 + i * 62} width={d.ready ? 92 : 104} height={16} rx={8} />
+            <text x={446} y={139 + i * 62}>{d.ready ? 'agent-ready' : 'needs typing'}</text>
+          </g>
         </g>
       ))}
     </svg>
   )
 }
 
-/** 05 — candidate agents dealt out of the graph, ranked by payback. */
+/**
+ * 05 — the recommender: agents ranked by payback, each showing the sources it
+ * draws on and whether the graph supports it yet. The blocked row is
+ * deliberate; the honest output includes what you cannot build today.
+ */
+const AGENTS = [
+  { name: 'Collections follow-up', roi: '$340K/yr', bar: 0.92, src: 'netsuite · sharepoint · zendesk', ready: true, eff: 'ready · 3 weeks' },
+  { name: 'Churn-risk digest', roi: '$120K/yr', bar: 0.58, src: 'salesforce · product events', ready: true, eff: 'ready · 2 weeks' },
+  { name: 'Contract renewal agent', roi: '$95K/yr', bar: 0.44, src: 'contracts · crm', ready: false, eff: 'blocked · Contracts < 60' },
+]
+
 export function UseCaseFigure() {
-  const cards = [
-    { name: 'Collections follow-up', roi: '$340K/yr', bar: 0.92, src: 'netsuite · sharepoint · zendesk' },
-    { name: 'Churn-risk digest', roi: '$120K/yr', bar: 0.58, src: 'salesforce · product events' },
-    { name: 'Invoice reconciliation', roi: '$95K/yr', bar: 0.44, src: 'netsuite · drive' },
-  ]
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
-      <g className="st-sf-minigraph">
-        {[[40, 60], [88, 40], [72, 96], [30, 112], [104, 84]].map(([x, y], i) => (
-          <circle key={i} className="st-sf-gnode" cx={x} cy={y} r={5} style={s(i)} />
-        ))}
-        <path className="st-sf-bridge" pathLength={100} style={s(0)} d="M40 60 L88 40 M72 96 L104 84 M30 112 L72 96 M40 60 L72 96" />
-      </g>
-      <path className="st-sf-feed" pathLength={100} d="M118 84 C 160 84, 168 120, 196 120" />
-      {cards.map((c, i) => (
-        <g key={c.name} className="st-sf-card" style={s(i)}>
-          <rect x={196} y={44 + i * 106} width={428} height={86} rx={10} />
-          <text className="st-sf-cardname" x={218} y={78 + i * 106}>{c.name}</text>
-          <text className="st-sf-cardsrc" x={218} y={98 + i * 106}>{c.src}</text>
-          <rect className="st-sf-cardtrack" x={218} y={110 + i * 106} width={300} height={6} rx={3} />
-          <rect className="st-sf-cardbar" x={218} y={110 + i * 106} height={6} rx={3}
-            style={{ '--w': `${300 * c.bar}px` } as CSSProperties} />
-          <text className="st-sf-cardroi" x={604} y={82 + i * 106} textAnchor="end">{c.roi}</text>
-        </g>
-      ))}
+      <text className="st-sf-dashcap" x={14} y={21}>PROPOSED AGENTS &#183; RANKED BY PAYBACK</text>
+      <path className="st-sf-rule" d="M0 34 H640" />
+      {AGENTS.map((a, i) => {
+        const bw = a.ready ? 106 : 160
+        return (
+          <g key={a.name} className={'st-sf-card st-sf-card--' + (a.ready ? 'ready' : 'blocked')} style={s(i)}>
+            <rect x={14} y={54 + i * 104} width={612} height={88} rx={10} />
+            <circle className="st-sf-rankdot" cx={40} cy={88 + i * 104} r={13} />
+            <text className="st-sf-cardrank" x={40} y={93 + i * 104} textAnchor="middle">{i + 1}</text>
+            <text className="st-sf-cardname" x={66} y={86 + i * 104}>{a.name}</text>
+            <text className="st-sf-cardsrc" x={66} y={104 + i * 104}>{a.src}</text>
+            <rect className="st-sf-cardtrack" x={66} y={116 + i * 104} width={330} height={6} rx={3} />
+            <rect className="st-sf-cardbar" x={66} y={116 + i * 104} height={6} rx={3}
+              style={{ '--w': (330 * a.bar) + 'px' } as CSSProperties} />
+            <text className="st-sf-cardroi" x={606} y={88 + i * 104} textAnchor="end">{a.roi}</text>
+            <g className={'st-sf-kbbadge st-sf-kbbadge--' + (a.ready ? 'ok' : 'wait')}>
+              <rect x={606 - bw} y={106 + i * 104} width={bw} height={17} rx={8.5} />
+              <text x={606 - bw + 10} y={118 + i * 104}>{a.eff}</text>
+            </g>
+          </g>
+        )
+      })}
     </svg>
   )
 }

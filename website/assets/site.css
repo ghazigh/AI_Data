@@ -954,7 +954,10 @@
 .st-sf-bridge { fill: none; stroke: var(--dl-grey-3); stroke-width: 1.2; }
 .st-sf-halo { fill: var(--dl-blue-wash); }
 .st-sf-gnode { fill: var(--dl-ink); }
-.st-sf-halolabel { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.14em; fill: var(--dl-grey-4); }
+.st-sf-halolabel { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.14em; fill: var(--dl-grey-4);
+  /* knockout: the label sits over cluster nodes, so stroke it in the halo
+     colour and paint the stroke first */
+  paint-order: stroke; stroke: var(--dl-blue-wash); stroke-width: 5px; stroke-linejoin: round; }
 .st-sf-feed { fill: none; stroke: var(--dl-grey-2); stroke-width: 1.4; }
 .st-sf-card rect { fill: var(--dl-grey-1); }
 .st-sf-cardname { font-family: var(--dl-font-display); font-size: 17px; font-weight: 600; fill: var(--dl-ink); }
@@ -1035,6 +1038,34 @@
   78%  { stroke-dashoffset: -102; opacity: 0; }
   100% { stroke-dashoffset: -102; opacity: 0; }
 }
+
+/* stage 03 — pipeline plan */
+.st-sf-foundval { font-family: var(--dl-font-display); font-size: 22px; font-weight: 700; fill: var(--dl-ink); }
+.st-sf-foundlabel { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.08em; fill: var(--dl-grey-3); }
+.st-sf-step rect { fill: var(--dl-paper); stroke: var(--dl-grey-2); stroke-width: 1; }
+.st-sf-stepnum { fill: var(--dl-blue-wash); }
+.st-sf-stepidx { font-family: var(--dl-font-mono); font-size: 10px; font-weight: 600; fill: var(--dl-blue); }
+.st-sf-stepname { font-family: var(--dl-font-display); font-size: 14px; font-weight: 600; fill: var(--dl-ink); }
+.st-sf-stepdetail { font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.05em; fill: var(--dl-grey-3); }
+.st-sf-chain { fill: none; stroke: var(--dl-grey-2); stroke-width: 1.4; }
+.st-sf-aftertext { font-family: var(--dl-font-body); font-size: 12px; fill: var(--dl-ink); }
+
+/* stage 04 — knowledge bases panel */
+.st-sf-kbname { font-family: var(--dl-font-display); font-size: 15px; font-weight: 600; fill: var(--dl-ink); }
+.st-sf-kbcount { font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.06em; fill: var(--dl-grey-3); }
+.st-sf-kbbadge text { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.06em; }
+.st-sf-kbbadge--ok rect { fill: #E7F3EC; }
+.st-sf-kbbadge--ok text { fill: var(--dl-ok); }
+.st-sf-kbbadge--wait rect { fill: #F8EFDD; }
+.st-sf-kbbadge--wait text { fill: var(--dl-warn); }
+
+/* stage 05 — ranked agent proposals */
+.st-sf-rankdot { fill: var(--dl-blue-wash); }
+.st-sf-cardrank { font-family: var(--dl-font-mono); font-size: 12px; font-weight: 600; fill: var(--dl-blue); }
+.st-sf-card--blocked rect:first-of-type { fill: var(--dl-canvas); stroke: var(--dl-grey-2); stroke-width: 1; }
+.st-sf-card--blocked .st-sf-cardname { fill: var(--dl-grey-4); }
+.st-sf-card--blocked .st-sf-cardroi { fill: var(--dl-grey-3); }
+.st-sf-card--blocked .st-sf-cardbar { fill: var(--dl-grey-3); }
 
 html, body { margin: 0; background: var(--dl-canvas); }
 html { scroll-behavior: smooth; }
