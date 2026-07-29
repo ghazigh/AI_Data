@@ -13,10 +13,11 @@ describe('ModalityPanel', () => {
     render(<ModalityPanel />)
     const rows = screen.getAllByRole('listitem')
     expect(rows).toHaveLength(MODALITY_PIPELINES.length)
-    // Scoped per row on purpose: transcripts, streams and email all have 6
-    // sources, so an unscoped getByText('6 sources') matches three elements
-    // and throws. Rows render in MODALITY_PIPELINES order — the panel does
-    // not re-sort — so index alignment holds.
+    // Scoped per row on purpose: tickets and email both have 4 sources, and
+    // images and streams both have 2, so an unscoped getByText('4 sources')
+    // or getByText('2 sources') matches two elements and throws. Rows render
+    // in MODALITY_PIPELINES order — the panel does not re-sort — so index
+    // alignment holds.
     for (const [i, p] of MODALITY_PIPELINES.entries()) {
       const n = sourcesForModality(p.modality).length
       expect(within(rows[i]).getByText(new RegExp(`${n} sources?`)), p.label).toBeDefined()
@@ -41,7 +42,10 @@ describe('ModalityPanel', () => {
   it('never numbers the rows', () => {
     const { container } = render(<ModalityPanel />)
     const region = container.querySelector('.dm-modalities')!
-    expect(within(region as HTMLElement).queryByText('01')).toBeNull()
+    // Catches '01', '1', '1.' and '(1)' alike — any of these would still
+    // read as the row being numbered, not just the literal zero-padded form.
+    const numbering = /^\(?0?1\)?\.?$/
+    expect(within(region as HTMLElement).queryAllByText(numbering)).toHaveLength(0)
   })
 
   it('opens a drawer naming the modality', () => {

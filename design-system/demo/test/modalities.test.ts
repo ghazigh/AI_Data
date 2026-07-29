@@ -90,4 +90,27 @@ describe('modality pipelines', () => {
       }
     }
   })
+
+  it('never processes more items than the modality holds in a stage counted in the same unit', () => {
+    // Broader than the structuring-stage guard above: a stage further down
+    // the chain (chunk, embed) may fan a document out into many chunks, but
+    // it may never claim more of the modality's own unit (tickets, messages,
+    // transcripts, images, events, rows) than the modality holds.
+    for (const p of MODALITY_PIPELINES) {
+      for (const s of p.stages) {
+        if (s.unit !== p.volumeUnit) continue
+        expect(s.count, `${p.label}/${s.name} exceeds volume`).toBeLessThanOrEqual(p.volume)
+      }
+    }
+  })
+
+  it('never claims less volume than its single-modality sources alone hold', () => {
+    for (const p of MODALITY_PIPELINES) {
+      const floor = sourcesForModality(p.modality)
+        .filter(s => s.modalities.length === 1)
+        .reduce((n, s) => n + s.records, 0)
+      expect(p.volume, `${p.label} claims ${p.volume} but its exclusive sources hold ${floor}`)
+        .toBeGreaterThanOrEqual(floor)
+    }
+  })
 })

@@ -72,23 +72,25 @@ export function Pipelines() {
         <ModalityPanel />
       </div>
 
-      <Panel title="Live run" action={<StatusPill tone="blue" label="Running" />}>
-        <div className="dm-run">
-          <div
-            className="dm-progress"
-            role="progressbar"
-            aria-label={LIVE_RUN.label}
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <i style={{ width: `${progress}%` }} />
+      <div className="dm-section">
+        <Panel title="Live run" action={<StatusPill tone="blue" label="Running" />}>
+          <div className="dm-run">
+            <div
+              className="dm-progress"
+              role="progressbar"
+              aria-label={LIVE_RUN.label}
+              aria-valuenow={progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
+              <i style={{ width: `${progress}%` }} />
+            </div>
+            <p className="dm-run-meta">
+              {processed.toLocaleString('en-US')} of {LIVE_RUN.total.toLocaleString('en-US')} records · {LIVE_RUN.label}
+            </p>
           </div>
-          <p className="dm-run-meta">
-            {processed.toLocaleString('en-US')} of {LIVE_RUN.total.toLocaleString('en-US')} records · {LIVE_RUN.label}
-          </p>
-        </div>
-      </Panel>
+        </Panel>
+      </div>
 
       <div className="dm-section">
         <Panel title="The restructuring this estate actually needs">

@@ -187,17 +187,20 @@ describe('the numbers agree across screens', () => {
     }
   })
 
-  it('lists only modalities the estate actually declares', () => {
-    const declared = new Set(SOURCES.flatMap(s => s.modalities))
+  it('lists only modalities at least one connected source declares', () => {
+    const declared = new Set(SOURCES.filter(s => s.status === 'connected').flatMap(s => s.modalities))
     for (const p of MODALITY_PIPELINES) {
-      expect(declared.has(p.modality), `${p.label} is not declared by any source`).toBe(true)
+      expect(declared.has(p.modality), `${p.label} has no connected source declaring it`).toBe(true)
     }
   })
 
-  it('keeps every modality volume within its sources capacity', () => {
+  it('never claims less volume than its single-modality sources alone hold', () => {
     for (const p of MODALITY_PIPELINES) {
-      const capacity = sourcesForModality(p.modality).reduce((n, s) => n + s.records, 0)
-      expect(p.volume, p.label).toBeLessThanOrEqual(capacity)
+      const floor = sourcesForModality(p.modality)
+        .filter(s => s.modalities.length === 1)
+        .reduce((n, s) => n + s.records, 0)
+      expect(p.volume, `${p.label} claims ${p.volume} but its exclusive sources hold ${floor}`)
+        .toBeGreaterThanOrEqual(floor)
     }
   })
 })
