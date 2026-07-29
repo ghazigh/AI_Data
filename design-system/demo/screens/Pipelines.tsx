@@ -66,7 +66,7 @@ export function Pipelines() {
 
   return (
     <>
-      <PageHead eyebrow="Stage 03 — Pipelines" title="The restructuring this estate actually needs" />
+      <PageHead eyebrow="Stage 03 — Pipelines" title="How this estate becomes agent-ready" />
 
       <div className="dm-section">
         <ModalityPanel />
@@ -91,7 +91,7 @@ export function Pipelines() {
       </Panel>
 
       <div className="dm-section">
-        <Panel title="The plan">
+        <Panel title="The restructuring this estate actually needs">
           <ul className="dm-plan">
             {PLAN.map(s => {
               const domain = domainByKey(s.domain)

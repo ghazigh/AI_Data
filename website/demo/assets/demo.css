@@ -394,7 +394,7 @@
 .dm-modality-name button { background: none; border: 0; padding: 0; font: inherit; font-size: 13px; font-weight: 600; color: inherit; text-align: left; cursor: pointer; }
 .dm-modality-name button:hover { color: var(--dl-blue); }
 .dm-modality-scale { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-modality-chain { font-size: 12px; color: var(--dl-grey-4); line-height: 1.6; }
+.dm-modality-chain { font-size: var(--dl-text-label); color: var(--dl-grey-4); line-height: 1.6; }
 .dm-modality-chain b { font-weight: 600; color: var(--dl-ink); }
 .dm-modality-out { font-size: 12.5px; }
 .dm-stage-row { display: grid; grid-template-columns: 1fr 96px 84px; gap: var(--dl-space-4); align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--dl-grey-1); }

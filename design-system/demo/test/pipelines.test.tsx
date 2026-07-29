@@ -38,7 +38,7 @@ describe('pipeline data', () => {
 describe('Pipelines screen', () => {
   it('shows every planned step with the count that justifies it', () => {
     render(<Pipelines />)
-    const panel = screen.getByRole('region', { name: /the plan/i })
+    const panel = screen.getByRole('region', { name: /the restructuring this estate actually needs/i })
     expect(within(panel).getByText('41,208')).toBeDefined()
     expect(within(panel).getByText('22,470')).toBeDefined()
   })
@@ -67,7 +67,7 @@ describe('Pipelines screen', () => {
   it('runs a started step to completion instead of stalling at 96', () => {
     vi.useFakeTimers()
     render(<Pipelines />)
-    const panel = screen.getByRole('region', { name: /the plan/i })
+    const panel = screen.getByRole('region', { name: /the restructuring this estate actually needs/i })
     const runButton = within(panel).getAllByRole('button', { name: /run step/i })[0]
     act(() => { fireEvent.click(runButton) })
 

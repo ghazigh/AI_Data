@@ -14,7 +14,7 @@ export function ModalityPanel() {
   const [selected, setSelected] = useState<ModalityPipeline | null>(null)
 
   return (
-    <Panel eyebrow="Stage 03 — Pipelines" title="Seven modalities, two shapes an agent can read">
+    <Panel title="Seven modalities, two shapes an agent can read">
       <ul className="dm-modalities">
         {MODALITY_PIPELINES.map(p => {
           const sourceCount = sourcesForModality(p.modality).length
