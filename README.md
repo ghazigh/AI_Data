@@ -27,13 +27,11 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 
 | Path | Contents |
 |---|---|
-| [`docs/01-market-research.md`](docs/01-market-research.md) | Market failure, why-now, market sizing, funding climate, buyer research, risks (sourced) |
-| [`docs/02-competitive-landscape.md`](docs/02-competitive-landscape.md) | Positioning map, competitor-by-competitor analysis, differentiation, moat |
-| [`docs/03-product-strategy.md`](docs/03-product-strategy.md) | The five product stages, platform loop, roadmap, success metrics |
-| [`docs/04-gtm-business-plan.md`](docs/04-gtm-business-plan.md) | ICP, land→expand motion, pricing, financial model, the $4M seed ask, 90-day plan |
-| [`docs/05-pitch-deck-narrative.md`](docs/05-pitch-deck-narrative.md) | Slide-by-slide deck script + investor Q&A objection prep |
-| [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404, SEO/OG/sitemap, animations. Open `website/index.html` directly, or deploy via GitHub Pages |
-| [`design-system/site/`](design-system/site/) | Website source (React pages + site.css/site.js) — rebuild with `npm run build:site` in `design-system/` |
+| `docs/` | Market research, competitive landscape, product strategy, GTM plan and pitch narrative, plus the design specs and implementation plans. **Local only — gitignored, not in the repo.** |
+| [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404 + the `/demo/` product demo, SEO/OG/sitemap, animations. Published to GitHub Pages at <https://ghazigh.github.io/AI_Data/> |
+| [`website/demo/`](website/demo/) | The clickable product demo — seven screens over a sample estate. Open `website/demo/index.html` directly |
+| [`design-system/site/`](design-system/site/) | Website source (React pages + site.css/site.js) — rebuild with `npm run build:site` |
+| [`design-system/demo/`](design-system/demo/) | Demo source (React screens, static estate data, hydration guard) — rebuild with `npm run build:demo` |
 | [`landing/index.html`](landing/index.html) | Legacy single-file landing page — fully self-contained, open directly in a browser |
 | [`deck/Datalith-Pitch-Deck.pptx`](deck/Datalith-Pitch-Deck.pptx) | 13-slide seed pitch deck (PowerPoint) |
 | [`deck/generate-deck.js`](deck/generate-deck.js) | Deck generator (`node generate-deck.js`, requires `pptxgenjs`) — edit & regenerate |
@@ -61,4 +59,5 @@ and metered.
 - [ ] Replace placeholder founder bios in deck slide 12 and add real traction numbers to slide 11 before sending to investors.
 - [ ] Register the `hello@datalith.ai` mailbox (all website CTAs point to it) and swap the GitHub Pages URL in `design-system/scripts/build-site.mjs` for the real domain once purchased.
 - [ ] Trademark/domain diligence on the "Datalith" name (search on 2026-07-22 found no conflicting company).
-- [ ] Build Audit v0 per the 90-day plan in `docs/04-gtm-business-plan.md`.
+- [ ] Build Audit v0 per the 90-day plan in the local GTM doc.
+- [ ] The `/demo/` workspace is desktop-only below 1280px — add a small-screen notice if prospects start opening it on phones.

@@ -12,3 +12,6 @@ design-system/dist-site/
 # local tooling scratch
 .claude/
 .vscode/
+
+# startup documentation — kept local, not tracked
+docs/
