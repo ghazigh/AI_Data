@@ -4,7 +4,9 @@ import { Panel } from '../components/Panel'
 import { DataTable, type Column } from '../components/DataTable'
 import { StatusPill } from '../components/StatusPill'
 import { ModalityPanel } from '../components/ModalityPanel'
+import { GraphPipelinePanel } from '../components/GraphPipelinePanel'
 import { PLAN, RUNS, LIVE_RUN, type PipelineRun } from '../data/pipelines'
+import { GRAPH_PIPELINES } from '../data/graphPipelines'
 import { domainByKey } from '../data/tenant'
 
 const OUTCOME = { succeeded: { tone: 'ok' as const, label: 'Succeeded' }, failed: { tone: 'warn' as const, label: 'Failed' } }
@@ -71,6 +73,12 @@ export function Pipelines() {
       <div className="dm-section">
         <ModalityPanel />
       </div>
+
+      {GRAPH_PIPELINES.map(p => (
+        <div className="dm-section" key={p.id}>
+          <GraphPipelinePanel pipeline={p} />
+        </div>
+      ))}
 
       <div className="dm-section">
         <Panel title="Live run" action={<StatusPill tone="blue" label="Running" />}>
