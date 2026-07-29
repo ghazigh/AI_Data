@@ -11,6 +11,7 @@ import { GRAPH_NODES, KNOWLEDGE_BASES, parseCount, nodesForDomain } from '../dat
 import { AGENTS, AUDIT, POLICIES } from '../data/governance'
 import { ACTIVITY } from '../data/activity'
 import { MODALITY_PIPELINES, sourcesForModality } from '../data/modalities'
+import { GRAPH_PIPELINES } from '../data/graphPipelines'
 import type { Modality } from '../data/types'
 
 const DEMO = new URL('..', import.meta.url).pathname
@@ -202,5 +203,11 @@ describe('the numbers agree across screens', () => {
       expect(p.volume, `${p.label} claims ${p.volume} but its exclusive sources hold ${floor}`)
         .toBeGreaterThanOrEqual(floor)
     }
+  })
+
+  it('derives the graph\'s knowledge bases from the clustering that found them', () => {
+    const construct = GRAPH_PIPELINES.find(p => p.id === 'construct')!
+    expect(construct.topicsAfter).toBe(KNOWLEDGE_BASES.length)
+    expect(construct.topicsAfter).toBe(DOMAINS.length)
   })
 })
