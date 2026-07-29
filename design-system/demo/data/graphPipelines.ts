@@ -37,9 +37,9 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
     stages: [
       {
         name: 'Embed',
-        detail: `Every structured chunk and typed row across the estate enters a shared ${EMBEDDING_DIMENSIONS}-dimension semantic space, applying a pretrained sentence encoder and pinning its version so later work embeds into the same space`,
+        detail: `Every structured chunk and typed row across the estate enters a shared ${EMBEDDING_DIMENSIONS}-dimension semantic space`,
         mode: 'applies',
-        produces: 'the sentence encoder',
+        reuses: 'the sentence encoder',
         count: 9_580_000,
         unit: 'chunks',
         runtime: '~7 h',

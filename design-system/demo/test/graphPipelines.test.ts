@@ -54,14 +54,28 @@ describe('graph pipelines', () => {
     for (const s of fitted) expect(s.produces, `${s.name} fits but names no artefact`).toBeTruthy()
   })
 
-  it('reuses on the extend path exactly what construction produced', () => {
-    const produced = new Set(
-      construct.stages.filter(s => s.produces).map(s => s.produces!),
-    )
+  it('reuses only artefacts construction fitted, or ones both paths treat as external', () => {
+    // The sentence encoder is pre-trained: neither pipeline fits it, both apply it.
+    // Only the projection and the cluster model are fitted here, so the pairing
+    // check has to allow a shared external dependency rather than forcing
+    // construction to claim it produced one.
+    const produced = new Set(construct.stages.filter(s => s.produces).map(s => s.produces!))
+    const external = new Set(construct.stages.filter(s => s.reuses).map(s => s.reuses!))
     const reused = extend.stages.filter(s => s.reuses).map(s => s.reuses!)
     expect(reused.length).toBeGreaterThanOrEqual(2)
     for (const r of reused) {
-      expect(produced.has(r), `extend reuses "${r}", which construction never produces`).toBe(true)
+      expect(
+        produced.has(r) || external.has(r),
+        `extend reuses "${r}", which construction neither fits nor also treats as external`,
+      ).toBe(true)
+    }
+  })
+
+  it('reuses every artefact it went to the trouble of fitting', () => {
+    const produced = construct.stages.filter(s => s.produces).map(s => s.produces!)
+    const reused = extend.stages.filter(s => s.reuses).map(s => s.reuses!)
+    for (const p of produced) {
+      expect(reused, `construction fits "${p}" but the extend path never reuses it`).toContain(p)
     }
   })
 
