@@ -10,6 +10,7 @@ import { USE_CASES } from '../data/useCases'
 import { GRAPH_NODES, KNOWLEDGE_BASES, parseCount, nodesForDomain } from '../data/graph'
 import { AGENTS, AUDIT, POLICIES } from '../data/governance'
 import { ACTIVITY } from '../data/activity'
+import { MODALITY_PIPELINES, sourcesForModality } from '../data/modalities'
 import type { Modality } from '../data/types'
 
 const DEMO = new URL('..', import.meta.url).pathname
@@ -183,6 +184,20 @@ describe('the numbers agree across screens', () => {
       for (const token of mentioned) {
         expect(ids.has(token), `policy "${p.rule}" names ${token}, which is not a registered agent`).toBe(true)
       }
+    }
+  })
+
+  it('lists only modalities the estate actually declares', () => {
+    const declared = new Set(SOURCES.flatMap(s => s.modalities))
+    for (const p of MODALITY_PIPELINES) {
+      expect(declared.has(p.modality), `${p.label} is not declared by any source`).toBe(true)
+    }
+  })
+
+  it('keeps every modality volume within its sources capacity', () => {
+    for (const p of MODALITY_PIPELINES) {
+      const capacity = sourcesForModality(p.modality).reduce((n, s) => n + s.records, 0)
+      expect(p.volume, p.label).toBeLessThanOrEqual(capacity)
     }
   })
 })
