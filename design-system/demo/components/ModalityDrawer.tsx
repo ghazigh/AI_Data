@@ -22,6 +22,9 @@ export function ModalityDrawer({ pipeline, onClose }: { pipeline: ModalityPipeli
       </p>
 
       <h3 className="dm-drawer-sub">The chain</h3>
+      <p className="dm-connect-lead">
+        These stages run parallelised across the estate, which is why their per-item rate is higher than the targeted repairs in the plan.
+      </p>
       <div>
         {pipeline.stages.map(stage => (
           <div className="dm-stage-row" key={stage.name}>

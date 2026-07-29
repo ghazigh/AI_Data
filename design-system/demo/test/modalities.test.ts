@@ -113,4 +113,19 @@ describe('modality pipelines', () => {
         .toBeGreaterThanOrEqual(floor)
     }
   })
+
+  it('keeps every stage inside the 48-hour promise the product makes', () => {
+    const hours = (r: string): number => {
+      const h = /(\d+)\s*h/.exec(r)?.[1]
+      const m = /(\d+)\s*min/.exec(r)?.[1]
+      return (h ? Number(h) : 0) + (m ? Number(m) : 0) / 60
+    }
+    for (const p of MODALITY_PIPELINES) {
+      for (const s of p.stages) {
+        expect(hours(s.runtime), `${p.label}/${s.name} at ${s.runtime}`).toBeLessThanOrEqual(18)
+      }
+      const total = p.stages.reduce((n, s) => n + hours(s.runtime), 0)
+      expect(total, `${p.label} chain totals ${total.toFixed(1)}h`).toBeLessThan(48)
+    }
+  })
 })
