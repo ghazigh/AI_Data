@@ -147,7 +147,7 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
     topicsAfter: 8,
     unassigned: {
       count: 330,
-      unit: 'chunks',
+      unit: 'points',
       note: 'These points matched no existing topic well enough to join it. Held as a candidate topic for steward review rather than dropped or forced into the nearest existing cluster.',
     },
     stages: [
