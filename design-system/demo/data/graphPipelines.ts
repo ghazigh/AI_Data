@@ -157,7 +157,7 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
         mode: 'applies',
         reuses: 'the sentence encoder',
         count: 63_400,
-        unit: 'chunks',
+        unit: 'records',
         runtime: '~28 min',
       },
       {
