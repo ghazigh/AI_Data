@@ -3,6 +3,7 @@ import { PageHead } from '../components/PageHead'
 import { Panel } from '../components/Panel'
 import { DataTable, type Column } from '../components/DataTable'
 import { StatusPill } from '../components/StatusPill'
+import { ModalityPanel } from '../components/ModalityPanel'
 import { PLAN, RUNS, LIVE_RUN, type PipelineRun } from '../data/pipelines'
 import { domainByKey } from '../data/tenant'
 
@@ -66,6 +67,10 @@ export function Pipelines() {
   return (
     <>
       <PageHead eyebrow="Stage 03 — Pipelines" title="The restructuring this estate actually needs" />
+
+      <div className="dm-section">
+        <ModalityPanel />
+      </div>
 
       <Panel title="Live run" action={<StatusPill tone="blue" label="Running" />}>
         <div className="dm-run">

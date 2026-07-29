@@ -147,7 +147,7 @@ export const MODALITY_PIPELINES: ModalityPipeline[] = [
     ],
     sample: {
       sourceId: 's3-claim-photos',
-      raw: 'FILE: CLM-2291046_photo_014.jpg | 4032x3024 | GPS: 41.792,-87.601\nOCR: "STOP" "MAIN ST"',
+      raw: 'FILE: CLM-2291046_photo_014.jpg | 4032x3024 | GPS: 41.792,-87.601\nCAPTURED: 2026-07-14T09:12:03Z | DEVICE: iPhone 14 | CLAIM: CLM-2291046',
       structured: '## Claim CLM-2291046 — Exterior damage, photo 14\n\n**Location:** Main St & 4th, Chicago IL (from GPS)\n\nRoof section missing shingles over an approximately 3m x 2m area, consistent with wind uplift. Visible granule loss along the exposed decking.\n\n<!-- claim: CLM-2291046 · source: s3-claim-photos -->',
     },
   },
