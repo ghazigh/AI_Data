@@ -1,3 +1,6 @@
+import { MODALITY_PIPELINES } from './modalities'
+import type { Modality } from './types'
+
 export type StageMode = 'fits' | 'applies'
 
 export interface ConstructionStage {
@@ -20,12 +23,70 @@ export interface GraphPipeline {
   stages: ConstructionStage[]
   topicsBefore: number
   topicsAfter: number
-  /** Points that matched no topic, held for steward review. Extend path only. */
+  /** Points that matched no topic, held for steward review. */
   unassigned?: { count: number; unit: string; note: string }
 }
 
 export const EMBEDDING_DIMENSIONS = 1_024
 export const REDUCED_DIMENSIONS = 24
+
+const stageCount = (modality: Modality, stageName: string): number => {
+  const pipeline = MODALITY_PIPELINES.find(p => p.modality === modality)!
+  const stage = pipeline.stages.find(s => s.name === stageName)!
+  return stage.count
+}
+
+/**
+ * The volume that actually enters the graph — every embeddable chunk,
+ * queryable row and typed rollup — summed across the seven modality
+ * pipelines in modalities.ts. Derived, not hand-typed, so a modality
+ * volume change can never silently decouple this panel from the one
+ * above it on the same screen.
+ *
+ * One stage per modality was picked as the entry grain. The pipeline's
+ * own last stage is not always at that grain, so each pick is justified
+ * below rather than assumed:
+ *
+ * - tables (23,000,000):      "Profile", not the chain's last stage
+ *   ("Publish schema", 1,260). Publish schema's count is in columns —
+ *   the shape of the schema, not the volume it describes. Profile is
+ *   the row-grain stage, and its count matches the modality's own row
+ *   volume exactly: every row is queryable through the published schema.
+ * - documents (9,362,000):    "Embed" — the chain's own embedding stage,
+ *   already at chunk grain.
+ * - tickets (1,600,000):      "Embed" — one embedded record per ticket
+ *   thread.
+ * - email (3,349,724):        "Embed" — post-chunk embedding grain, after
+ *   threads are split at reply boundaries.
+ * - transcripts (3,077,000):  "Embed" — same reasoning as email, chunked
+ *   after diarising.
+ * - images (4,200,000):       "Embed" — one embedded markdown record per
+ *   photo.
+ * - streams (2,305,000):      "Aggregate", not the chain's last stage
+ *   ("Publish schema", 42). Same issue as tables: Publish schema's count
+ *   is columns, not rollup rows. Aggregate is where the queryable rollup
+ *   grain is produced — the unit the output description ("typed rollups,
+ *   queryable beside the warehouse") actually promises.
+ *
+ * Sum: 46,893,724 records.
+ */
+export const GRAPH_ENTRY_VOLUME =
+  stageCount('tables', 'Profile') +
+  stageCount('documents', 'Embed') +
+  stageCount('tickets', 'Embed') +
+  stageCount('email', 'Embed') +
+  stageCount('transcripts', 'Embed') +
+  stageCount('images', 'Embed') +
+  stageCount('streams', 'Aggregate')
+
+/**
+ * HDBSCAN marks sparse points as noise rather than forcing them into a
+ * group. On a heterogeneous, seven-modality corpus this size, a small
+ * but non-trivial fraction is expected — 4% approximates the points
+ * that land in no region dense enough to seed or join a cluster.
+ */
+const CONSTRUCTION_NOISE_RATE = 0.04
+const CONSTRUCTION_NOISE_COUNT = Math.round(GRAPH_ENTRY_VOLUME * CONSTRUCTION_NOISE_RATE)
 
 export const GRAPH_PIPELINES: GraphPipeline[] = [
   {
@@ -34,24 +95,29 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
     lead: 'The graph is not hand-authored. Every structured chunk and typed row across the estate is embedded, projected into a shared coordinate space, clustered, and labelled — the eight knowledge bases fall out of that process rather than being declared in advance.',
     topicsBefore: 0,
     topicsAfter: 8,
+    unassigned: {
+      count: CONSTRUCTION_NOISE_COUNT,
+      unit: 'points',
+      note: 'These points fall in no region dense enough to seed or join a cluster. Held as candidate topics for steward review rather than forced into a group.',
+    },
     stages: [
       {
         name: 'Embed',
         detail: `Every structured chunk and typed row across the estate enters a shared ${EMBEDDING_DIMENSIONS}-dimension semantic space`,
         mode: 'applies',
         reuses: 'the sentence encoder',
-        count: 9_580_000,
-        unit: 'chunks',
+        count: GRAPH_ENTRY_VOLUME,
+        unit: 'records',
         runtime: '~7 h',
       },
       {
         name: 'Reduce dimensions',
-        detail: `Fits a projection from ${EMBEDDING_DIMENSIONS} dimensions down to ${REDUCED_DIMENSIONS}, and saves it so later work lands in the same coordinate space`,
+        detail: `Fits a projection from ${EMBEDDING_DIMENSIONS} dimensions down to ${REDUCED_DIMENSIONS} — enough dimensions for density to be meaningful — and saves it so later work lands in the same coordinate space`,
         mode: 'fits',
         produces: 'the UMAP projection',
-        count: 9_580_000,
+        count: GRAPH_ENTRY_VOLUME,
         unit: 'points',
-        runtime: '~3 h 30 min',
+        runtime: '~5 h',
       },
       {
         name: 'Cluster',
@@ -60,7 +126,7 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
         produces: 'the HDBSCAN cluster model',
         count: 8,
         unit: 'clusters',
-        runtime: '~2 h 15 min',
+        runtime: '~3 h',
       },
       {
         name: 'Define topics',
@@ -80,9 +146,9 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
     topicsBefore: 8,
     topicsAfter: 8,
     unassigned: {
-      count: 214,
+      count: 330,
       unit: 'chunks',
-      note: 'Held as a candidate topic for steward review rather than dropped or forced into the nearest existing cluster.',
+      note: 'These points matched no existing topic well enough to join it. Held as a candidate topic for steward review rather than dropped or forced into the nearest existing cluster.',
     },
     stages: [
       {
@@ -90,36 +156,36 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
         detail: `Encodes the new source's chunks and rows into the same ${EMBEDDING_DIMENSIONS}-dimension space used at construction`,
         mode: 'applies',
         reuses: 'the sentence encoder',
-        count: 41_000,
+        count: 63_400,
         unit: 'chunks',
-        runtime: '~18 min',
+        runtime: '~28 min',
       },
       {
         name: 'Project',
         detail: 'Transforms the new points through the already-fitted projection — no new fit, just placing them in the coordinate space built at construction time',
         mode: 'applies',
         reuses: 'the UMAP projection',
-        count: 41_000,
+        count: 63_400,
         unit: 'points',
-        runtime: '~9 min',
+        runtime: '~14 min',
       },
       {
         name: 'Assign',
         detail: 'Scores each new point against the existing cluster model; points that fall inside a known dense region join that topic',
         mode: 'applies',
         reuses: 'the HDBSCAN cluster model',
-        count: 40_786,
+        count: 63_070,
         unit: 'points',
-        runtime: '~6 min',
+        runtime: '~9 min',
       },
       {
         name: 'Bind & serve',
-        detail: 'Attaches the newly assigned entities to the existing knowledge bases under the same governance and access policy',
+        detail: 'Resolves the newly assigned points to entities and attaches them to the existing knowledge bases under the same governance and access policy',
         mode: 'applies',
         reuses: 'the topic labels',
-        count: 40_786,
+        count: 57_391,
         unit: 'entities',
-        runtime: '~4 min',
+        runtime: '~6 min',
       },
     ],
   },

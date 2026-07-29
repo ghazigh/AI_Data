@@ -4,10 +4,10 @@ import type { GraphPipeline } from '../data/graphPipelines'
 
 /**
  * Renders one graph pipeline — construction or extension — as a titled panel.
- * The two calls of this component are meant to sit side by side: construction
- * fits the projection and the cluster model, extension only ever applies them.
- * The `fits` / `applies` pill on every row is the whole contrast, so it is
- * never hidden behind an icon or a colour alone.
+ * The two calls of this component are stacked, one panel per section:
+ * construction fits the projection and the cluster model, extension only
+ * ever applies them. The `fits` / `applies` pill on every row is the whole
+ * contrast, so it is never hidden behind an icon or a colour alone.
  */
 export function GraphPipelinePanel({ pipeline: p }: { pipeline: GraphPipeline }) {
   const topicsLine = p.topicsBefore > 0
@@ -27,9 +27,11 @@ export function GraphPipelinePanel({ pipeline: p }: { pipeline: GraphPipeline })
             </div>
             <p className="dm-gpipe-detail">
               {s.detail}
-              <span className="dm-gpipe-artefact">
-                {s.produces ? `Produces ${s.produces}` : `Reuses ${s.reuses}`}
-              </span>
+              {(s.produces || s.reuses) && (
+                <span className="dm-gpipe-artefact">
+                  {s.produces ? `Produces ${s.produces}` : `Reuses ${s.reuses}`}
+                </span>
+              )}
             </p>
             <p className="dm-gpipe-count">
               {s.count.toLocaleString('en-US')}

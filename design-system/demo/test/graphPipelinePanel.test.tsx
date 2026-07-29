@@ -18,12 +18,22 @@ describe('GraphPipelinePanel', () => {
   })
 
   it('shows every stage with its detail, count and runtime', () => {
-    render(<GraphPipelinePanel pipeline={construct} />)
-    for (const s of construct.stages) {
-      expect(screen.getByText(s.name)).toBeDefined()
-      expect(screen.getByText(s.detail)).toBeDefined()
-      expect(screen.getByText(s.runtime)).toBeDefined()
-    }
+    const { container } = render(<GraphPipelinePanel pipeline={construct} />)
+    const rows = container.querySelectorAll('.dm-gpipe > li')
+    expect(rows.length).toBe(construct.stages.length)
+    construct.stages.forEach((s, i) => {
+      const row = within(rows[i] as HTMLElement)
+      expect(row.getByText(s.name)).toBeDefined()
+      expect(row.getByText(s.detail)).toBeDefined()
+      expect(row.getByText(s.runtime)).toBeDefined()
+      expect(row.getByText(s.count.toLocaleString('en-US'))).toBeDefined()
+    })
+  })
+
+  it('renders the residue count as ordinary text', () => {
+    const { container } = render(<GraphPipelinePanel pipeline={extend} />)
+    const residue = within(container.querySelector('.dm-gpipe-residue') as HTMLElement)
+    expect(residue.getByText(extend.unassigned!.count.toLocaleString('en-US'))).toBeDefined()
   })
 
   it('marks which stages fit a model and which apply one', () => {
@@ -59,9 +69,9 @@ describe('GraphPipelinePanel', () => {
     expect(screen.getByText(new RegExp(extend.unassigned!.note))).toBeDefined()
   })
 
-  it('shows no residue block on the construction path', () => {
+  it('shows a residue block on the construction path too, not just extension', () => {
     render(<GraphPipelinePanel pipeline={construct} />)
-    expect(screen.queryByText(/candidate topic/i)).toBeNull()
+    expect(screen.getByText(new RegExp(construct.unassigned!.note))).toBeDefined()
   })
 
   it('never numbers the stages', () => {

@@ -320,9 +320,11 @@
 .dm-stage-name { font-size: 13px; font-weight: 600; }
 .dm-stage-name .dm-pill { margin-left: var(--dl-space-2); vertical-align: middle; }
 .dm-stage-detail { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
-.dm-stage-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
-.dm-stage-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-stage-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
+/* Shared with .dm-gpipe-count / .dm-gpipe-runtime below, so the two panels'
+   number treatment cannot drift apart. */
+.dm-stage-count, .dm-gpipe-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
+.dm-stage-count em, .dm-gpipe-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-stage-runtime, .dm-gpipe-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
 .dm-sample { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dl-space-4); margin-top: var(--dl-space-4); }
 .dm-sample pre { margin: 0; padding: var(--dl-space-3); border: var(--dl-hairline); background: var(--dl-canvas); font-family: var(--dl-font-mono); font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; overflow-x: auto; }
 .dm-sample figcaption { margin-top: var(--dl-space-2); font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-grey-3); }
@@ -334,8 +336,6 @@
 .dm-gpipe-name { display: flex; align-items: center; gap: var(--dl-space-2); font-size: 13px; font-weight: 600; }
 .dm-gpipe-detail { font-size: 12px; line-height: 1.6; color: var(--dl-grey-4); }
 .dm-gpipe-artefact { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-gpipe-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
-.dm-gpipe-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-gpipe-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
+/* .dm-gpipe-count and .dm-gpipe-runtime are styled above, shared with .dm-stage-count / .dm-stage-runtime. */
 .dm-gpipe-residue { display: grid; grid-template-columns: 132px 1fr; gap: var(--dl-space-5); align-items: baseline; padding: 13px 18px; border-top: var(--dl-hairline); background: var(--dl-canvas); }
 .dm-gpipe-residue p { font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
