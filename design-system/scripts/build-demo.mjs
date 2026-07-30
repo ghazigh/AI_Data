@@ -50,16 +50,16 @@ writeFileSync(
 cpSync('site/assets/favicon.svg', `${OUT}/assets/favicon.svg`)
 
 // ---- 4. one server-rendered file per route -------------------------------
-const { ROUTES, DemoApp, titleFor } = await import(pathToFileURL('dist-site/demo-app.mjs'))
+const { ALL_ROUTES, DemoApp, titleFor } = await import(pathToFileURL('dist-site/demo-app.mjs'))
 const { createElement } = await import('react')
 const { renderToString } = await import('react-dom/server')
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
-for (const route of ROUTES) {
-  const nested = route.slug !== ''
-  const prefix = nested ? '../' : ''
-  const dir = nested ? `${OUT}/${route.slug}` : OUT
+for (const route of ALL_ROUTES) {
+  const depth = route.slug === '' ? 0 : route.slug.split('/').length
+  const prefix = '../'.repeat(depth)
+  const dir = route.slug === '' ? OUT : `${OUT}/${route.slug}`
   mkdirSync(dir, { recursive: true })
 
   const body = renderToString(createElement(DemoApp, { slug: route.slug, prefix }))
@@ -72,7 +72,7 @@ for (const route of ROUTES) {
 <meta name="viewport" content="width=1280">
 <title>${esc(title)}</title>
 <meta name="description" content="Explore the Datalith platform with a fully populated sample estate — readiness scores, the knowledge graph, governed serving and the agent use cases the data supports.">
-${nested ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${BASE_URL}/demo/">`}
+${route.slug !== '' ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${BASE_URL}/demo/">`}
 <meta name="theme-color" content="#FCFCFB">
 <link rel="icon" type="image/svg+xml" href="${prefix}assets/favicon.svg">
 <link rel="stylesheet" href="${prefix}assets/demo.css">

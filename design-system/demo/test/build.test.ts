@@ -9,14 +9,15 @@
 // import.meta.url alone, and the URL resolves to a real filesystem path.
 import { describe, it, expect } from 'vitest'
 import { existsSync, readFileSync } from 'node:fs'
-import { ROUTES } from '../routes'
+import { ALL_ROUTES } from '../routes'
+import { allEntries } from '../data/pipelineCatalogue'
 
 const OUT = new URL('../../../website/demo/', import.meta.url).pathname
 const built = existsSync(`${OUT}index.html`)
 
 describe.skipIf(!built)('build output', () => {
   it('writes one html file per route', () => {
-    for (const r of ROUTES) {
+    for (const r of ALL_ROUTES) {
       const file = r.slug === '' ? `${OUT}index.html` : `${OUT}${r.slug}/index.html`
       expect(existsSync(file), file).toBe(true)
     }
@@ -37,6 +38,13 @@ describe.skipIf(!built)('build output', () => {
   it('keeps inner screens out of the index', () => {
     const html = readFileSync(`${OUT}graph/index.html`, 'utf8')
     expect(html).toContain('name="robots" content="noindex"')
+  })
+
+  it('resolves workspace assets two levels up', () => {
+    const entry = allEntries()[0]
+    const html = readFileSync(`${OUT}pipelines/${entry.id}/index.html`, 'utf8')
+    expect(html).toContain('href="../../assets/demo.css"')
+    expect(html).toContain('src="../../assets/demo.js"')
   })
 
   it('emits the client bundle and stylesheet', () => {

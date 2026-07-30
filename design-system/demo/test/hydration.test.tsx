@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { renderToString } from 'react-dom/server'
 import { render } from '@testing-library/react'
 import { DemoApp } from '../DemoApp'
-import { ROUTES } from '../routes'
+import { ALL_ROUTES } from '../routes'
 import { prefixForSlug } from '../router'
 
 describe('prefixForSlug', () => {
@@ -45,7 +45,7 @@ const normalizeStyleAttrs = (html: string): string =>
 const stripEmptyComments = (html: string): string => html.split('<!-- -->').join('')
 
 describe('SSR and client agree', () => {
-  for (const route of ROUTES) {
+  for (const route of ALL_ROUTES) {
     it(`renders identical markup for "${route.slug || 'index'}"`, () => {
       const prefix = prefixForSlug(route.slug)
       const server = renderToString(<DemoApp slug={route.slug} prefix={prefix} />)

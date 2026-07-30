@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DemoRoute } from '../routes'
-import { hrefFor } from '../routes'
+import { ALL_ROUTES, hrefFor } from '../routes'
 import { TENANT, ESTATE } from '../data/tenant'
 import { searchEstate } from '../search'
 import { useDemoState } from '../state'
@@ -22,9 +22,17 @@ export function TopBar({ route, prefix }: TopBarProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  const parent = route.parentSlug ? ALL_ROUTES.find(r => r.slug === route.parentSlug) : undefined
+
   return (
     <div className="dm-topbar">
-      <p className="dm-crumb">{TENANT.name} / <b>{route.title}</b></p>
+      {parent ? (
+        <p className="dm-crumb">
+          {TENANT.name} / <a href={hrefFor(parent.slug, prefix)} data-demo-link>{parent.title}</a> ▸ <b>{route.title}</b>
+        </p>
+      ) : (
+        <p className="dm-crumb">{TENANT.name} / <b>{route.title}</b></p>
+      )}
 
       <div className="dm-search">
         <input

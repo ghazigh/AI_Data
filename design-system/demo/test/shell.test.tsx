@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, within, fireEvent } from '@testing-library/react'
 import { AppShell } from '../components/AppShell'
+import { TopBar } from '../components/TopBar'
 import { DemoStateProvider } from '../state'
 import { DemoApp } from '../DemoApp'
-import { ROUTES } from '../routes'
+import { ROUTES, ALL_ROUTES } from '../routes'
+import { allEntries } from '../data/pipelineCatalogue'
 
 const shell = (current = '') =>
   render(<DemoStateProvider><AppShell current={current} prefix=""><p>content</p></AppShell></DemoStateProvider>)
@@ -69,5 +71,14 @@ describe('AppShell', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /reset demo/i }))
     expect(screen.queryByRole('button', { name: 'Amazon Redshift' })).toBeNull()
+  })
+
+  it('breadcrumbs a workspace under its parent screen', () => {
+    const entry = allEntries()[0]
+    const route = ALL_ROUTES.find(r => r.slug === `pipelines/${entry.id}`)!
+    render(<DemoStateProvider><TopBar route={route} prefix="" /></DemoStateProvider>)
+    const parent = screen.getByRole('link', { name: 'Pipelines' })
+    expect(parent.getAttribute('href')).toBe('pipelines/')
+    expect(screen.getByText(entry.name)).toBeDefined()
   })
 })

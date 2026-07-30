@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
 import { Rail } from './Rail'
 import { TopBar } from './TopBar'
-import { ROUTES } from '../routes'
+import { ROUTES, ALL_ROUTES } from '../routes'
 
 export interface AppShellProps { current: string; prefix: string; children: ReactNode }
 
 export function AppShell({ current, prefix, children }: AppShellProps) {
-  const route = ROUTES.find(r => r.slug === current) ?? ROUTES[0]
+  const route = ALL_ROUTES.find(r => r.slug === current) ?? ROUTES[0]
   return (
     <div className="dm-root">
       <Rail current={current} prefix={prefix} />

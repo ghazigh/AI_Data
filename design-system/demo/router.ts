@@ -1,7 +1,11 @@
 import { ROUTES, routeForPath, titleFor } from './routes'
 
-/** Path back to /demo/ from a screen's own directory. */
-export const prefixForSlug = (slug: string): string => (slug === '' ? '' : '../')
+/** Path back to /demo/ from a screen's own directory. Depth-relative, mirroring
+ * the depth calculation in scripts/build-demo.mjs so a directly-loaded nested
+ * route (e.g. a two-segment workspace slug) hydrates with the same prefix the
+ * server rendered. */
+export const prefixForSlug = (slug: string): string =>
+  slug === '' ? '' : '../'.repeat(slug.split('/').length)
 
 /**
  * Intercept clicks on links marked data-demo-link and navigate without a reload.
