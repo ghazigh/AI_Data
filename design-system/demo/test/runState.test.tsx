@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, act, fireEvent } from '@testing-library/react'
-import { DemoStateProvider, useDemoState } from '../state'
-import { entryById } from '../data/pipelineCatalogue'
-import { defaultConfigFor } from '../runConfig'
+import { DemoStateProvider, useDemoState, ticksToComplete, MIN_TICKS, MAX_TICKS } from '../state'
+import { allEntries, entryById } from '../data/pipelineCatalogue'
+import { defaultConfigFor, projectRun } from '../runConfig'
 
 const entry = entryById('graph-extend')!
 
@@ -90,5 +90,59 @@ describe('run state', () => {
     fireEvent.click(screen.getAllByText('start')[0])
     fireEvent.click(screen.getByText('reset'))
     expect(screen.getAllByTestId('count')[0].textContent).toBe('0')
+  })
+})
+
+describe('tick budget scales with projected runtime', () => {
+  // Shortest and longest projected runtimes in the catalogue (under each entry's default
+  // config) — plan-p3 (~6 min) and structuring-images (~1230 min). A fixed tick count would
+  // make both finish at the same moment, contradicting the duration each screen row states.
+  const shortEntry = entryById('plan-p3')!
+  const longEntry = entryById('structuring-images')!
+
+  function Multi() {
+    const { runs, startRun, advanceRuns } = useDemoState()
+    return (
+      <div>
+        <button
+          onClick={() => {
+            startRun(shortEntry, defaultConfigFor(shortEntry))
+            startRun(longEntry, defaultConfigFor(longEntry))
+          }}
+        >
+          start
+        </button>
+        <button onClick={() => advanceRuns()}>tick</button>
+        {runs.map(r => (
+          <p key={r.id} data-testid={`status-${r.entryId}`}>{r.status}</p>
+        ))}
+      </div>
+    )
+  }
+
+  it('gives a longer-projected pipeline strictly more ticks to finish than a shorter one', () => {
+    render(<DemoStateProvider><Multi /></DemoStateProvider>)
+    fireEvent.click(screen.getByText('start'))
+
+    let shortDoneAt = -1
+    let longDoneAt = -1
+    for (let tick = 1; tick <= 50; tick++) {
+      act(() => { fireEvent.click(screen.getByText('tick')) })
+      if (shortDoneAt === -1 && screen.getByTestId(`status-${shortEntry.id}`).textContent === 'completed') shortDoneAt = tick
+      if (longDoneAt === -1 && screen.getByTestId(`status-${longEntry.id}`).textContent === 'completed') longDoneAt = tick
+    }
+
+    expect(shortDoneAt).toBeGreaterThan(0)
+    expect(longDoneAt).toBeGreaterThan(0)
+    expect(longDoneAt).toBeGreaterThan(shortDoneAt)
+  })
+
+  it('keeps every catalogue entry\'s tick budget within the clamp', () => {
+    for (const e of allEntries()) {
+      const projection = projectRun(e, defaultConfigFor(e))
+      const budget = ticksToComplete(projection.minutes)
+      expect(budget, e.id).toBeGreaterThanOrEqual(MIN_TICKS)
+      expect(budget, e.id).toBeLessThanOrEqual(MAX_TICKS)
+    }
   })
 })

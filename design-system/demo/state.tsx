@@ -5,6 +5,12 @@ import type { CatalogueEntry, CatalogueStage, SectionKind } from './data/pipelin
 import type { RunConfig, RunProjection } from './runConfig'
 import { projectRun } from './runConfig'
 
+/**
+ * No 'failed' status: a live run in this demo always finishes or is cancelled, by design —
+ * introducing an in-flight failure would either need a real (non-deterministic) failure
+ * source or a product decision about which pipeline is scripted to always fail, neither of
+ * which belongs here. Failure only ever appears retrospectively, in RUN_HISTORY.
+ */
 export type RunStatus = 'running' | 'completed' | 'cancelled'
 
 export interface RunRecord {
@@ -20,6 +26,8 @@ export interface RunRecord {
   recordsProcessed: number
   /** Ticks elapsed since the run started. advanceRuns() increments this for every running run. */
   ticks: number
+  /** Ticks this run takes to finish, fixed at start time by ticksToComplete(projection.minutes). */
+  ticksBudget: number
 }
 
 export interface DemoState {
@@ -39,11 +47,17 @@ export interface DemoState {
 const Ctx = createContext<DemoState | null>(null)
 
 /**
- * Fixed number of ticks a run takes to finish, independent of its projected minutes —
- * the screen calls advanceRuns() on a wall-clock interval purely for a watchable
- * animation, not to simulate real elapsed time.
+ * Ticks a run takes to finish, scaled to its projected runtime. Log-scaled so a
+ * 900-minute graph build visibly outlasts a 6-minute mask without anyone having to
+ * watch it for minutes, and clamped so nothing is instant or interminable. The screen
+ * calls advanceRuns() on a wall-clock interval purely for a watchable animation — this
+ * budget governs pacing, not simulated elapsed time.
  */
-const TICKS_TO_COMPLETE = 24
+export const MIN_TICKS = 8
+export const MAX_TICKS = 40
+
+export const ticksToComplete = (minutes: number): number =>
+  Math.min(MAX_TICKS, Math.max(MIN_TICKS, Math.round(4 + 4 * Math.log2(1 + minutes))))
 
 /** The stage whose cumulative weight first exceeds `fraction`; the last stage once fraction reaches 1. */
 const stageIndexForFraction = (stages: CatalogueStage[], fraction: number): number => {
@@ -59,8 +73,8 @@ const stageIndexForFraction = (stages: CatalogueStage[], fraction: number): numb
 const tickRun = (run: RunRecord): RunRecord => {
   if (run.status !== 'running') return run
   const ticks = run.ticks + 1
-  const finished = ticks >= TICKS_TO_COMPLETE
-  const fraction = Math.min(ticks / TICKS_TO_COMPLETE, 1)
+  const finished = ticks >= run.ticksBudget
+  const fraction = Math.min(ticks / run.ticksBudget, 1)
   const total = run.projection.records
   return {
     ...run,
@@ -103,6 +117,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
         stageIndex: 0,
         recordsProcessed: 0,
         ticks: 0,
+        ticksBudget: ticksToComplete(projection.minutes),
       }
       setRuns(prev => [record, ...prev])
     },

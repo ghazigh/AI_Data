@@ -12,6 +12,8 @@ import { AGENTS, AUDIT, POLICIES } from '../data/governance'
 import { ACTIVITY } from '../data/activity'
 import { MODALITY_PIPELINES, sourcesForModality } from '../data/modalities'
 import { GRAPH_PIPELINES } from '../data/graphPipelines'
+import { entryById } from '../data/pipelineCatalogue'
+import { RUN_HISTORY } from '../data/runHistory'
 import type { Modality } from '../data/types'
 
 const DEMO = new URL('..', import.meta.url).pathname
@@ -209,5 +211,18 @@ describe('the numbers agree across screens', () => {
     const construct = GRAPH_PIPELINES.find(p => p.id === 'construct')!
     expect(construct.topicsAfter).toBe(KNOWLEDGE_BASES.length)
     expect(construct.topicsAfter).toBe(DOMAINS.length)
+  })
+
+  it('cites only real catalogue entries in the run history', () => {
+    for (const h of RUN_HISTORY) {
+      expect(entryById(h.entryId), `${h.id} cites unknown entry "${h.entryId}"`).toBeDefined()
+    }
+  })
+
+  it('matches the run history\'s kind to its cited catalogue entry\'s kind', () => {
+    for (const h of RUN_HISTORY) {
+      const entry = entryById(h.entryId)!
+      expect(h.kind, `${h.id} claims kind "${h.kind}" but ${h.entryId} is "${entry.kind}"`).toBe(entry.kind)
+    }
   })
 })
