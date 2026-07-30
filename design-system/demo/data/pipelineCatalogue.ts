@@ -50,7 +50,7 @@ export interface CatalogueSection {
  * Operates only on strings already present in the pipeline definitions —
  * never reads a clock.
  */
-const parseRuntimeMinutes = (runtime: string): number => {
+export const parseRuntimeMinutes = (runtime: string): number => {
   const hours = /(\d+)\s*h\b/.exec(runtime)
   const minutes = /(\d+)\s*min\b/.exec(runtime)
   return (hours ? Number(hours[1]) * 60 : 0) + (minutes ? Number(minutes[1]) : 0)

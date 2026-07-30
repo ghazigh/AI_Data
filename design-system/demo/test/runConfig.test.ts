@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { defaultConfigFor, projectRun } from '../runConfig'
+import { defaultConfigFor, projectRun, supportsRedaction, supportsChunkStrategy } from '../runConfig'
 import { CATALOGUE_SECTIONS, allEntries, entryById } from '../data/pipelineCatalogue'
 
-const structuring = CATALOGUE_SECTIONS[0].entries[0]
+const structuring = CATALOGUE_SECTIONS[0].entries[0] // tables: has a redaction stage (Mask), no chunk stage
 const construct = entryById('graph-construct')!
 const remediation = CATALOGUE_SECTIONS[2].entries[0]
+const documents = entryById('structuring-documents')! // no redaction stage at all
+const email = entryById('structuring-email')! // has a genuine Chunk stage
 
 describe('defaultConfigFor', () => {
   it('starts at full scope with every source selected', () => {
@@ -22,6 +24,34 @@ describe('defaultConfigFor', () => {
 
   it('defaults remediation to a real run, not a dry run', () => {
     expect(defaultConfigFor(remediation).dryRun).toBe(false)
+  })
+})
+
+describe('supportsRedaction', () => {
+  it('is true for a structuring entry with a masking stage', () => {
+    expect(supportsRedaction(structuring)).toBe(true)
+  })
+
+  it('is false for a structuring entry with no masking or redaction stage', () => {
+    expect(supportsRedaction(documents)).toBe(false)
+  })
+
+  it('is false outside structuring', () => {
+    expect(supportsRedaction(construct)).toBe(false)
+  })
+})
+
+describe('supportsChunkStrategy', () => {
+  it('is true for a structuring entry with a Chunk stage', () => {
+    expect(supportsChunkStrategy(email)).toBe(true)
+  })
+
+  it('is false for a structuring entry with no Chunk stage', () => {
+    expect(supportsChunkStrategy(structuring)).toBe(false)
+  })
+
+  it('is false outside structuring', () => {
+    expect(supportsChunkStrategy(construct)).toBe(false)
   })
 })
 
@@ -54,11 +84,16 @@ describe('projectRun', () => {
     expect(p.runnable).toBe(true)
   })
 
-  it('adds fitting stages and multiplies runtime when re-fitting the topic model', () => {
+  // graph-construct's own baseline (Embed + Reduce dimensions + Cluster + Define topics) IS a
+  // from-scratch fit. refitModels: true is that baseline, unchanged. refitModels: false (the
+  // default) substitutes the fitting stages for their far cheaper applying equivalents, so
+  // reusing costs strictly less than fitting and fitting is the choice that warns.
+  it('reusing fitted models substitutes cheaper applying stages and costs less than a refit', () => {
     const reuse = projectRun(construct, { ...defaultConfigFor(construct), refitModels: false })
     const refit = projectRun(construct, { ...defaultConfigFor(construct), refitModels: true })
-    expect(refit.stages.length).toBeGreaterThan(reuse.stages.length)
-    expect(refit.minutes).toBeGreaterThan(reuse.minutes)
+    expect(reuse.stages.map(s => s.name)).not.toEqual(refit.stages.map(s => s.name))
+    expect(reuse.minutes).toBeLessThan(refit.minutes)
+    expect(refit.minutes).toBe(construct.baselineMinutes)
   })
 
   it('warns that re-fitting requires rebinding every agent', () => {
@@ -68,10 +103,18 @@ describe('projectRun', () => {
     expect(reuse.warnings).toHaveLength(0)
   })
 
-  it('changes the chunk count with the chunk strategy', () => {
+  it('changes the chunk count with the chunk strategy, on a chain that actually chunks', () => {
+    const clause = projectRun(email, { ...defaultConfigFor(email), chunkStrategy: 'clause' })
+    const fixed = projectRun(email, { ...defaultConfigFor(email), chunkStrategy: 'fixed' })
+    expect(fixed.records).not.toBe(clause.records)
+  })
+
+  it('leaves records unchanged across chunk strategies on a chain with no chunk stage', () => {
     const clause = projectRun(structuring, { ...defaultConfigFor(structuring), chunkStrategy: 'clause' })
     const fixed = projectRun(structuring, { ...defaultConfigFor(structuring), chunkStrategy: 'fixed' })
-    expect(fixed.records).not.toBe(clause.records)
+    const semantic = projectRun(structuring, { ...defaultConfigFor(structuring), chunkStrategy: 'semantic' })
+    expect(fixed.records).toBe(clause.records)
+    expect(semantic.records).toBe(clause.records)
   })
 
   it('drops the redaction stage when redaction is turned off, and warns', () => {
@@ -81,11 +124,25 @@ describe('projectRun', () => {
     expect(off.warnings.join(' ')).toMatch(/personal data/i)
   })
 
+  it('leaves stages and warnings unchanged when redaction is turned off on a chain with no redaction stage', () => {
+    const on = projectRun(documents, { ...defaultConfigFor(documents), redact: true })
+    const off = projectRun(documents, { ...defaultConfigFor(documents), redact: false })
+    expect(off.stages.map(s => s.name)).toEqual(on.stages.map(s => s.name))
+    expect(off.warnings).toHaveLength(0)
+  })
+
   it('claims no readiness delta on a dry run', () => {
     const real = projectRun(remediation, { ...defaultConfigFor(remediation), dryRun: false })
     const dry = projectRun(remediation, { ...defaultConfigFor(remediation), dryRun: true })
     expect(real.readinessDelta).toBe(remediation.readinessDelta)
     expect(dry.readinessDelta).toBe(0)
+  })
+
+  it('has no effect outside remediation', () => {
+    const real = projectRun(construct, { ...defaultConfigFor(construct), dryRun: false })
+    const dry = projectRun(construct, { ...defaultConfigFor(construct), dryRun: true })
+    expect(dry.readinessDelta).toBe(real.readinessDelta)
+    expect(dry.warnings.join(' ')).not.toMatch(/written/i)
   })
 
   it('keeps stage weights summing to one for every entry and config', () => {
