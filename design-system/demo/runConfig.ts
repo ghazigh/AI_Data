@@ -5,6 +5,21 @@ import { GRAPH_PIPELINES } from './data/graphPipelines'
 
 export type ChunkStrategy = 'clause' | 'fixed' | 'semantic'
 
+/**
+ * Minutes -> a short display string, consistent with the tilde-estimated
+ * runtimes already used across the modality and graph pipelines
+ * ("~1 h 36 min", "~48 min"). Lives here, not beside a single screen, because
+ * both the pipeline table's history-derived labels and the run history
+ * drawer read it.
+ */
+export const formatMinutes = (minutes: number): string => {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `~${m} min`
+  if (m === 0) return `~${h} h`
+  return `~${h} h ${m} min`
+}
+
 export interface RunConfig {
   sourceIds: string[]
   /** Structuring only, and only where the chain has a masking or redaction stage. */

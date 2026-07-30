@@ -1,11 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PageHead } from '../components/PageHead'
-import { StatTile } from '../components/StatTile'
-import { RunningNow } from '../components/RunningNow'
-import { CatalogueSection } from '../components/CatalogueSection'
-import { RunHistoryTable } from '../components/RunHistoryTable'
-import { CATALOGUE_SECTIONS, allEntries } from '../data/pipelineCatalogue'
-import { RUN_HISTORY } from '../data/runHistory'
+import { PipelineTable } from '../components/PipelineTable'
+import { allEntries, type SectionKind } from '../data/pipelineCatalogue'
+import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
 
 /**
@@ -15,11 +12,30 @@ import { useDemoState } from '../state'
  */
 const TICK_MS = 900
 
+const KIND_OPTIONS: { value: SectionKind | ''; label: string }[] = [
+  { value: '', label: 'All kinds' },
+  { value: 'structuring', label: 'Structuring' },
+  { value: 'graph', label: 'Graph' },
+  { value: 'remediation', label: 'Remediation' },
+]
+
+// Labelled "Running", not "In progress" — the count line above states "N in
+// progress" only while something actually runs, and this option must not
+// make that phrase permanently present on the page via a select's own
+// (always-in-the-DOM) option text.
+const STATUS_OPTIONS: { value: ExecutionStatus | ''; label: string }[] = [
+  { value: '', label: 'Any status' },
+  { value: 'running', label: 'Running' },
+  { value: 'succeeded', label: 'Succeeded' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'none', label: 'Not yet run' },
+]
+
 /**
- * A console: what can be run, what is running, what has run. This is the screen
- * the rest of the catalogue, run-configuration and run-lifecycle work built for —
- * an operator lands here to select, configure, run and track pipelines, not to
- * read about how the platform works.
+ * Every pipeline in the catalogue, one flat filterable table — no console, no
+ * selection, no configure-and-run drawer. An operator lands here to find a
+ * pipeline and open it; running one happens in that pipeline's own workspace.
  */
 export function Pipelines() {
   const { runs, advanceRuns } = useDemoState()
@@ -39,44 +55,63 @@ export function Pipelines() {
     return () => clearInterval(id)
   }, [hasRunning])
 
-  const available = allEntries().length
+  const [kind, setKind] = useState<SectionKind | ''>('')
+  const [status, setStatus] = useState<ExecutionStatus | ''>('')
+  const [search, setSearch] = useState('')
+
   const running = runs.filter(r => r.status === 'running').length
-  // Labeled "Succeeded", and counts only succeeded runs, on purpose: the run
-  // history table below lists every terminal run (succeeded, failed and
-  // cancelled), so a tile titled "Completed" that counted all of them would
-  // read as the same number as the table's row count — it isn't, since some
-  // rows failed or were cancelled. Naming the tile after exactly what it
-  // counts keeps the two numbers from looking like they disagree.
-  const succeeded =
-    runs.filter(r => r.status === 'completed').length +
-    RUN_HISTORY.filter(h => h.outcome === 'succeeded').length
+
+  const query = search.trim().toLowerCase()
+  const shown = allEntries().filter(e => {
+    if (kind && e.kind !== kind) return false
+    if (status && lastExecutionFor(e.id, runs).status !== status) return false
+    if (query && !`${e.name} ${e.summary}`.toLowerCase().includes(query)) return false
+    return true
+  })
 
   return (
     <>
       <PageHead eyebrow="Stage 03 — Pipelines" title="Pipelines" />
 
-      <div className="dm-tiles is-3">
-        <StatTile label="Pipelines available" value={String(available)}
-          sub="Across structuring, graph and remediation" />
-        <StatTile label="Running" value={String(running)}
-          sub={running > 0 ? 'In progress on this screen' : 'Nothing in flight'} />
-        <StatTile label="Succeeded" value={String(succeeded)}
-          sub="This session and history combined" />
+      <p className="dm-pipe-count">
+        {`${shown.length} pipelines`}
+        {running > 0 ? ` · ${running} in progress` : ''}
+      </p>
+
+      <div className="dm-filterbar">
+        <input
+          className="dm-filter-search"
+          type="search"
+          value={search}
+          placeholder="Search pipelines"
+          aria-label="Search pipelines"
+          onChange={e => setSearch(e.target.value)}
+        />
+        <label className="dm-filter-select">
+          <span className="dm-eyebrow">Kind</span>
+          <select value={kind} onChange={e => setKind(e.target.value as SectionKind | '')}>
+            {KIND_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </label>
+        <label className="dm-filter-select">
+          <span className="dm-eyebrow">Status</span>
+          <select value={status} onChange={e => setStatus(e.target.value as ExecutionStatus | '')}>
+            {STATUS_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <div className="dm-section">
-        <RunningNow />
-      </div>
-
-      {CATALOGUE_SECTIONS.map(section => (
-        <div className="dm-section" key={section.kind}>
-          <CatalogueSection section={section} />
+      {shown.length === 0 ? (
+        <p className="dm-list-empty">No pipelines match these filters.</p>
+      ) : (
+        <div className="dm-panel">
+          <PipelineTable entries={shown} prefix="" />
         </div>
-      ))}
-
-      <div className="dm-section">
-        <RunHistoryTable />
-      </div>
+      )}
     </>
   )
 }

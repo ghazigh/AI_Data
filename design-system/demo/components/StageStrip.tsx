@@ -8,9 +8,9 @@ export function StageStrip({ prefix }: { prefix: string }) {
   const { sources, runs } = useDemoState()
   const connectedCount = sources.filter(s => s.status === 'connected').length
   const blockedCount = USE_CASES.filter(u => u.status === 'blocked').length
-  // Same running/available shape the Pipelines console itself reports in its
-  // "Running" and "Pipelines available" tiles (see Pipelines.tsx) — guarded
-  // against disagreeing in crossScreen.test.tsx.
+  // Same running/available shape the Pipelines list itself reports in its
+  // own count line (see Pipelines.tsx) — guarded against disagreeing in
+  // crossScreen.test.tsx.
   const runningCount = runs.filter(r => r.status === 'running').length
   const availableCount = allEntries().length
 

@@ -1,0 +1,81 @@
+import { describe, it, expect } from 'vitest'
+import { render, screen, within, fireEvent } from '@testing-library/react'
+import { DemoStateProvider } from '../state'
+import { Pipelines } from '../screens/Pipelines'
+import { allEntries } from '../data/pipelineCatalogue'
+
+const renderScreen = () => render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
+
+describe('Pipelines console', () => {
+  // The whole point of this task: the screen names itself operationally, and
+  // carries none of the marketing language the user objected to.
+  it('titles the screen operationally — no heading reads as an explanation of the platform', () => {
+    renderScreen()
+    for (const heading of screen.getAllByRole('heading')) {
+      expect(heading.textContent, heading.textContent ?? '').not.toMatch(/^how /i)
+    }
+    expect(screen.queryByText(/agent-ready/i)).toBeNull()
+    expect(screen.queryByText(/two shapes/i)).toBeNull()
+    expect(screen.getByRole('heading', { level: 1, name: 'Pipelines' })).toBeDefined()
+  })
+
+  it('removes the old descriptive panels entirely', () => {
+    renderScreen()
+    expect(screen.queryByRole('region', { name: /two shapes an agent can read/i })).toBeNull()
+    expect(screen.queryByRole('region', { name: /adding a dataset to the graph/i })).toBeNull()
+    expect(screen.queryByRole('region', { name: /how the graph.s topics are discovered/i })).toBeNull()
+  })
+})
+
+describe('Pipelines list', () => {
+  it('lists every pipeline in one table', () => {
+    renderScreen()
+    const table = screen.getByRole('table')
+    expect(within(table).getAllByRole('row')).toHaveLength(allEntries().length + 1)
+  })
+
+  it('counts the pipelines above the table, with no in-progress clause when nothing runs', () => {
+    renderScreen()
+    expect(screen.getByText(`${allEntries().length} pipelines`)).toBeDefined()
+    expect(screen.queryByText(/in progress/i)).toBeNull()
+  })
+
+  it('links each row to its workspace', () => {
+    renderScreen()
+    const entry = allEntries()[0]
+    const link = screen.getByRole('link', { name: entry.name })
+    expect(link.getAttribute('href')).toBe(`pipelines/${entry.id}/`)
+  })
+
+  it('filters the table by kind', () => {
+    renderScreen()
+    fireEvent.change(screen.getByLabelText(/kind/i), { target: { value: 'graph' } })
+    const rows = within(screen.getByRole('table')).getAllByRole('row')
+    expect(rows).toHaveLength(allEntries().filter(e => e.kind === 'graph').length + 1)
+  })
+
+  it('filters the table by search text', () => {
+    renderScreen()
+    fireEvent.change(screen.getByLabelText(/search/i), { target: { value: 'topic model' } })
+    expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(2)
+  })
+
+  it('says so when a filter matches nothing', () => {
+    renderScreen()
+    fireEvent.change(screen.getByLabelText(/search/i), { target: { value: 'zzzz' } })
+    expect(screen.getByText(/no pipelines match/i)).toBeDefined()
+  })
+
+  it('reports each pipeline last execution from its history record', () => {
+    renderScreen()
+    const row = screen.getByRole('link', { name: 'Tables structuring' }).closest('tr')!
+    expect(within(row).getByText('12 min ago')).toBeDefined()
+    expect(within(row).getByText('Succeeded')).toBeDefined()
+  })
+
+  it('offers no way to run a pipeline from the list', () => {
+    renderScreen()
+    expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
+    expect(screen.queryByRole('button', { name: /configure and run/i })).toBeNull()
+  })
+})

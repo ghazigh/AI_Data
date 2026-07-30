@@ -44,6 +44,17 @@ const normalizeStyleAttrs = (html: string): string =>
 // compared, since that could carry a real divergence.
 const stripEmptyComments = (html: string): string => html.split('<!-- -->').join('')
 
+// A fourth serializer asymmetry, specific to a controlled <select>: react-dom/server
+// bakes the selected option's state into the markup as a literal `selected=""`
+// attribute, since a static HTML string has no other way to represent "this is the
+// current value" before any script runs. A fresh client render instead sets the
+// selection through the live DOM (`select.value` / `option.selected`) once mounted,
+// which never writes the HTML attribute back — the same "attribute vs. live
+// property" split that motivates normalizeStyleAttrs above. Both sides still encode
+// the same selected option (both start from the same static initial useState), so
+// stripping the attribute costs nothing in strictness.
+const stripSelectedAttrs = (html: string): string => html.replace(/ selected=""/g, '')
+
 describe('SSR and client agree', () => {
   for (const route of ALL_ROUTES) {
     it(`renders identical markup for "${route.slug || 'index'}"`, () => {
@@ -57,7 +68,7 @@ describe('SSR and client agree', () => {
       const normalized = document.createElement('div')
       normalized.innerHTML = server
       const { container } = render(<DemoApp slug={route.slug} prefix={prefix} />)
-      const clean = (html: string) => stripEmptyComments(normalizeStyleAttrs(html))
+      const clean = (html: string) => stripSelectedAttrs(stripEmptyComments(normalizeStyleAttrs(html)))
       expect(clean(container.innerHTML)).toBe(clean(normalized.innerHTML))
     })
   }
