@@ -34,10 +34,16 @@ const sampleFor = (entry: CatalogueEntry) => {
 
 export interface ConfigureRunDrawerProps {
   entries: CatalogueEntry[]
-  onClose: () => void
+  /** The ×, Escape, or a scrim click — dismissing without running anything.
+   * Must never discard the caller's selection. */
+  onCancel: () => void
+  /** Every entry has been handed to startRun. Distinct from onCancel so a
+   * completed run can clear the caller's selection while a mere dismissal
+   * never does. */
+  onRun: () => void
 }
 
-export function ConfigureRunDrawer({ entries, onClose }: ConfigureRunDrawerProps) {
+export function ConfigureRunDrawer({ entries, onCancel, onRun }: ConfigureRunDrawerProps) {
   const { startRun } = useDemoState()
   // One RunConfig per entry, seeded once from the entry's own default and
   // never re-seeded while this drawer is mounted — CatalogueSection only
@@ -66,11 +72,11 @@ export function ConfigureRunDrawer({ entries, onClose }: ConfigureRunDrawerProps
 
   const runAll = () => {
     for (const entry of entries) startRun(entry, configs[entry.id])
-    onClose()
+    onRun()
   }
 
   return (
-    <Drawer open title={title} onClose={onClose}>
+    <Drawer open title={title} onClose={onCancel}>
       {projections.map(({ entry, projection }) => {
         const config = configs[entry.id]
         const hasOptions =
@@ -172,12 +178,16 @@ export function ConfigureRunDrawer({ entries, onClose }: ConfigureRunDrawerProps
             </p>
 
             <div>
+              {/* Name, share and runtime only — the catalogue's own stage.detail
+                  is documentation prose written for the "how this works" panels
+                  elsewhere, not this operational run-configuration view, and for
+                  graph-extend specifically it also describes the *general* case
+                  of adding a dataset ("the new source's chunks") in a way that
+                  would contradict this scoped source already being claimed by
+                  graph-construct if it were echoed here. */}
               {projection.stages.map(stage => (
                 <div className="dm-stage-row" key={stage.name}>
-                  <div>
-                    <p className="dm-stage-name">{stage.name}</p>
-                    <p className="dm-stage-detail">{stage.detail}</p>
-                  </div>
+                  <p className="dm-stage-name">{stage.name}</p>
                   <p className="dm-stage-count">{Math.round(stage.weight * 100)}%</p>
                   <p className="dm-stage-runtime">{formatMinutes(Math.round(stage.weight * projection.minutes))}</p>
                 </div>

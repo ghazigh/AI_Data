@@ -92,7 +92,10 @@ const ASSIGN_APPLY_RATIO =
 /** Reusing the existing topic labels is a lookup, not a fit — near-zero and does not scale with volume. */
 const REUSE_LABELS_MINUTES = 1
 
-const REFIT_WARNING =
+// Exported so any UI that states this consequence ahead of the drawer — the
+// catalogue section's standing warning, for one — quotes this exact string
+// rather than a separately-authored paraphrase that could drift from it.
+export const REFIT_WARNING =
   'Re-fitting reshuffles the topic space — rebind every agent bound to a topic after this run.'
 
 /**

@@ -3,6 +3,7 @@ import { Panel } from './Panel'
 import { DataTable, type Column } from './DataTable'
 import { ConfigureRunDrawer } from './ConfigureRunDrawer'
 import type { CatalogueEntry, CatalogueSection as CatalogueSectionData } from '../data/pipelineCatalogue'
+import { REFIT_WARNING } from '../runConfig'
 
 /**
  * Minutes -> a short display string, consistent with the tilde-estimated
@@ -106,9 +107,11 @@ export function CatalogueSection({ section }: { section: CatalogueSectionData })
       {refitEntries.length > 0 && (
         <div className="dm-blocked">
           <p className="dm-eyebrow">Re-fit warning</p>
+          {/* Quotes runConfig's REFIT_WARNING verbatim — the drawer's own live
+              warning renders the same string via projectRun, so the two
+              surfaces can never state this consequence two different ways. */}
           <p>
-            {refitEntries.map(e => e.name).join(', ')} re-fits the topic model and breaks every agent binding —
-            rebind them after running it.
+            {refitEntries.map(e => e.name).join(', ')}: {REFIT_WARNING}
           </p>
         </div>
       )}
@@ -126,7 +129,13 @@ export function CatalogueSection({ section }: { section: CatalogueSectionData })
       {drawerOpen && selectedEntries.length > 0 && (
         <ConfigureRunDrawer
           entries={selectedEntries}
-          onClose={() => {
+          // Dismissing (×, Escape, scrim) only closes the drawer — an operator
+          // backing out of a review should still find their rows selected.
+          // Only a completed run clears the selection, since that's the one
+          // path where re-offering the same rows to configure again would be
+          // wrong.
+          onCancel={() => setDrawerOpen(false)}
+          onRun={() => {
             setDrawerOpen(false)
             setSelected(new Set())
           }}
