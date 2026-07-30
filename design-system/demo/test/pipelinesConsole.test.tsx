@@ -41,12 +41,19 @@ describe('Pipelines console', () => {
   })
 
   it('reports a summary strip of pipelines available, running and completed', () => {
-    renderScreen()
+    const { container } = renderScreen()
     const available = CATALOGUE_SECTIONS.flatMap(s => s.entries).length
-    expect(screen.getByText('Pipelines available')).toBeDefined()
-    expect(screen.getByText(String(available))).toBeDefined()
-    expect(screen.getByText('Running')).toBeDefined()
-    expect(screen.getByText('Completed')).toBeDefined()
+    // Scoped to the strip: "Succeeded" is also the outcome pill on every
+    // successful row in the history table below, so an unscoped query matches
+    // several elements and throws.
+    const strip = within(container.querySelector('.dm-tiles') as HTMLElement)
+    expect(strip.getByText('Pipelines available')).toBeDefined()
+    expect(strip.getByText(String(available))).toBeDefined()
+    expect(strip.getByText('Running')).toBeDefined()
+    // "Succeeded", not "Completed": the tile counts only successful runs, so a
+    // label of "Completed" would disagree with the history table, which also
+    // lists failed and cancelled runs.
+    expect(strip.getByText('Succeeded')).toBeDefined()
   })
 
   it('invites the operator to select a pipeline when nothing is running', () => {

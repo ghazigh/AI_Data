@@ -12,7 +12,7 @@ import { AGENTS, AUDIT, POLICIES } from '../data/governance'
 import { ACTIVITY } from '../data/activity'
 import { MODALITY_PIPELINES, sourcesForModality } from '../data/modalities'
 import { GRAPH_PIPELINES } from '../data/graphPipelines'
-import { entryById } from '../data/pipelineCatalogue'
+import { allEntries, entryById } from '../data/pipelineCatalogue'
 import { RUN_HISTORY } from '../data/runHistory'
 import type { Modality } from '../data/types'
 
@@ -223,6 +223,32 @@ describe('the numbers agree across screens', () => {
     for (const h of RUN_HISTORY) {
       const entry = entryById(h.entryId)!
       expect(h.kind, `${h.id} claims kind "${h.kind}" but ${h.entryId} is "${entry.kind}"`).toBe(entry.kind)
+    }
+  })
+
+  it('matches the run history\'s entryName to its cited catalogue entry\'s name', () => {
+    for (const h of RUN_HISTORY) {
+      const entry = entryById(h.entryId)!
+      expect(h.entryName, `${h.id} names "${h.entryName}" but ${h.entryId} is "${entry.name}"`).toBe(entry.name)
+    }
+  })
+
+  // lastRun must be structurally incapable of disagreeing with RUN_HISTORY: it is
+  // derived as the finished value of this entry's most recent RUN_HISTORY record
+  // (successful, failed or cancelled — "last run" means the last time it ran, not
+  // just the last time it succeeded), or 'Not yet run' when no record exists.
+  it("derives every entry's lastRun from its RUN_HISTORY record instead of a hand-authored string", () => {
+    for (const e of allEntries()) {
+      const record = RUN_HISTORY.find(h => h.entryId === e.id)
+      const expected = record?.finished ?? 'Not yet run'
+      expect(e.lastRun, e.name).toBe(expected)
+    }
+  })
+
+  it("never claims 'Not yet run' for an entry that has a RUN_HISTORY record", () => {
+    for (const h of RUN_HISTORY) {
+      const entry = entryById(h.entryId)!
+      expect(entry.lastRun, `${entry.name} has run ${h.id} on record but still reads 'Not yet run'`).not.toBe('Not yet run')
     }
   })
 })

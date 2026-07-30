@@ -41,7 +41,13 @@ export function Pipelines() {
 
   const available = allEntries().length
   const running = runs.filter(r => r.status === 'running').length
-  const completed =
+  // Labeled "Succeeded", and counts only succeeded runs, on purpose: the run
+  // history table below lists every terminal run (succeeded, failed and
+  // cancelled), so a tile titled "Completed" that counted all of them would
+  // read as the same number as the table's row count — it isn't, since some
+  // rows failed or were cancelled. Naming the tile after exactly what it
+  // counts keeps the two numbers from looking like they disagree.
+  const succeeded =
     runs.filter(r => r.status === 'completed').length +
     RUN_HISTORY.filter(h => h.outcome === 'succeeded').length
 
@@ -54,7 +60,7 @@ export function Pipelines() {
           sub="Across structuring, graph and remediation" />
         <StatTile label="Running" value={String(running)}
           sub={running > 0 ? 'In progress on this screen' : 'Nothing in flight'} />
-        <StatTile label="Completed" value={String(completed)}
+        <StatTile label="Succeeded" value={String(succeeded)}
           sub="This session and history combined" />
       </div>
 

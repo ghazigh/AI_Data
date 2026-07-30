@@ -3,6 +3,7 @@ import { SOURCES } from './sources'
 import { MODALITY_PIPELINES, sourcesForModality } from './modalities'
 import { GRAPH_PIPELINES } from './graphPipelines'
 import { PLAN, type StepKind } from './pipelines'
+import { RUN_HISTORY } from './runHistory'
 
 export type SectionKind = 'structuring' | 'graph' | 'remediation'
 
@@ -76,6 +77,17 @@ const sourceIdsForDomain = (domain: DomainKey): string[] =>
     .filter(s => s.domains.includes(domain))
     .map(s => s.id)
 
+/**
+ * lastRun is derived, never hand-authored: the `finished` value of this entry's
+ * most recent RUN_HISTORY record — successful, failed or cancelled, since "last
+ * run" means the last time the pipeline ran, not just the last time it succeeded
+ * — or 'Not yet run' when no record exists. RUN_HISTORY carries at most one
+ * record per entryId today (guarded in integrity.test.ts); if that ever changes,
+ * this takes the first match in array order.
+ */
+const lastRunFor = (entryId: string): string =>
+  RUN_HISTORY.find(h => h.entryId === entryId)?.finished ?? 'Not yet run'
+
 // ---- Structuring: one entry per modality pipeline, run on a schedule because ----
 // ---- documents of every modality keep arriving.                              ----
 
@@ -97,16 +109,6 @@ const STRUCTURING_SCHEDULE: Record<Modality, string> = {
   images: 'Runs every 12 hours',
 }
 
-const STRUCTURING_LAST_RUN: Record<Modality, string> = {
-  streams: '12 min ago',
-  tickets: '22 min ago',
-  email: '1 h ago',
-  documents: '50 min ago',
-  tables: '3 h ago',
-  transcripts: '4 h ago',
-  images: '6 h ago',
-}
-
 const STRUCTURING_SECTION: CatalogueSection = {
   kind: 'structuring',
   title: 'Structuring',
@@ -121,7 +123,7 @@ const STRUCTURING_SECTION: CatalogueSection = {
     baselineRecords: pipeline.volume,
     baselineMinutes: chainMinutes(pipeline.stages),
     schedule: STRUCTURING_SCHEDULE[pipeline.modality],
-    lastRun: STRUCTURING_LAST_RUN[pipeline.modality],
+    lastRun: lastRunFor(`structuring-${pipeline.modality}`),
   })),
 }
 
@@ -152,11 +154,6 @@ const GRAPH_SOURCE_IDS: Record<'construct' | 'extend', string[]> = {
   extend: ['sharepoint-uw-guidelines'],
 }
 
-const GRAPH_LAST_RUN: Record<'construct' | 'extend', string> = {
-  construct: 'Not re-run since the initial build',
-  extend: '6 days ago',
-}
-
 const embedCount = (stages: { name: string; count: number }[]): number =>
   stages.find(s => s.name === 'Embed')!.count
 
@@ -174,7 +171,12 @@ const GRAPH_SECTION: CatalogueSection = {
     baselineRecords: embedCount(pipeline.stages),
     baselineMinutes: chainMinutes(pipeline.stages),
     warnsOnRefit: pipeline.id === 'construct' ? true : undefined,
-    lastRun: GRAPH_LAST_RUN[pipeline.id],
+    // graph-construct's only history record (hist-7) is a *cancelled* re-fit —
+    // under the lastRunFor rule above that reads as that run's own timestamp
+    // ("11 days ago"), which is accurate: it is the last time this pipeline ran,
+    // cancellation and all. No bespoke "not re-run since the initial build"
+    // prose lives here anymore; RUN_HISTORY is the only source of truth.
+    lastRun: lastRunFor(`graph-${pipeline.id}`),
   })),
 }
 
@@ -236,7 +238,10 @@ const REMEDIATION_SECTION: CatalogueSection = {
     baselineMinutes: parseRuntimeMinutes(step.runtime),
     readinessDelta: step.delta,
     targetDomain: step.domain,
-    lastRun: 'Not yet run',
+    // Half the plan has already been run (see RUN_HISTORY's plan-p1/p3/p4
+    // records) and half hasn't — that split is the honest state of the plan,
+    // not something to paper over with a blanket 'Not yet run'.
+    lastRun: lastRunFor(`plan-${step.id}`),
   })),
 }
 
