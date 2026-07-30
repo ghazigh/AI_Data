@@ -276,27 +276,28 @@
 .dm-connect-lead { font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
 .dm-field { display: flex; flex-direction: column; gap: var(--dl-space-2); margin-top: var(--dl-space-5); }
 .dm-field span { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-4); }
-.dm-field input { padding: 11px 13px; border: var(--dl-hairline); background: var(--dl-canvas); font-size: 13px; color: var(--dl-ink); }
-.dm-field input:focus { border-color: var(--dl-blue); outline: none; }
+.dm-field input, .dm-field select { padding: 11px 13px; border: var(--dl-hairline); background: var(--dl-canvas); font-size: 13px; color: var(--dl-ink); }
+.dm-field input:focus, .dm-field select:focus { border-color: var(--dl-blue); outline: none; }
 .dm-connect-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: var(--dl-space-6); }
 
-/* ===== pipelines ===== */
-.dm-run { padding: var(--dl-space-5) 18px; }
+/* ===== pipelines console ===== */
 .dm-progress { position: relative; height: 8px; background: var(--dl-grey-1); }
 .dm-progress i { position: absolute; inset: 0 auto 0 0; background: var(--dl-blue); transition: width var(--dl-ease); }
 .dm-run-meta { margin-top: var(--dl-space-3); font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-4); }
-.dm-plan li { display: grid; grid-template-columns: 1fr 110px 150px 110px 106px; gap: var(--dl-space-4); align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--dl-grey-1); }
-.dm-plan li:last-child { border-bottom: 0; }
+/* .dm-plan-t / .dm-plan-d also carry the pipeline name and summary in the
+   catalogue section's own table (CatalogueSection.tsx) — one row treatment
+   shared across every list of pipelines on this screen. */
 .dm-plan-t { font-size: 13px; font-weight: 600; }
 .dm-plan-d { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
-.dm-plan-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-small); letter-spacing: -0.02em; text-align: right; }
-.dm-plan-count small { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-plan-delta { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-blue); text-align: right; }
-.dm-plan-runtime { font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-4); text-align: right; }
-.dm-plan .dm-btn { padding: 7px 14px; font-size: 11.5px; }
-.dm-plan-running { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
-.dm-plan-running .dm-progress { width: 100%; }
-.dm-plan-running .dm-btn { width: 100%; justify-content: center; opacity: 0.6; cursor: default; }
+
+.dm-run-empty { padding: var(--dl-space-4) 18px; font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-runlist li { display: grid; grid-template-columns: 1fr 240px 96px; gap: var(--dl-space-5); align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--dl-grey-1); }
+.dm-runlist li:last-child { border-bottom: 0; }
+.dm-run-name { font-size: 13px; font-weight: 600; }
+.dm-run-stage { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
+.dm-run-progress { display: flex; flex-direction: column; gap: 6px; }
+.dm-run-progress .dm-run-meta { margin-top: 0; }
+.dm-runlist .dm-btn { justify-self: end; padding: 7px 14px; font-size: 11.5px; }
 
 /* ===== graph canvas ===== */
 .dm-canvas { position: relative; border: var(--dl-hairline); background: var(--dl-paper); }
@@ -388,38 +389,31 @@
 .dm-result-sub { display: block; margin-top: 2px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
 .dm-results-empty { padding: 11px 14px; font-size: 12.5px; color: var(--dl-grey-4); }
 
-/* ===== modality pipelines ===== */
-.dm-modalities li { display: grid; grid-template-columns: 210px 1fr 300px; gap: var(--dl-space-5); align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--dl-grey-1); }
-.dm-modalities li:last-child { border-bottom: 0; }
-.dm-modality-name button { background: none; border: 0; padding: 0; font: inherit; font-size: 13px; font-weight: 600; color: inherit; text-align: left; cursor: pointer; }
-.dm-modality-name button:hover { color: var(--dl-blue); }
-.dm-modality-scale { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-modality-chain { font-size: var(--dl-text-label); color: var(--dl-grey-4); line-height: 1.6; }
-.dm-modality-chain b { font-weight: 600; color: var(--dl-ink); }
-.dm-modality-out { font-size: 12.5px; }
+/* ===== stage detail rows (configure drawer + run history drawer) ===== */
 .dm-stage-row { display: grid; grid-template-columns: 1fr 96px 84px; gap: var(--dl-space-4); align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--dl-grey-1); }
 .dm-stage-row:last-child { border-bottom: 0; }
 .dm-stage-name { font-size: 13px; font-weight: 600; }
 .dm-stage-name .dm-pill { margin-left: var(--dl-space-2); vertical-align: middle; }
 .dm-stage-detail { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
-/* Shared with .dm-gpipe-count / .dm-gpipe-runtime below, so the two panels'
-   number treatment cannot drift apart. */
-.dm-stage-count, .dm-gpipe-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
-.dm-stage-count em, .dm-gpipe-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-stage-runtime, .dm-gpipe-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
+.dm-stage-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
+.dm-stage-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-stage-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
 .dm-sample { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dl-space-4); margin-top: var(--dl-space-4); }
 .dm-sample pre { margin: 0; padding: var(--dl-space-3); border: var(--dl-hairline); background: var(--dl-canvas); font-family: var(--dl-font-mono); font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; overflow-x: auto; }
 .dm-sample figcaption { margin-top: var(--dl-space-2); font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-grey-3); }
 
-/* ===== graph construction pipelines ===== */
+/* ===== catalogue sections + configure drawer ===== */
+/* The section's own "what kind of thing these are" line — reused for the
+   run-history drawer's stage-count summary below via .dm-uc-summary instead,
+   so this one stays scoped to CatalogueSection. */
 .dm-gpipe-lead { padding: 14px 18px 0; font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
-.dm-gpipe-topics { padding: var(--dl-space-3) 18px; font-family: var(--dl-font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-grey-3); }
-.dm-gpipe li { display: grid; grid-template-columns: 260px 1fr 132px 92px; gap: var(--dl-space-5); align-items: baseline; padding: 13px 18px; border-top: 1px solid var(--dl-grey-1); }
-.dm-gpipe-name { display: flex; align-items: center; gap: var(--dl-space-2); font-size: 13px; font-weight: 600; }
-.dm-gpipe-detail { font-size: 12px; line-height: 1.6; color: var(--dl-grey-4); }
-.dm-gpipe-artefact { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
-/* .dm-gpipe-count and .dm-gpipe-runtime are styled above, shared with .dm-stage-count / .dm-stage-runtime. */
-.dm-gpipe-residue { display: grid; grid-template-columns: 132px 1fr; gap: var(--dl-space-5); align-items: baseline; padding: 13px 18px; border-top: var(--dl-hairline); background: var(--dl-canvas); }
-.dm-gpipe-residue p { font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
+/* Action bar sits between the section's lead line and its table, so its
+   border pairs with the table below it the same way .dm-filterbar pairs
+   with the panel that follows it elsewhere in the demo. */
+.dm-cat-actions { display: flex; justify-content: flex-end; padding: 12px 18px; border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); background: var(--dl-blue-wash); }
+/* One row per scope source or per kind-specific option in the configure
+   drawer — a compact label+control row, reused for both. */
+.dm-cfg-check { display: flex; align-items: center; gap: var(--dl-space-2); padding: 7px 0; font-size: 12.5px; color: var(--dl-ink); }
+.dm-cfg-warning { margin-top: var(--dl-space-2); font-size: 12.5px; line-height: 1.5; color: var(--dl-warn-text); }
 
 html, body { margin: 0; background: var(--dl-canvas); }

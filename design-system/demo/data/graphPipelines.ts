@@ -153,7 +153,11 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
     stages: [
       {
         name: 'Embed',
-        detail: `Encodes the new source's chunks and rows into the same ${EMBEDDING_DIMENSIONS}-dimension space used at construction`,
+        // Scoped to a source graph-construct already claims as processed elsewhere in the
+        // catalogue (see GRAPH_SOURCE_IDS in pipelineCatalogue.ts) — this must never read as
+        // a claim of novelty, so it describes encoding the source's chunks and rows into the
+        // space that already exists, not a "new" one.
+        detail: `Encodes the source's chunks and rows into the existing ${EMBEDDING_DIMENSIONS}-dimension space built at construction`,
         mode: 'applies',
         reuses: 'the sentence encoder',
         count: 63_400,
@@ -162,7 +166,7 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
       },
       {
         name: 'Project',
-        detail: 'Transforms the new points through the already-fitted projection — no new fit, just placing them in the coordinate space built at construction time',
+        detail: 'Transforms the source\'s points through the already-fitted projection — no fit here, just placing them in the coordinate space built at construction time',
         mode: 'applies',
         reuses: 'the UMAP projection',
         count: 63_400,
@@ -171,7 +175,7 @@ export const GRAPH_PIPELINES: GraphPipeline[] = [
       },
       {
         name: 'Assign',
-        detail: 'Scores each new point against the existing cluster model; points that fall inside a known dense region join that topic',
+        detail: 'Scores each point against the existing cluster model; points that fall inside a known dense region join that topic',
         mode: 'applies',
         reuses: 'the HDBSCAN cluster model',
         count: 63_070,

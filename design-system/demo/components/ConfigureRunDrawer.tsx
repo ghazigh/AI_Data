@@ -178,16 +178,17 @@ export function ConfigureRunDrawer({ entries, onCancel, onRun }: ConfigureRunDra
             </p>
 
             <div>
-              {/* Name, share and runtime only — the catalogue's own stage.detail
-                  is documentation prose written for the "how this works" panels
-                  elsewhere, not this operational run-configuration view, and for
-                  graph-extend specifically it also describes the *general* case
-                  of adding a dataset ("the new source's chunks") in a way that
-                  would contradict this scoped source already being claimed by
-                  graph-construct if it were echoed here. */}
+              {/* An operator deciding whether to run this genuinely wants to know what
+                  each stage does, not just its share and runtime — so stage.detail
+                  renders here. graph-extend's own detail strings are written to hold
+                  up under exactly this scoping (see the comment beside its Embed stage
+                  in graphPipelines.ts), so echoing them is safe. */}
               {projection.stages.map(stage => (
                 <div className="dm-stage-row" key={stage.name}>
-                  <p className="dm-stage-name">{stage.name}</p>
+                  <div>
+                    <p className="dm-stage-name">{stage.name}</p>
+                    <p className="dm-stage-detail">{stage.detail}</p>
+                  </div>
                   <p className="dm-stage-count">{Math.round(stage.weight * 100)}%</p>
                   <p className="dm-stage-runtime">{formatMinutes(Math.round(stage.weight * projection.minutes))}</p>
                 </div>
