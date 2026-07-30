@@ -309,3 +309,17 @@
 
 /* ===== run history drawer ===== */
 .dm-cfg-warning { margin-top: var(--dl-space-2); font-size: 12.5px; line-height: 1.5; color: var(--dl-warn-text); }
+
+/* ===== pipeline workspace ===== */
+.dm-workspace-h { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--dl-space-5); margin-bottom: 18px; }
+.dm-workspace-h h1 { margin-top: 8px; font-family: var(--dl-font-display); font-size: 29px; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+.dm-workspace-summary { margin-top: 8px; max-width: 620px; font-size: 13px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-workspace-actions { display: flex; align-items: center; gap: var(--dl-space-5); flex: none; }
+
+.dm-tablist { display: flex; gap: var(--dl-space-5); border-bottom: var(--dl-hairline); margin-bottom: 18px; }
+.dm-tab { padding: 10px 1px; border: 0; border-bottom: 2px solid transparent; background: none; font-size: 13px; font-weight: 600; color: var(--dl-grey-4); cursor: pointer; }
+.dm-tab:hover { color: var(--dl-ink); }
+.dm-tab.is-on { border-bottom-color: var(--dl-ink); color: var(--dl-ink); }
+
+.dm-stage-list { padding-left: 20px; }
+.dm-stage-list li { padding: 5px 0; font-size: 13px; }

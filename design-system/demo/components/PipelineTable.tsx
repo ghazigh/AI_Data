@@ -5,7 +5,9 @@ import type { CatalogueEntry, SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
 
-const KIND_LABEL: Record<SectionKind, string> = {
+/** How a catalogue entry's kind reads, defined once — the table's Kind column
+ * and a pipeline's own workspace header must always agree on the label. */
+export const KIND_LABEL: Record<SectionKind, string> = {
   structuring: 'Structuring',
   graph: 'Graph',
   remediation: 'Remediation',
