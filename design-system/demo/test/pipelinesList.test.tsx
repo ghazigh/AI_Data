@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen, within, fireEvent } from '@testing-library/react'
-import { DemoStateProvider } from '../state'
+import { DemoStateProvider, useDemoState } from '../state'
 import { Pipelines } from '../screens/Pipelines'
-import { allEntries } from '../data/pipelineCatalogue'
+import { allEntries, entryById } from '../data/pipelineCatalogue'
+import { defaultConfigFor } from '../runConfig'
 
 const renderScreen = () => render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
 
@@ -35,16 +36,24 @@ describe('Pipelines list', () => {
   })
 
   it('counts the pipelines above the table, with no in-progress clause when nothing runs', () => {
-    renderScreen()
-    expect(screen.getByText(`${allEntries().length} pipelines`)).toBeDefined()
-    expect(screen.queryByText(/in progress/i)).toBeNull()
+    // Scoped to the count line itself: the status filter's own "In progress"
+    // option is legitimately in the DOM at all times (a select's closed
+    // options are never removed), so an unscoped text query for that phrase
+    // would find it regardless of whether anything is actually running —
+    // this test is about the count line's own wording, not the whole page.
+    const { container } = renderScreen()
+    const count = container.querySelector('.dm-pipe-count')!
+    expect(count.textContent).toBe(`${allEntries().length} pipelines`)
+    expect(count.textContent).not.toMatch(/in progress/i)
   })
 
   it('links each row to its workspace', () => {
     renderScreen()
     const entry = allEntries()[0]
     const link = screen.getByRole('link', { name: entry.name })
-    expect(link.getAttribute('href')).toBe(`pipelines/${entry.id}/`)
+    // The screen is served at /demo/pipelines/ (one level deep), so its own
+    // workspace links go back up to /demo/ before descending again.
+    expect(link.getAttribute('href')).toBe(`../pipelines/${entry.id}/`)
   })
 
   it('filters the table by kind', () => {
@@ -77,5 +86,46 @@ describe('Pipelines list', () => {
     renderScreen()
     expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
     expect(screen.queryByRole('button', { name: /configure and run/i })).toBeNull()
+  })
+})
+
+describe('Pipelines tick interval', () => {
+  // The list page itself has no run-starting UI any more (running one
+  // happens in a pipeline's own workspace) — so a run is started directly
+  // through DemoState, via a probe mounted alongside the screen in the same
+  // provider, the same way runState.test.tsx and crossScreen.test.tsx do.
+  const entry = entryById('graph-extend')!
+
+  function StartRun() {
+    const { startRun } = useDemoState()
+    return <button onClick={() => startRun(entry, defaultConfigFor(entry))}>start</button>
+  }
+
+  const renderWithStarter = () =>
+    render(
+      <DemoStateProvider>
+        <StartRun />
+        <Pipelines />
+      </DemoStateProvider>
+    )
+
+  it('only advances runs while at least one is running, and clears the interval on unmount', () => {
+    vi.useFakeTimers()
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
+    const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
+    const { unmount } = renderWithStarter()
+
+    // Nothing running yet — no interval should have started.
+    expect(setIntervalSpy).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByText('start'))
+    expect(setIntervalSpy).toHaveBeenCalledTimes(1)
+
+    unmount()
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(1)
+
+    setIntervalSpy.mockRestore()
+    clearIntervalSpy.mockRestore()
+    vi.useRealTimers()
   })
 })

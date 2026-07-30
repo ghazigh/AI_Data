@@ -4,6 +4,14 @@ import { PipelineTable } from '../components/PipelineTable'
 import { allEntries, type SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
+import { prefixForSlug } from '../router'
+
+// This screen is always served at /demo/pipelines/ — one level deep — so its
+// own workspace links need one '../' back to /demo/ before descending into
+// pipelines/<id>/ again. Computed via the same depth-aware helper the build
+// script and the router use, rather than a literal, so this stays correct if
+// the route's own depth ever changes instead of silently going stale.
+const PREFIX = prefixForSlug('pipelines')
 
 /**
  * How often the screen advances every running run one tick, purely to pace a
@@ -19,13 +27,9 @@ const KIND_OPTIONS: { value: SectionKind | ''; label: string }[] = [
   { value: 'remediation', label: 'Remediation' },
 ]
 
-// Labelled "Running", not "In progress" — the count line above states "N in
-// progress" only while something actually runs, and this option must not
-// make that phrase permanently present on the page via a select's own
-// (always-in-the-DOM) option text.
 const STATUS_OPTIONS: { value: ExecutionStatus | ''; label: string }[] = [
   { value: '', label: 'Any status' },
-  { value: 'running', label: 'Running' },
+  { value: 'running', label: 'In progress' },
   { value: 'succeeded', label: 'Succeeded' },
   { value: 'failed', label: 'Failed' },
   { value: 'cancelled', label: 'Cancelled' },
@@ -109,7 +113,7 @@ export function Pipelines() {
         <p className="dm-list-empty">No pipelines match these filters.</p>
       ) : (
         <div className="dm-panel">
-          <PipelineTable entries={shown} prefix="" />
+          <PipelineTable entries={shown} prefix={PREFIX} />
         </div>
       )}
     </>

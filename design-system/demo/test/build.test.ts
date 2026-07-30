@@ -51,4 +51,25 @@ describe.skipIf(!built)('build output', () => {
     expect(existsSync(`${OUT}assets/demo.js`)).toBe(true)
     expect(existsSync(`${OUT}assets/demo.css`)).toBe(true)
   })
+
+  // A component-level test can only ever check the href string a screen
+  // emits, not whether that string actually lands on a file the build wrote —
+  // exactly the class of bug that got through when the Pipelines list once
+  // hardcoded prefix="" (see screens/Pipelines.tsx): the href looked
+  // plausible in isolation but resolved to website/demo/pipelines/pipelines/
+  // <id>/, a path nothing ever writes. This resolves every workspace href
+  // the built page actually emits, the same way a browser would, and checks
+  // the file it lands on exists.
+  it('links every pipeline row to a workspace file the build actually wrote', () => {
+    const html = readFileSync(`${OUT}pipelines/index.html`, 'utf8')
+    const hrefs = [...html.matchAll(/href="([^"]*pipelines\/[a-z0-9-]+\/)"/g)].map(m => m[1])
+    expect(hrefs.length).toBe(allEntries().length)
+
+    for (const href of hrefs) {
+      const resolved = new URL(href, 'https://example.invalid/demo/pipelines/').pathname
+      expect(resolved.startsWith('/demo/'), href).toBe(true)
+      const file = `${OUT}${resolved.slice('/demo/'.length)}index.html`
+      expect(existsSync(file), `${href} -> ${file}`).toBe(true)
+    }
+  })
 })
