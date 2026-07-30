@@ -1,4 +1,4 @@
-import type { DomainKey, Modality } from './types'
+import type { DomainKey } from './types'
 import { SOURCES } from './sources'
 import { MODALITY_PIPELINES, sourcesForModality } from './modalities'
 import { GRAPH_PIPELINES } from './graphPipelines'
@@ -92,21 +92,31 @@ const lastRunFor = (entryId: string): string =>
 // ---- documents of every modality keep arriving.                              ----
 
 /**
- * Cadence per modality. Reflects how the data arrives, not just its volume:
- * streams is live telemetry so it runs hourly; document stores — where a
- * batch of files lands rather than a continuous feed — run on a slower,
- * four-hour cadence, as called out in the task brief. The rest sit between
- * the two depending on how continuously each source type produces new
- * records.
+ * A fixed set of common scheduling cadences, in hours. scheduleFor picks the
+ * smallest one strictly longer than the pipeline's own baseline runtime — a
+ * schedule that could fire again before the current run finishes would mean
+ * the pipeline is effectively always running, which contradicts a catalogue
+ * row that also states a finished 'last run' some minutes or hours ago.
  */
-const STRUCTURING_SCHEDULE: Record<Modality, string> = {
-  streams: 'Runs hourly',
-  tickets: 'Runs every 2 hours',
-  email: 'Runs every 3 hours',
-  documents: 'Runs every 4 hours',
-  tables: 'Runs every 6 hours',
-  transcripts: 'Runs every 8 hours',
-  images: 'Runs every 12 hours',
+const SCHEDULE_CANDIDATE_HOURS = [1, 2, 3, 4, 6, 8, 12, 16, 20, 24, 36, 48, 72] as const
+
+const scheduleLabel = (hours: number): string => {
+  if (hours === 1) return 'Runs hourly'
+  if (hours === 24) return 'Runs daily'
+  if (hours % 24 === 0) return `Runs every ${hours / 24} days`
+  return `Runs every ${hours} hours`
+}
+
+/**
+ * Cadence derived from the pipeline's own baseline runtime, never hand-typed —
+ * see SCHEDULE_CANDIDATE_HOURS above for why "longer than the runtime" is the
+ * rule. Guarded in integrity.test.ts.
+ */
+const scheduleFor = (baselineMinutes: number): string => {
+  const hours =
+    SCHEDULE_CANDIDATE_HOURS.find(h => h * 60 > baselineMinutes) ??
+    SCHEDULE_CANDIDATE_HOURS[SCHEDULE_CANDIDATE_HOURS.length - 1]
+  return scheduleLabel(hours)
 }
 
 const STRUCTURING_SECTION: CatalogueSection = {
@@ -122,7 +132,7 @@ const STRUCTURING_SECTION: CatalogueSection = {
     stages: weightedStages(pipeline.stages),
     baselineRecords: pipeline.volume,
     baselineMinutes: chainMinutes(pipeline.stages),
-    schedule: STRUCTURING_SCHEDULE[pipeline.modality],
+    schedule: scheduleFor(chainMinutes(pipeline.stages)),
     lastRun: lastRunFor(`structuring-${pipeline.modality}`),
   })),
 }

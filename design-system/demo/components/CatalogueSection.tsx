@@ -107,11 +107,15 @@ export function CatalogueSection({ section }: { section: CatalogueSectionData })
       {refitEntries.length > 0 && (
         <div className="dm-blocked">
           <p className="dm-eyebrow">Re-fit warning</p>
-          {/* Quotes runConfig's REFIT_WARNING verbatim — the drawer's own live
-              warning renders the same string via projectRun, so the two
+          {/* Reuse is the default in the configure drawer, so this stands before
+              anything is selected — the lead-in makes that conditional explicit
+              rather than reading as if a run were already underway. Quotes
+              runConfig's REFIT_WARNING verbatim after that — the drawer's own
+              live warning renders the same string via projectRun, so the two
               surfaces can never state this consequence two different ways. */}
           <p>
-            {refitEntries.map(e => e.name).join(', ')}: {REFIT_WARNING}
+            {refitEntries.map(e => e.name).join(', ')} defaults to reusing the fitted models. Choosing to re-fit
+            from scratch instead: {REFIT_WARNING}
           </p>
         </div>
       )}

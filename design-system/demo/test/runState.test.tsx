@@ -17,6 +17,8 @@ function Probe() {
       <p data-testid="status">{runs[0]?.status ?? 'none'}</p>
       <p data-testid="stage">{runs[0]?.stageIndex ?? -1}</p>
       <p data-testid="processed">{runs[0]?.recordsProcessed ?? -1}</p>
+      <p data-testid="projectedRecords">{runs[0]?.projection.records ?? -1}</p>
+      <p data-testid="config">{runs[0] ? JSON.stringify(runs[0].config) : ''}</p>
     </div>
   )
 }
@@ -56,8 +58,11 @@ describe('run state', () => {
     fireEvent.click(screen.getByText('start'))
     for (let i = 0; i < 400; i++) act(() => { fireEvent.click(screen.getByText('tick')) })
     expect(val('status')).toBe('completed')
-    const projected = Number(val('processed'))
-    expect(projected).toBeGreaterThan(0)
+    const processed = Number(val('processed'))
+    expect(processed).toBeGreaterThan(0)
+    // state.tsx promises these agree bit for bit on completion — not just both
+    // being positive, but the exact same number the projection stated.
+    expect(processed).toBe(Number(val('projectedRecords')))
   })
 
   it('never advances past the final stage', () => {
@@ -79,6 +84,10 @@ describe('run state', () => {
     setup()
     fireEvent.click(screen.getByText('start'))
     expect(val('count')).toBe('1')
+    // Would pass even if `config` were dropped from RunRecord entirely unless
+    // the actual config value is asserted — so compare it against exactly what
+    // defaultConfigFor(entry) produces, not just its presence.
+    expect(JSON.parse(val('config')!)).toEqual(defaultConfigFor(entry))
   })
 
   it('clears runs on reset', () => {

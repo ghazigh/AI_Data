@@ -51,12 +51,39 @@ describe('CatalogueSection', () => {
     expect(within(region).queryByRole('button', { name: /configure and run/i })).toBeNull()
   })
 
+  it('renders every entry\'s baseline record count and source count in its own row', () => {
+    // Regression guard: deleting the records/sources columns would leave every
+    // other test in this file green while the catalogue's own baseline numbers
+    // (41,208 duplicate records, 380 columns, 22,470 documents, etc.) silently
+    // stopped reaching the screen.
+    render(
+      <DemoStateProvider>
+        {CATALOGUE_SECTIONS.map(section => (
+          <CatalogueSection section={section} key={section.kind} />
+        ))}
+      </DemoStateProvider>
+    )
+    for (const section of CATALOGUE_SECTIONS) {
+      const region = screen.getByRole('region', { name: section.title })
+      for (const entry of section.entries) {
+        const row = checkboxFor(region, entry.name).closest('tr')!
+        expect(within(row).getByText(entry.baselineRecords.toLocaleString('en-US')), entry.name).toBeDefined()
+        const sourceLabel = `${entry.sourceIds.length} source${entry.sourceIds.length === 1 ? '' : 's'}`
+        expect(within(row).getByText(sourceLabel), entry.name).toBeDefined()
+      }
+    }
+  })
+
   it('shows a schedule for every structuring row', () => {
     renderSection(structuring)
     const region = screen.getByRole('region', { name: structuring.title })
     for (const entry of structuring.entries) {
       expect(entry.schedule).toBeTruthy()
-      expect(within(region).getByText(entry.schedule!)).toBeDefined()
+      // Scoped to this entry's own row: two structuring pipelines can share a
+      // cadence (e.g. two both landing on "Runs every 8 hours"), so searching
+      // the whole section can match more than one row.
+      const row = checkboxFor(region, entry.name).closest('tr')!
+      expect(within(row).getByText(entry.schedule!)).toBeDefined()
     }
   })
 

@@ -35,8 +35,12 @@ describe('determinism', () => {
     }
   })
 
-  it('never reads a clock inside the data layer', () => {
-    for (const f of files.filter(f => f.includes('/data/'))) {
+  // Widened from just /data/ to every file under demo/: state.tsx (RunRecord
+  // ids are a monotonic ref counter, never a timestamp) and RunHistoryTable.tsx
+  // (a session run's 'finished' is the fixed literal 'Just now') both promise
+  // the same no-clock rule, not only the data layer.
+  it('never reads a clock anywhere in the demo', () => {
+    for (const f of files) {
       const src = readFileSync(f, 'utf8')
       expect(src.includes('Date.now'), f).toBe(false)
       expect(src.includes('new Date'), f).toBe(false)
@@ -249,6 +253,75 @@ describe('the numbers agree across screens', () => {
     for (const h of RUN_HISTORY) {
       const entry = entryById(h.entryId)!
       expect(entry.lastRun, `${entry.name} has run ${h.id} on record but still reads 'Not yet run'`).not.toBe('Not yet run')
+    }
+  })
+
+  // pipelineCatalogue.ts's lastRunFor comment claims "RUN_HISTORY carries at
+  // most one record per entryId today (guarded in integrity.test.ts)" — this
+  // is that guard.
+  it('carries at most one RUN_HISTORY record per catalogue entry', () => {
+    expect(new Set(RUN_HISTORY.map(h => h.entryId)).size).toBe(RUN_HISTORY.length)
+  })
+
+  // Rule: a RUN_HISTORY record may only claim a positive readinessDelta for a
+  // remediation entry when RED_FLAGS no longer carries an open flag for that
+  // same domain and the same count — otherwise the flag and the history
+  // disagree about whether the gap the flag names is still open.
+  it('never claims a readiness delta for a domain whose red flag is still open with the same count', () => {
+    for (const h of RUN_HISTORY) {
+      if (h.readinessDelta <= 0) continue
+      const entry = entryById(h.entryId)!
+      if (entry.kind !== 'remediation') continue
+      const stillOpen = RED_FLAGS.find(f => f.domain === entry.targetDomain && f.count === entry.baselineRecords)
+      expect(
+        stillOpen,
+        `${h.id} claims +${h.readinessDelta} readiness for ${entry.name}, but red flag ` +
+          `"${stillOpen?.title}" still lists ${entry.baselineRecords} as open`
+      ).toBeUndefined()
+    }
+  })
+
+  // Rule: wherever a RUN_HISTORY record's configSummary states a source count
+  // ("Full scope, N sources"), N must match the catalogue entry's own
+  // sourceIds — parsed independently of however the summary was authored, so
+  // a stray literal (like hist-1's old "6 sources" against a 15-source entry)
+  // cannot slip past every other check.
+  it('matches the source count a run history record states to its catalogue entry\'s own source count', () => {
+    for (const h of RUN_HISTORY) {
+      const match = /(\d+) sources?\b/.exec(h.configSummary)
+      if (!match) continue
+      const entry = entryById(h.entryId)!
+      expect(
+        Number(match[1]),
+        `${h.id} claims ${match[1]} sources but ${entry.name} has ${entry.sourceIds.length}`
+      ).toBe(entry.sourceIds.length)
+    }
+  })
+
+  // Rule: a structuring pipeline's schedule must never promise to start again
+  // before its own baseline run could finish — otherwise the pipeline would
+  // effectively always be running, contradicting a catalogue row that also
+  // states a finished 'last run' some time ago. Parses the schedule string
+  // independently of pipelineCatalogue.ts's own scheduleFor, so a future hand
+  // edit to the label is checked the same as a generator bug.
+  it('schedules every structuring pipeline strictly less often than its own baseline runtime', () => {
+    const scheduleMinutes = (schedule: string): number => {
+      if (schedule === 'Runs hourly') return 60
+      if (schedule === 'Runs daily') return 24 * 60
+      const hours = /^Runs every (\d+) hours$/.exec(schedule)
+      if (hours) return Number(hours[1]) * 60
+      const days = /^Runs every (\d+) days$/.exec(schedule)
+      if (days) return Number(days[1]) * 24 * 60
+      throw new Error(`Unparseable schedule: "${schedule}"`)
+    }
+
+    for (const p of MODALITY_PIPELINES) {
+      const entry = entryById(`structuring-${p.modality}`)!
+      expect(entry.schedule, entry.name).toBeTruthy()
+      expect(
+        scheduleMinutes(entry.schedule!),
+        `${entry.name}'s schedule "${entry.schedule}" is not longer than its own ${entry.baselineMinutes}-minute runtime`
+      ).toBeGreaterThan(entry.baselineMinutes)
     }
   })
 })

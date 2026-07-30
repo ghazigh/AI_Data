@@ -36,7 +36,7 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     stagesTotal: 4,
     records: 23_000_000,
     readinessDelta: 0,
-    configSummary: 'Full scope, 6 sources, personal data masked',
+    configSummary: 'Full scope, 15 sources, personal data masked',
     outcome: 'succeeded',
     dryRun: false,
   },
@@ -65,10 +65,14 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     stagesCompleted: 3,
     stagesTotal: 3,
     records: 41_208,
-    readinessDelta: 7,
-    configSummary: 'Guidewire, Salesforce, policy mart — full run',
+    // Dry run, so this stays 0 — RED_FLAGS' f2 still lists these 41,208 duplicate
+    // records as an open gap, and a positive delta here would claim the readiness
+    // score already gained from closing it. See the guard in integrity.test.ts.
+    readinessDelta: 0,
+    configSummary: 'Guidewire, Salesforce, policy mart — dry run',
     outcome: 'succeeded',
-    dryRun: false,
+    dryRun: true,
+    note: 'Dry run — reported the 41,208 duplicate records that would merge; nothing was written, so the flag stayed open.',
   },
   {
     id: 'hist-4',
@@ -93,14 +97,14 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     kind: 'structuring',
     finished: '4 h ago',
     duration: '3 min',
-    stagesCompleted: 1,
+    stagesCompleted: 0,
     stagesTotal: 5,
     records: 0,
     readinessDelta: 0,
     configSummary: 'Full scope, 3 sources, personal data masked',
     outcome: 'failed',
     dryRun: false,
-    note: 'The diarisation service timed out after Transcribe — no chunks were embedded.',
+    note: 'The diarisation service timed out during Diarise — no chunks were embedded.',
   },
   {
     id: 'hist-6',
@@ -112,10 +116,14 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     stagesCompleted: 3,
     stagesTotal: 3,
     records: 22_470,
-    readinessDelta: 9,
-    configSummary: 'Reinsurance treaty archive — full run',
+    // Dry run, so this stays 0 — RED_FLAGS' f5 still lists these 22,470 documents
+    // as unchunked, and a positive delta here would claim the readiness score
+    // already gained from closing that gap. See the guard in integrity.test.ts.
+    readinessDelta: 0,
+    configSummary: 'Reinsurance treaty archive — dry run',
     outcome: 'succeeded',
-    dryRun: false,
+    dryRun: true,
+    note: 'Dry run — reported the 22,470 documents that would chunk; nothing was written, so the flag stayed open.',
   },
   {
     id: 'hist-7',
@@ -124,14 +132,14 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     kind: 'graph',
     finished: '11 days ago',
     duration: '38 min',
-    stagesCompleted: 1,
+    stagesCompleted: 0,
     stagesTotal: 4,
     records: 0,
     readinessDelta: 0,
     configSummary: 'Whole connected estate, re-fitting the projection and cluster model',
     outcome: 'cancelled',
     dryRun: false,
-    note: 'Cancelled after Embed — a re-fit would have rebound every agent, so the operator stopped it to schedule a maintenance window first.',
+    note: 'Cancelled during Embed, well before it finished — a re-fit would have rebound every agent, so the operator stopped it to schedule a maintenance window first.',
   },
   // The five remaining structuring entries all run on a schedule (STRUCTURING_SCHEDULE
   // in pipelineCatalogue.ts) — a pipeline that runs every few hours needs a run on
