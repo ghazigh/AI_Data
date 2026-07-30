@@ -141,8 +141,8 @@ export const RUN_HISTORY: RunHistoryEntry[] = [
     dryRun: false,
     note: 'Cancelled during Embed, well before it finished — a re-fit would have rebound every agent, so the operator stopped it to schedule a maintenance window first.',
   },
-  // The five remaining structuring entries all run on a schedule (STRUCTURING_SCHEDULE
-  // in pipelineCatalogue.ts) — a pipeline that runs every few hours needs a run on
+  // The five remaining structuring entries all run on a schedule (derived by
+  // scheduleFor in pipelineCatalogue.ts) — a pipeline that runs every few hours needs a run on
   // record to justify that claim, the same way hist-1 and hist-5 already justify
   // structuring-tables and structuring-transcripts. Their `finished` values are the
   // ones pipelineCatalogue.ts used to hand-author directly; they now derive from here.
