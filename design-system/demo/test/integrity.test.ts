@@ -504,7 +504,7 @@ describe('creation and workspace integrity guards (spec §9)', () => {
     render(
       createElement(DemoStateProvider, null,
         createElement(Pipelines, null),
-        createElement(ExecutionsTable, { entryId: entry.id })
+        createElement(ExecutionsTable, { entry })
       )
     )
 
@@ -566,6 +566,28 @@ describe('creation and workspace integrity guards (spec §9)', () => {
     // ...and the breadcrumb names it too, rather than still saying "Pipelines".
     const crumb = document.querySelector('.dm-crumb')!
     expect(crumb.querySelector('b')?.textContent).toBe(name)
+  })
+
+  // §9.12 — every consumer on this branch moved to allEntriesWithCreated(),
+  // but ExecutionsTable kept the catalogue-only entryById lookup, so a
+  // pipeline created this session resolved to undefined and the tab threw the
+  // moment it had a row to render — unmounting the whole app. Invisible while
+  // the tab was empty, which is why every other test passed: create, run, then
+  // open Executions is the click path that breaks it.
+  it('renders the Executions tab of a pipeline created this session, once it has a run', () => {
+    const name = 'Session-created pipeline'
+    render(createElement(DemoRoot, { initialSlug: 'pipelines' }))
+
+    fireEvent.click(screen.getByRole('button', { name: /create pipeline/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: name } })
+    fireEvent.click(within(dialog).getAllByRole('checkbox')[0])
+    fireEvent.click(within(dialog).getByRole('button', { name: /create pipeline/i }))
+
+    fireEvent.click(screen.getByRole('button', { name: /^run pipeline$/i }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Executions' }))
+
+    expect(screen.getByRole('table', { name: `${name} executions` })).toBeDefined()
   })
 
   // §9.10 — carried forward from the console build this replaced: that build

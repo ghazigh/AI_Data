@@ -14,7 +14,11 @@ const RETENTION_OPTIONS: PipelineSettings['retentionDays'][] = [30, 90, 365]
  * stored and shown; nothing else in the demo reads them.
  */
 export function SettingsTab({ entry }: { entry: CatalogueEntry }) {
-  const { settingsFor, setSettings } = useDemoState()
+  const { settingsFor, setSettings, configFor } = useDemoState()
+  // The configured scope, not the pipeline's total: the Source component and
+  // the run itself both honour configFor, so quoting entry.sourceIds here made
+  // Settings say 10 while the chain beside it said 2 — and the run used 2.
+  const scoped = configFor(entry).sourceIds.length
   const settings = settingsFor(entry.id)
 
   const update = (next: Partial<PipelineSettings>) => setSettings(entry.id, { ...settings, ...next })
@@ -37,7 +41,11 @@ export function SettingsTab({ entry }: { entry: CatalogueEntry }) {
           </div>
           <div>
             <dt>Sources in scope</dt>
-            <dd>{entry.sourceIds.length}</dd>
+            <dd>
+              {scoped === entry.sourceIds.length
+                ? `${entry.sourceIds.length} — full scope`
+                : `${scoped} of ${entry.sourceIds.length}`}
+            </dd>
           </div>
           <div>
             <dt>Baseline records</dt>

@@ -1,6 +1,6 @@
 import type { CatalogueEntry } from './pipelineCatalogue'
 import { RED_FLAGS } from './readiness'
-import { REFIT_WARNING } from '../runConfig'
+import { formatNumber, REFIT_WARNING } from '../runConfig'
 
 export type TriggerKind = 'schedule' | 'event' | 'manual'
 
@@ -57,7 +57,7 @@ export function triggersFor(entry: CatalogueEntry): Trigger[] {
     ...(flag
       ? [{ id: `${entry.id}:event`, kind: 'event' as const,
           label: `When readiness flags "${flag.title}"`,
-          detail: `${flag.detail} Currently ${flag.count.toLocaleString('en-GB')} ${flag.unit}.` }]
+          detail: `${flag.detail} Currently ${formatNumber(flag.count)} ${flag.unit}.` }]
       : []),
     manual(entry, 'Start a run by hand from this workspace.'),
   ]

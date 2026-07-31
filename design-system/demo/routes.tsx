@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react'
-import { DEMO_BASE, hrefFor } from './navigation'
+import { DEMO_BASE, hrefFor, STAGES } from './navigation'
 import { Overview } from './screens/Overview'
 import { Connect } from './screens/Connect'
 import { Ready } from './screens/Ready'
@@ -22,13 +22,25 @@ export interface DemoRoute {
   Component: ComponentType
 }
 
+/** Screen component per stage slug — the half of a stage route that cannot
+ * live in navigation.ts, since importing the screens is what makes this
+ * module the top of the import graph rather than a leaf. */
+const STAGE_SCREENS: Record<string, ComponentType> = {
+  connect: Connect,
+  ready: Ready,
+  pipelines: Pipelines,
+  graph: Graph,
+  'use-cases': UseCases,
+}
+
 export const ROUTES: DemoRoute[] = [
   { slug: '', title: 'Estate overview', Component: Overview },
-  { slug: 'connect', title: 'Connect', stage: '01', Component: Connect },
-  { slug: 'ready', title: 'Ready', stage: '02', Component: Ready },
-  { slug: 'pipelines', title: 'Pipelines', stage: '03', Component: Pipelines },
-  { slug: 'graph', title: 'Graph', stage: '04', Component: Graph },
-  { slug: 'use-cases', title: 'Use cases', stage: '05', Component: UseCases },
+  ...STAGES.map(s => ({
+    slug: s.slug,
+    title: s.title,
+    stage: s.stage,
+    Component: STAGE_SCREENS[s.slug],
+  })),
   { slug: 'governance', title: 'Governance & audit', Component: Governance },
 ]
 

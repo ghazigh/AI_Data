@@ -4,7 +4,7 @@ import { DOMAINS } from '../data/tenant'
 
 // The screen-level assertions that used to live here (live run bar, "run step"
 // buttons, the old plan panel) tested UI this task removed — the console this
-// task builds instead is covered end to end by pipelinesConsole.test.tsx. What
+// task builds instead is covered end to end by pipelinesList.test.tsx. What
 // remains here is the underlying PLAN data every remediation catalogue entry is
 // derived from (see pipelineCatalogue.ts's REMEDIATION_SECTION).
 describe('pipeline data', () => {

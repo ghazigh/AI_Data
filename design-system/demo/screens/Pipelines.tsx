@@ -67,7 +67,6 @@ export function Pipelines() {
   const navigate = useNavigate()
 
   const entries = allEntriesWithCreated()
-  const running = runs.filter(r => r.status === 'running').length
 
   const query = search.trim().toLowerCase()
   const shown = entries.filter(e => {
@@ -76,6 +75,11 @@ export function Pipelines() {
     if (query && !`${e.name} ${e.summary}`.toLowerCase().includes(query)) return false
     return true
   })
+
+  // Counted over the rows actually on screen, not over every run: filtering to
+  // Graph while a structuring run is in flight otherwise reads "2 pipelines ·
+  // 1 in progress" above a table where nothing is running.
+  const runningShown = shown.filter(e => lastExecutionFor(e.id, runs).status === 'running').length
 
   return (
     <>
@@ -90,8 +94,8 @@ export function Pipelines() {
       />
 
       <p className="dm-pipe-count">
-        {`${shown.length} pipelines`}
-        {running > 0 ? ` · ${running} in progress` : ''}
+        {`${shown.length} ${shown.length === 1 ? 'pipeline' : 'pipelines'}`}
+        {runningShown > 0 ? ` · ${runningShown} in progress` : ''}
       </p>
 
       <div className="dm-filterbar">

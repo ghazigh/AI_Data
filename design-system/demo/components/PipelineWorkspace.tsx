@@ -160,7 +160,7 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
             onSelect={setSelected}
           />
         )}
-        {active === 'executions' && <ExecutionsTable entryId={entry.id} />}
+        {active === 'executions' && <ExecutionsTable entry={entry} />}
         {active === 'triggers' && <TriggersTab entry={entry} />}
         {active === 'settings' && <SettingsTab entry={entry} />}
       </div>

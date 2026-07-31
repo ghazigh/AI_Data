@@ -1,4 +1,4 @@
-import { ROUTES, hrefFor } from '../routes'
+import { STAGES, hrefFor } from '../navigation'
 import { useDemoState } from '../state'
 import { ESTATE } from '../data/tenant'
 import { USE_CASES } from '../data/useCases'
@@ -36,7 +36,7 @@ export function StageStrip({ prefix }: { prefix: string }) {
 
   return (
     <ol className="dm-stagestrip" aria-label="Product stages">
-      {ROUTES.filter(r => r.stage).map(r => {
+      {STAGES.map(r => {
         const s = STATUS[r.slug]
         return (
           <li key={r.slug}>

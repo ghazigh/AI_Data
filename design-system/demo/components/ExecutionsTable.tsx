@@ -6,7 +6,7 @@ import { StatusPill } from './StatusPill'
 import { formatMinutes } from '../runConfig'
 import { useDemoState, type RunRecord } from '../state'
 import { RUN_HISTORY, type RunHistoryEntry } from '../data/runHistory'
-import { entryById, type CatalogueEntry } from '../data/pipelineCatalogue'
+import type { CatalogueEntry } from '../data/pipelineCatalogue'
 import { triggersFor } from '../data/triggers'
 import { executionId, type ExecutionStatus } from '../data/executions'
 import { executionStatusPill } from './PipelineTable'
@@ -34,8 +34,7 @@ interface HistoryRow {
 }
 
 /** One line describing the scope and options a run was started with, from its RunConfig. */
-const summarizeConfig = (run: RunRecord): string => {
-  const entry = entryById(run.entryId)!
+const summarizeConfig = (run: RunRecord, entry: CatalogueEntry): string => {
   const scope = run.config.sourceIds.length === entry.sourceIds.length
     ? `${entry.sourceIds.length} sources, full scope`
     : `${run.config.sourceIds.length} of ${entry.sourceIds.length} sources`
@@ -54,7 +53,7 @@ const summarizeConfig = (run: RunRecord): string => {
  * 'running'. A session run is always triggered by hand: whatever the entry's
  * schedule says, this run began because the operator pressed Run.
  */
-const rowFromRun = (run: RunRecord): HistoryRow => {
+const rowFromRun = (run: RunRecord, entry: CatalogueEntry): HistoryRow => {
   const executed = run.projection.stages.slice(0, run.stageIndex + 1)
   const fraction = Math.min(1, run.ticks / run.ticksBudget)
   const lastStage = executed[executed.length - 1]
@@ -68,7 +67,7 @@ const rowFromRun = (run: RunRecord): HistoryRow => {
     finished: run.status === 'running' ? 'In progress' : 'Just now',
     duration: formatMinutes(Math.max(1, Math.round(run.projection.minutes * fraction))),
     records: run.recordsProcessed,
-    configSummary: summarizeConfig(run),
+    configSummary: summarizeConfig(run, entry),
     note: run.status === 'cancelled'
       ? `Cancelled after ${lastStage?.name ?? 'starting'} — the operator stopped it before it finished.`
       : run.projection.warnings.length > 0
@@ -111,13 +110,17 @@ const rowFromHistory = (h: RunHistoryEntry, entry: CatalogueEntry, triggerEnable
  * followed by its seeded RUN_HISTORY record if it has one — RUN_HISTORY
  * carries at most one record per entryId.
  */
-export function ExecutionsTable({ entryId }: { entryId: string }) {
-  const entry = entryById(entryId)!
+export function ExecutionsTable({ entry }: { entry: CatalogueEntry }) {
+  // The entry arrives as a prop rather than being looked up here: entryById
+  // only knows the catalogue, so a pipeline created this session resolved to
+  // undefined and this component threw the moment it had a row to render.
+  // PipelineWorkspace already holds the right entry, created or not.
+  const entryId = entry.id
   const { runs, triggerEnabled } = useDemoState()
   const [openId, setOpenId] = useState<string | null>(null)
 
   const rows: HistoryRow[] = [
-    ...runs.filter(r => r.entryId === entryId).map(rowFromRun),
+    ...runs.filter(r => r.entryId === entryId).map(run => rowFromRun(run, entry)),
     ...RUN_HISTORY.filter(h => h.entryId === entryId).map(h => rowFromHistory(h, entry, triggerEnabled)),
   ]
   const open = rows.find(r => r.id === openId) ?? null
