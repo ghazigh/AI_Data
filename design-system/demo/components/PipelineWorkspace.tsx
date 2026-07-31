@@ -5,7 +5,7 @@ import { useDemoState } from '../state'
 import { projectRun, type RunConfig } from '../runConfig'
 import { StatusPill } from './StatusPill'
 import { executionStatusPill, KIND_LABEL } from './PipelineTable'
-import { StageChain, SOURCE_COMPONENT_ID, fittingCounterpart } from './StageChain'
+import { StageChain, NO_SOURCES_REASON, SOURCE_COMPONENT_ID, fittingCounterpart } from './StageChain'
 import { ComponentConfigPanel } from './ComponentConfigPanel'
 import { WorkspaceTabs, WORKSPACE_PANEL_ID, workspaceTabId, type WorkspaceTab } from './WorkspaceTabs'
 
@@ -20,6 +20,11 @@ const TABS: WorkspaceTab[] = [
  * — a run started from a workspace must keep advancing while the operator is
  * looking at it, on the pacing the rest of the demo already uses. */
 const TICK_MS = 900
+
+/** Ties the disabled Run button to the sentence saying why it is disabled. A fixed id,
+ * not useId: one workspace renders per page, and a generated id would differ between
+ * the server's render and the client's. */
+const RUN_BLOCKED_ID = 'dm-run-blocked'
 
 /** Renders the workspace for one pipeline: a header naming it, its last
  * execution and a run/cancel action, and four tabs over one switching panel.
@@ -92,16 +97,23 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
               Cancel run
             </button>
           ) : (
-            <button
-              className="dm-btn is-ink"
-              // Deselecting every source leaves nothing to process, which projectRun
-              // already reports — the button says so rather than starting a run over
-              // zero records.
-              disabled={!projection.runnable}
-              onClick={() => startRun(entry, config)}
-            >
-              Run pipeline
-            </button>
+            // Deselecting every source leaves nothing to process, which projectRun
+            // already reports. The button cannot start such a run, and the reason is on
+            // screen beside it and named by it — a greyed control with no explanation
+            // leaves an operator with nothing to act on.
+            <div className="dm-run">
+              <button
+                className="dm-btn is-ink"
+                disabled={!projection.runnable}
+                aria-describedby={projection.runnable ? undefined : RUN_BLOCKED_ID}
+                onClick={() => startRun(entry, config)}
+              >
+                Run pipeline
+              </button>
+              {!projection.runnable && (
+                <p className="dm-run-blocked" id={RUN_BLOCKED_ID}>{NO_SOURCES_REASON}</p>
+              )}
+            </div>
           )}
         </div>
       </div>

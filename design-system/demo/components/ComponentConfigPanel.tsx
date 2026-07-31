@@ -9,7 +9,13 @@ import {
   type ChunkStrategy,
   type RunConfig,
 } from '../runConfig'
-import { SOURCE_COMPONENT_ID, ownsChunkStrategy, ownsRedaction, ownsRefitChoice } from './StageChain'
+import {
+  NO_SOURCES_REASON,
+  SOURCE_COMPONENT_ID,
+  ownsChunkStrategy,
+  ownsRedaction,
+  ownsRefitChoice,
+} from './StageChain'
 
 /** The three strategies, each with the consequence CHUNK_MULTIPLIER already encodes. */
 const CHUNK_OPTIONS: { value: ChunkStrategy; label: string; note: string }[] = [
@@ -72,9 +78,7 @@ export function ComponentConfigPanel({ entry, config, componentId, onChange, onC
         <p className="dm-uc-summary">
           {`${formatNumber(projection.records)} records · ${formatMinutes(projection.minutes)}`}
         </p>
-        {!projection.runnable && (
-          <p className="dm-cfg-warning">No source is selected, so this pipeline has nothing to run.</p>
-        )}
+        {!projection.runnable && <p className="dm-cfg-warning">{NO_SOURCES_REASON}</p>}
 
         <DoneButton onClose={onClose} />
       </Drawer>
@@ -94,20 +98,31 @@ export function ComponentConfigPanel({ entry, config, componentId, onChange, onC
   const previous = chain[index - 1]
   const next = chain[index + 1]
 
+  // Where a component has a control, the two lines saying what it reads and what it
+  // hands on give that control its context. Where it has none, they only pad the one
+  // sentence the panel exists to say — and "Produces: Input for Embed" tells an
+  // operator nothing the chain behind the panel is not already showing.
+  const hasOptions =
+    ownsChunkStrategy(entry, stage.name) ||
+    ownsRedaction(entry, stage.name) ||
+    ownsRefitChoice(entry, stage.name)
+
   return (
     <Drawer open title={stage.name} onClose={onClose}>
       <p className="dm-uc-summary">{stage.detail}</p>
 
-      <dl className="dm-io">
-        <div>
-          <dt>Consumes</dt>
-          <dd>{previous ? `${previous.name} output` : 'The sources in scope'}</dd>
-        </div>
-        <div>
-          <dt>Produces</dt>
-          <dd>{next ? `Input for ${next.name}` : 'The pipeline output'}</dd>
-        </div>
-      </dl>
+      {hasOptions && (
+        <dl className="dm-io">
+          <div>
+            <dt>Consumes</dt>
+            <dd>{previous ? `${previous.name} output` : 'The sources in scope'}</dd>
+          </div>
+          <div>
+            <dt>Produces</dt>
+            <dd>{next ? `Input for ${next.name}` : 'The pipeline output'}</dd>
+          </div>
+        </dl>
+      )}
 
       {ownsChunkStrategy(entry, stage.name) ? (
         <>

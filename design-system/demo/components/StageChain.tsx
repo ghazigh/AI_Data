@@ -4,15 +4,19 @@ import type { RunRecord } from '../state'
 import {
   formatMinutes,
   formatNumber,
+  isRedactionStage,
   projectRun,
   supportsChunkStrategy,
   supportsRedaction,
-  REDACTION_STAGE_NAMES,
   type RunConfig,
 } from '../runConfig'
 
 /** The component id of the Source card. Every other card's id is its stage name. */
 export const SOURCE_COMPONENT_ID = 'source'
+
+/** Why a pipeline cannot run, said once — the Source panel and the header's disabled
+ * Run button state the same reason in the same words. */
+export const NO_SOURCES_REASON = 'No source is selected, so this pipeline has nothing to run.'
 
 /**
  * projectRun swaps a from-scratch fit for its applying equivalent when the graph
@@ -37,6 +41,17 @@ export const fittingCounterpart = (name: string): string | undefined => {
 }
 
 /**
+ * A React key that survives the rename, so switching between fitting and reusing
+ * updates the same card in place instead of unmounting it and mounting a differently
+ * named one. Focus depends on this: Drawer restores focus to the element that was
+ * active when it opened, and an unmounted card is a detached node to focus.
+ */
+const componentKey = (name: string): string => {
+  const pair = FITTING_PAIRS.find(([fits, applies]) => fits === name || applies === name)
+  return pair ? pair[0] : name
+}
+
+/**
  * Which component owns the re-fit choice. Deliberately not every renamed stage:
  * the projection and the cluster model are what get fitted, so those two cards
  * carry the choice, under either of the two names each of them can wear.
@@ -53,7 +68,7 @@ export const ownsChunkStrategy = (entry: CatalogueEntry, componentName: string):
 
 /** True where this entry's masking toggle belongs on this component's panel. */
 export const ownsRedaction = (entry: CatalogueEntry, componentName: string): boolean =>
-  supportsRedaction(entry) && REDACTION_STAGE_NAMES.has(componentName)
+  supportsRedaction(entry) && isRedactionStage(componentName)
 
 /** The one line a card shows about the option it owns, or undefined when it owns none. */
 export const optionSummary = (entry: CatalogueEntry, componentName: string, config: RunConfig): string | undefined => {
@@ -108,13 +123,22 @@ export interface StageChainProps {
  * hears five components rather than five components and four decorations.
  */
 export function StageChain({ entry, config, run, selected, onSelect }: StageChainProps) {
-  const projection = projectRun(entry, config)
+  // A run in flight is executing the projection it was started with, and its
+  // stageIndex indexes into exactly that list. Editing the configuration mid-run
+  // changes what the *next* run would do, and nothing about this one — so while a run
+  // is in flight the chain draws the run: its stages, its weights and the option
+  // values it is honouring. Drawing a live projection instead would let a mid-run edit
+  // renumber the chain under a stageIndex that means nothing in it, which reads as
+  // every component having already succeeded while the run is still going.
+  const inFlight = run?.status === 'running' ? run : undefined
+  const shownConfig = inFlight ? inFlight.config : config
+  const projection = inFlight ? inFlight.projection : projectRun(entry, config)
   const weights = projection.stages.map(s => s.weight)
 
   const share = (weight: number): string =>
     projection.runnable ? formatMinutes(Math.max(1, Math.round(weight * projection.minutes))) : '—'
 
-  const sourceCount = config.sourceIds.length
+  const sourceCount = shownConfig.sourceIds.length
   const scope = `${sourceCount} source${sourceCount === 1 ? '' : 's'} · ${formatNumber(projection.records)} records`
 
   return (
@@ -136,10 +160,10 @@ export function StageChain({ entry, config, run, selected, onSelect }: StageChai
 
       {projection.stages.map((stage, index) => {
         const progress = progressFor(index, weights, run)
-        const option = optionSummary(entry, stage.name, config)
+        const option = optionSummary(entry, stage.name, shownConfig)
         return (
           <button
-            key={stage.name}
+            key={componentKey(stage.name)}
             type="button"
             className={`dm-chain-card${selected === stage.name ? ' is-on' : ''}`}
             aria-pressed={selected === stage.name}

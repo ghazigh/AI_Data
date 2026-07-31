@@ -71,10 +71,14 @@ const CHUNK_MULTIPLIER: Record<ChunkStrategy, number> = {
   semantic: 0.65,
 }
 
-/** Stage names, across the seven modality pipelines, that mask or strip personal data.
- * Exported so the UI that offers the masking toggle decides which component owns it
- * from this same set, rather than from a second hand-written copy of these names. */
-export const REDACTION_STAGE_NAMES = new Set(['Mask', 'Redact'])
+/** Stage names, across the seven modality pipelines, that mask or strip personal data. */
+const REDACTION_STAGE_NAMES = new Set(['Mask', 'Redact'])
+
+/** True for a stage that masks or strips personal data. Exported so the UI that offers
+ * the masking toggle decides which component owns it from the same names projectRun
+ * filters on, rather than from a second hand-written copy of them — as a predicate
+ * rather than the Set itself, which a caller could add to. */
+export const isRedactionStage = (stageName: string): boolean => REDACTION_STAGE_NAMES.has(stageName)
 
 /** True only where the chain actually has a stage that removes personal data — the UI should
  * offer the redact toggle only here; elsewhere it would be a control that does nothing. */
@@ -166,7 +170,14 @@ export function defaultConfigFor(entry: CatalogueEntry): RunConfig {
     sourceIds: [...entry.sourceIds],
     redact: true,
     chunkStrategy: 'clause',
-    refitModels: false,
+    // A pipeline that exists to fit the models opens on fitting them: graph-construct is
+    // named "Build the topic model", its summary says it fits the projection and cluster
+    // model, and its stated baseline runtime IS that from-scratch fit — a workspace opening
+    // on 'Reuse topic labels' would contradict all three. The consequence is stated above
+    // the choice wherever it is offered, this entry has no automatic trigger, and starting
+    // a run is a deliberate press, so the honest default is not a dangerous one. Every
+    // other entry, graph-extend included, applies what construct already fitted.
+    refitModels: entry.warnsOnRefit === true,
     dryRun: false,
   }
 }

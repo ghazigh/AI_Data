@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, within, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, within, fireEvent, act } from '@testing-library/react'
 import { DemoStateProvider } from '../state'
 import { PipelineWorkspace } from '../components/PipelineWorkspace'
 import { entryById } from '../data/pipelineCatalogue'
-import { REFIT_WARNING, defaultConfigFor, projectRun } from '../runConfig'
-import { fittingCounterpart } from '../components/StageChain'
+import { REFIT_WARNING, defaultConfigFor, formatNumber, projectRun } from '../runConfig'
+import { NO_SOURCES_REASON, fittingCounterpart } from '../components/StageChain'
 
 const renderWorkspace = (id: string) =>
   render(<DemoStateProvider><PipelineWorkspace entryId={id} /></DemoStateProvider>)
@@ -93,31 +93,50 @@ describe('the Pipeline tab component chain', () => {
 
   it('warns about re-fitting before the choice is made, in the graph pipeline', () => {
     renderWorkspace('graph-construct')
-    // The default reuses the fitted models, so the component that owns the choice
-    // is on screen under its applying name — see fittingCounterpart.
-    const panel = openComponent('Project')
+    const panel = openComponent('Reduce dimensions')
     expect(within(panel).getByText(REFIT_WARNING)).toBeDefined()
   })
 
-  it('switches to re-fitting and back through the cards as they are labelled at the time', () => {
+  it('opens the pipeline that fits the models on its fitting stages', () => {
     renderWorkspace('graph-construct')
-    expect(within(chain()).getByText('Project')).toBeDefined()
-    expect(within(chain()).queryByText('Reduce dimensions')).toBeNull()
-
-    fireEvent.click(within(openComponent('Project')).getByLabelText(/re-fit/i))
-    done()
-
-    // projectRun renames the fitting stages, so the chain now reads differently.
     expect(within(chain()).getByText('Reduce dimensions')).toBeDefined()
-    expect(within(chain()).queryByText('Project')).toBeNull()
+    expect(within(chain()).queryByText('Reuse topic labels')).toBeNull()
+  })
 
-    // And back again, through the name the card carries now — without this the
-    // operator could reach reuse and never leave it.
+  it('switches to reuse and back through the cards as they are labelled at the time', () => {
+    renderWorkspace('graph-construct')
+
     fireEvent.click(within(openComponent('Reduce dimensions')).getByLabelText(/reuse/i))
     done()
 
+    // projectRun renames the fitting stages, so the chain now reads differently.
     expect(within(chain()).getByText('Project')).toBeDefined()
     expect(within(chain()).queryByText('Reduce dimensions')).toBeNull()
+
+    // And back again, through the name the card carries now — without this the
+    // operator could reach reuse and never leave it.
+    fireEvent.click(within(openComponent('Project')).getByLabelText(/re-fit/i))
+    done()
+
+    expect(within(chain()).getByText('Reduce dimensions')).toBeDefined()
+    expect(within(chain()).queryByText('Project')).toBeNull()
+  })
+
+  it('keeps focus on the component its own choice has just renamed', () => {
+    renderWorkspace('graph-construct')
+    const card = screen.getByRole('button', { name: /Reduce dimensions/ })
+    // fireEvent.click does not move focus, and Drawer restores focus to whatever was
+    // active when it opened — so focus the card first, as a real click would.
+    card.focus()
+    fireEvent.click(card)
+
+    fireEvent.click(within(screen.getByRole('dialog')).getByLabelText(/reuse/i))
+    done()
+
+    // The same DOM node, now labelled 'Project' — not a detached one, which would
+    // have dropped focus to <body>.
+    expect(document.activeElement).toBe(card)
+    expect(screen.getByRole('button', { name: /Project/ })).toBe(card)
   })
 
   it('pairs every renamed fitting stage with the name projectRun gives it', () => {
@@ -142,10 +161,22 @@ describe('the Pipeline tab component chain', () => {
     expect(boxes).toHaveLength(entry.sourceIds.length)
     boxes.forEach(box => fireEvent.click(box))
 
-    expect(within(screen.getByRole('dialog')).getByText(/nothing to run/i)).toBeDefined()
+    expect(within(screen.getByRole('dialog')).getByText(NO_SOURCES_REASON)).toBeDefined()
     done()
 
-    expect((screen.getByRole('button', { name: /run pipeline/i }) as HTMLButtonElement).disabled).toBe(true)
+    // A greyed button with the reason only inside a panel the operator has just closed
+    // leaves nothing on screen to act on — so the reason is beside it, and named by it.
+    const run = screen.getByRole('button', { name: /run pipeline/i }) as HTMLButtonElement
+    expect(run.disabled).toBe(true)
+    const reason = screen.getByText(NO_SOURCES_REASON)
+    expect(run.getAttribute('aria-describedby')).toBe(reason.id)
+    expect(reason.id).toBeTruthy()
+  })
+
+  it('names no reason on the Run button while the run is startable', () => {
+    renderWorkspace('structuring-email')
+    expect(screen.getByRole('button', { name: /run pipeline/i }).getAttribute('aria-describedby')).toBeNull()
+    expect(screen.queryByText(NO_SOURCES_REASON)).toBeNull()
   })
 
   it('narrows the projection when a source leaves the scope', () => {
@@ -158,7 +189,57 @@ describe('the Pipeline tab component chain', () => {
     done()
 
     expect(screen.getByText(new RegExp(`${entry.sourceIds.length - 1} sources`))).toBeDefined()
-    expect(screen.queryByText(new RegExp(`${before.records.toLocaleString('en-US')} records`))).toBeNull()
+    expect(screen.queryByText(new RegExp(`${formatNumber(before.records)} records`))).toBeNull()
+  })
+
+  it('keeps drawing the run that is executing when the configuration changes mid-run', () => {
+    vi.useFakeTimers()
+    try {
+      const entry = entryById('structuring-email')!
+      renderWorkspace(entry.id)
+      const cards = () => within(chain()).getAllByRole('button')
+      const lastCard = () => cards()[cards().length - 1]
+
+      fireEvent.click(screen.getByRole('button', { name: /run pipeline/i }))
+      // Advance until the final component is the one in progress — the worst case for
+      // a mid-run edit, since a shortened chain has no index for it at all.
+      for (let i = 0; i < 60 && !lastCard().textContent?.includes('In progress'); i++) {
+        act(() => { vi.advanceTimersByTime(1000) })
+      }
+      expect(lastCard().textContent).toContain('In progress')
+
+      // run.stageIndex indexes the projection the run started with. Editing the config
+      // now changes what the next run would do, not this one, so the chain must keep
+      // drawing the run — otherwise the Mask stage vanishes, every remaining card falls
+      // below stageIndex and reads Succeeded while the run is still going.
+      fireEvent.click(within(openComponent('Redact')).getByLabelText(/mask personal data/i))
+      done()
+
+      expect(cards()).toHaveLength(entry.stages.length + 1)
+      expect(within(chain()).getByText('Redact')).toBeDefined()
+      expect(lastCard().textContent).toContain('In progress')
+      expect(within(chain()).queryAllByText('Succeeded')).toHaveLength(entry.stages.length - 1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('draws the new configuration again once the run is no longer in flight', () => {
+    vi.useFakeTimers()
+    try {
+      renderWorkspace('structuring-email')
+      fireEvent.click(screen.getByRole('button', { name: /run pipeline/i }))
+      act(() => { vi.advanceTimersByTime(1000) })
+
+      fireEvent.click(within(openComponent('Redact')).getByLabelText(/mask personal data/i))
+      done()
+      expect(within(chain()).getByText('Redact')).toBeDefined()
+
+      fireEvent.click(screen.getByRole('button', { name: /cancel run/i }))
+      expect(within(chain()).queryByText('Redact')).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('carries a configuration across a tab switch, since the Run button is not in the tab', () => {

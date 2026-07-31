@@ -14,8 +14,20 @@ describe('defaultConfigFor', () => {
     expect(c.sourceIds).toEqual(structuring.sourceIds)
   })
 
-  it('defaults the graph pipeline to reusing fitted models', () => {
-    expect(defaultConfigFor(construct).refitModels).toBe(false)
+  // The pipeline that warns on re-fit is the one whose whole purpose is the fit —
+  // graph-construct is named "Build the topic model" and its baseline runtime IS the
+  // from-scratch fit, so opening it on the applying stages would contradict its own
+  // name, summary and stated runtime. Everything else applies what it already fitted.
+  it('defaults the pipeline that fits the models to fitting them', () => {
+    expect(construct.warnsOnRefit).toBe(true)
+    expect(defaultConfigFor(construct).refitModels).toBe(true)
+  })
+
+  it('defaults every other pipeline to reusing the fitted models', () => {
+    for (const e of allEntries()) {
+      if (e.warnsOnRefit) continue
+      expect(defaultConfigFor(e).refitModels, e.name).toBe(false)
+    }
   })
 
   it('defaults structuring to redacting personal data', () => {
@@ -85,9 +97,10 @@ describe('projectRun', () => {
   })
 
   // graph-construct's own baseline (Embed + Reduce dimensions + Cluster + Define topics) IS a
-  // from-scratch fit. refitModels: true is that baseline, unchanged. refitModels: false (the
-  // default) substitutes the fitting stages for their far cheaper applying equivalents, so
-  // reusing costs strictly less than fitting and fitting is the choice that warns.
+  // from-scratch fit. refitModels: true (the default for this entry) is that baseline,
+  // unchanged. refitModels: false substitutes the fitting stages for their far cheaper
+  // applying equivalents, so reusing costs strictly less than fitting and fitting is the
+  // choice that warns.
   it('reusing fitted models substitutes cheaper applying stages and costs less than a refit', () => {
     const reuse = projectRun(construct, { ...defaultConfigFor(construct), refitModels: false })
     const refit = projectRun(construct, { ...defaultConfigFor(construct), refitModels: true })
