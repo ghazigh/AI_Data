@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { PageHead } from '../components/PageHead'
 import { PipelineTable } from '../components/PipelineTable'
-import { allEntries, type SectionKind } from '../data/pipelineCatalogue'
+import { PipelineWorkspace } from '../components/PipelineWorkspace'
+import { CreatePipelineDialog } from '../components/CreatePipelineDialog'
+import type { SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
 import { prefixForSlug } from '../router'
+import { hrefFor } from '../routes'
 
 // This screen is always served at /demo/pipelines/ — one level deep — so its
 // own workspace links need one '../' back to /demo/ before descending into
@@ -42,7 +45,7 @@ const STATUS_OPTIONS: { value: ExecutionStatus | ''; label: string }[] = [
  * pipeline and open it; running one happens in that pipeline's own workspace.
  */
 export function Pipelines() {
-  const { runs, advanceRuns } = useDemoState()
+  const { runs, advanceRuns, allEntriesWithCreated, createPipeline } = useDemoState()
   const hasRunning = runs.some(r => r.status === 'running')
 
   // advanceRuns is rebuilt on every DemoState update (it closes over `runs`),
@@ -62,20 +65,41 @@ export function Pipelines() {
   const [kind, setKind] = useState<SectionKind | ''>('')
   const [status, setStatus] = useState<ExecutionStatus | ''>('')
   const [search, setSearch] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  // Set only once a pipeline is created this session — this screen then swaps
+  // itself for that pipeline's own workspace, which is what "navigate to the
+  // new workspace" means for a screen that receives no navigation callback of
+  // its own (see routes.ts's routeForSlug for the fallback that lets a later,
+  // real link click or Back/Forward reach this same pipeline through the
+  // ordinary router instead).
+  const [justCreatedId, setJustCreatedId] = useState<string | null>(null)
 
+  const entries = allEntriesWithCreated()
   const running = runs.filter(r => r.status === 'running').length
 
   const query = search.trim().toLowerCase()
-  const shown = allEntries().filter(e => {
+  const shown = entries.filter(e => {
     if (kind && e.kind !== kind) return false
     if (status && lastExecutionFor(e.id, runs).status !== status) return false
     if (query && !`${e.name} ${e.summary}`.toLowerCase().includes(query)) return false
     return true
   })
 
+  if (justCreatedId) {
+    return <PipelineWorkspace entryId={justCreatedId} />
+  }
+
   return (
     <>
-      <PageHead eyebrow="Stage 03 — Pipelines" title="Pipelines" />
+      <PageHead
+        eyebrow="Stage 03 — Pipelines"
+        title="Pipelines"
+        actions={
+          <button type="button" className="dm-btn is-ink" onClick={() => setDialogOpen(true)}>
+            Create pipeline
+          </button>
+        }
+      />
 
       <p className="dm-pipe-count">
         {`${shown.length} pipelines`}
@@ -116,6 +140,20 @@ export function Pipelines() {
           <PipelineTable entries={shown} prefix={PREFIX} />
         </div>
       )}
+
+      <CreatePipelineDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        existingNames={entries.map(e => e.name)}
+        onCreate={draft => {
+          const id = createPipeline(draft)
+          // Keeps the address bar honest for a pipeline that now genuinely
+          // exists this session, and gives Back somewhere real to return to.
+          window.history.pushState({ slug: `pipelines/${id}` }, '', hrefFor(`pipelines/${id}`, PREFIX))
+          setDialogOpen(false)
+          setJustCreatedId(id)
+        }}
+      />
     </>
   )
 }

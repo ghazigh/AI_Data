@@ -1,9 +1,11 @@
 import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { SOURCES } from './data/sources'
 import type { Source } from './data/types'
+import { allEntries } from './data/pipelineCatalogue'
 import type { CatalogueEntry, CatalogueStage, SectionKind } from './data/pipelineCatalogue'
 import type { RunConfig, RunProjection } from './runConfig'
 import { defaultConfigFor, projectRun } from './runConfig'
+import { buildEntry, type PipelineDraft } from './data/createPipeline'
 
 /**
  * No 'failed' status: a live run in this demo always finishes or is cancelled, by design —
@@ -78,6 +80,15 @@ export interface DemoState {
   /** An entry's declared settings, defaulting to DEFAULT_SETTINGS until something writes one. */
   settingsFor: (entryId: string) => PipelineSettings
   setSettings: (entryId: string, settings: PipelineSettings) => void
+  /** Every pipeline created this session, in creation order. */
+  createdPipelines: CatalogueEntry[]
+  /** Builds and stores a new entry from a validated draft, returning its new id
+   * (a monotonic 'created-<n>' — see nextCreatedId below, never a catalogue id). */
+  createPipeline: (draft: PipelineDraft) => string
+  /** The catalogue plus every session-created pipeline — what the list page,
+   * the Overview strip's count and a workspace's own id lookup all read,
+   * so none of the three can disagree about which pipelines exist. */
+  allEntriesWithCreated: () => CatalogueEntry[]
 }
 
 const Ctx = createContext<DemoState | null>(null)
@@ -139,6 +150,13 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
   const [settingsOverrides, setSettingsOverrides] = useState<Record<string, PipelineSettings>>({})
   // Monotonic counter for run ids — never derived from a clock or a random source.
   const nextRunId = useRef(1)
+  // Pipelines created this session. Empty until the Create pipeline dialog
+  // succeeds, so a fresh load (server or client) never differs.
+  const [createdPipelines, setCreatedPipelines] = useState<CatalogueEntry[]>([])
+  // Monotonic counter for created-pipeline ids, same discipline as nextRunId —
+  // never a clock or a random source, and never reset on resetDemo (matching
+  // nextRunId's own convention), so an id already handed out is never reused.
+  const nextCreatedId = useRef(1)
 
   const value = useMemo<DemoState>(() => ({
     sources,
@@ -151,6 +169,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       setConfigs({})
       setTriggerOverrides({})
       setSettingsOverrides({})
+      setCreatedPipelines([])
     },
     configFor: entry => configs[entry.id] ?? defaultConfigFor(entry),
     setConfig: (entryId, config) => setConfigs(prev => ({ ...prev, [entryId]: config })),
@@ -179,7 +198,14 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
     cancelRun: runId =>
       setRuns(prev => prev.map(r => (r.id === runId && r.status === 'running' ? { ...r, status: 'cancelled' } : r))),
     advanceRuns: () => setRuns(prev => prev.map(tickRun)),
-  }), [sources, runs, configs, triggerOverrides, settingsOverrides])
+    createdPipelines,
+    createPipeline: draft => {
+      const id = `created-${nextCreatedId.current++}`
+      setCreatedPipelines(prev => [...prev, buildEntry(draft, id)])
+      return id
+    },
+    allEntriesWithCreated: () => [...allEntries(), ...createdPipelines],
+  }), [sources, runs, configs, triggerOverrides, settingsOverrides, createdPipelines])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

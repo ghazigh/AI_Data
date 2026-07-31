@@ -89,6 +89,28 @@ describe('Pipelines list', () => {
   })
 })
 
+describe('Create pipeline dialog', () => {
+  it('creates a pipeline and lands on its workspace', () => {
+    render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
+    fireEvent.click(screen.getByRole('button', { name: /create pipeline/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Broker email triage' } })
+    fireEvent.click(within(dialog).getAllByRole('checkbox')[0])
+    fireEvent.click(within(dialog).getByRole('button', { name: /create pipeline/i }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Broker email triage' })).toBeDefined()
+  })
+
+  it('refuses a name that is already taken', () => {
+    render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
+    fireEvent.click(screen.getByRole('button', { name: /create pipeline/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Tables structuring' } })
+    fireEvent.click(within(dialog).getAllByRole('checkbox')[0])
+    fireEvent.click(within(dialog).getByRole('button', { name: /create pipeline/i }))
+    expect(within(dialog).getByText(/already/i)).toBeDefined()
+  })
+})
+
 describe('Pipelines tick interval', () => {
   // The list page itself has no run-starting UI any more (running one
   // happens in a pipeline's own workspace) — so a run is started directly

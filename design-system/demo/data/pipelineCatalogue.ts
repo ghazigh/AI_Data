@@ -110,9 +110,11 @@ const scheduleLabel = (hours: number): string => {
 /**
  * Cadence derived from the pipeline's own baseline runtime, never hand-typed —
  * see SCHEDULE_CANDIDATE_HOURS above for why "longer than the runtime" is the
- * rule. Guarded in integrity.test.ts.
+ * rule. Guarded in integrity.test.ts. Exported so data/createPipeline.ts gives
+ * a session-created structuring pipeline the same real cadence rule rather
+ * than a second, hand-authored copy of this table.
  */
-const scheduleFor = (baselineMinutes: number): string => {
+export const scheduleFor = (baselineMinutes: number): string => {
   const hours =
     SCHEDULE_CANDIDATE_HOURS.find(h => h * 60 > baselineMinutes) ??
     SCHEDULE_CANDIDATE_HOURS[SCHEDULE_CANDIDATE_HOURS.length - 1]

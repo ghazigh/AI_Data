@@ -2,17 +2,18 @@ import { ROUTES, hrefFor } from '../routes'
 import { useDemoState } from '../state'
 import { ESTATE } from '../data/tenant'
 import { USE_CASES } from '../data/useCases'
-import { allEntries } from '../data/pipelineCatalogue'
 
 export function StageStrip({ prefix }: { prefix: string }) {
-  const { sources, runs } = useDemoState()
+  const { sources, runs, allEntriesWithCreated } = useDemoState()
   const connectedCount = sources.filter(s => s.status === 'connected').length
   const blockedCount = USE_CASES.filter(u => u.status === 'blocked').length
   // Same running/available shape the Pipelines list itself reports in its
   // own count line (see Pipelines.tsx) — guarded against disagreeing in
-  // crossScreen.test.tsx.
+  // crossScreen.test.tsx. allEntriesWithCreated(), not allEntries(), so a
+  // pipeline created this session is counted here too — otherwise Overview
+  // would understate the list page's own count the moment one exists.
   const runningCount = runs.filter(r => r.status === 'running').length
-  const availableCount = allEntries().length
+  const availableCount = allEntriesWithCreated().length
 
   // Derived from session state and the canon data, not hardcoded — a source
   // connected mid-session or a run started later shows up here without this

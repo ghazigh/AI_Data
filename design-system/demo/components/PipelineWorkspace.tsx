@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { entryById } from '../data/pipelineCatalogue'
 import { lastExecutionFor } from '../data/executions'
 import { useDemoState } from '../state'
 import { projectRun, type RunConfig } from '../runConfig'
@@ -34,8 +33,12 @@ const RUN_BLOCKED_ID = 'dm-run-blocked'
  * Returns null for an id the catalogue doesn't know, same as the placeholder
  * this replaces. */
 export function PipelineWorkspace({ entryId }: { entryId: string }) {
-  const entry = entryById(entryId)
-  const { runs, startRun, cancelRun, advanceRuns, configFor, setConfig, settingsFor } = useDemoState()
+  // A session-created pipeline lives only in state, never in the catalogue's own
+  // module data — so the lookup has to go through allEntriesWithCreated() rather
+  // than the pure entryById() every other screen used to reach for. Still
+  // returns null for an id nothing knows about, same as before.
+  const { runs, startRun, cancelRun, advanceRuns, configFor, setConfig, settingsFor, allEntriesWithCreated } = useDemoState()
+  const entry = allEntriesWithCreated().find(e => e.id === entryId)
   const [active, setActive] = useState<string>(TABS[0].id)
   // Null on first paint — no component's panel may be open before the operator
   // opens one, or the server's markup and the client's first render disagree.
@@ -55,6 +58,18 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
     const id = setInterval(() => advanceRunsRef.current(), TICK_MS)
     return () => clearInterval(id)
   }, [hasRunning])
+
+  // A session-created pipeline's route is a synthetic fallback (see
+  // routes.ts's routeForSlug): titleFor() has no way to know its real name from
+  // the slug alone, since that name lives only in this session's state, not in
+  // any module-level route table. Once this workspace actually mounts with the
+  // real entry, correct the document title itself rather than leave the
+  // browser tab reading a generic placeholder for a pipeline that has a name.
+  // Client-only (effects never run during SSR), so this never touches markup.
+  useEffect(() => {
+    if (!entry) return
+    document.title = `${entry.name} — Datalith demo`
+  }, [entry?.name])
 
   if (!entry) return null
 

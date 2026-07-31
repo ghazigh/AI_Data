@@ -1,7 +1,21 @@
-// @vitest-environment node
+// This file used to pin a plain-Node test environment, back when it only ever
+// read files and compared data. Guards 7 and 8 below render real screens
+// (ComponentConfigPanel, Pipelines, ExecutionsTable), which need `document` —
+// so this file now runs under the project's default jsdom environment
+// (see vitest.config.ts). Node built-ins (fs, path) stay available either
+// way: jsdom only adds browser globals on top of the same Node process, it
+// doesn't take them away. Careful not to spell out the environment pragma
+// itself in a comment — Vitest's scanner matches it anywhere in the file,
+// not only at the top, and would silently re-pin this file to Node.
 import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+// This is a .ts file, not .tsx, per the brief's file list — JSX syntax is a
+// TypeScript parser rule tied to the .tsx extension, so guards 7, 8 and 10
+// build their elements with createElement instead of JSX angle brackets.
+import { createElement } from 'react'
+import { render, screen, within } from '@testing-library/react'
 import { ESTATE, DOMAINS } from '../data/tenant'
 import { SOURCES, estateScore } from '../data/sources'
 import { RED_FLAGS } from '../data/readiness'
@@ -15,8 +29,30 @@ import { GRAPH_PIPELINES } from '../data/graphPipelines'
 import { allEntries, entryById } from '../data/pipelineCatalogue'
 import { RUN_HISTORY } from '../data/runHistory'
 import type { Modality } from '../data/types'
+import { WORKSPACE_ROUTES, DEMO_BASE, hrefFor, routeForPath } from '../routes'
+import { triggersFor } from '../data/triggers'
+import { executionId, lastExecutionFor } from '../data/executions'
+import { buildEntry, defaultStagesFor } from '../data/createPipeline'
+import {
+  defaultConfigFor,
+  projectRun,
+  supportsChunkStrategy,
+  supportsRedaction,
+  isRedactionStage,
+} from '../runConfig'
+import { DemoStateProvider } from '../state'
+import { Pipelines } from '../screens/Pipelines'
+import { ExecutionsTable } from '../components/ExecutionsTable'
+import { ComponentConfigPanel } from '../components/ComponentConfigPanel'
+import { executionStatusPill } from '../components/PipelineTable'
 
-const DEMO = new URL('..', import.meta.url).pathname
+// dirname(fileURLToPath(...)), not `new URL('..', import.meta.url).pathname` —
+// under the jsdom environment this file needs for guards 7, 8 and 10, Vite
+// treats that `new URL(..., import.meta.url)` shape as a browser asset
+// reference and rewrites it to a path existsSync/readdirSync can't resolve
+// (the same hazard build.test.ts's own DEMO const documents, there worked
+// around by staying on the node environment instead).
+const DEMO = dirname(dirname(fileURLToPath(import.meta.url)))
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {
@@ -323,5 +359,188 @@ describe('the numbers agree across screens', () => {
         `${entry.name}'s schedule "${entry.schedule}" is not longer than its own ${entry.baselineMinutes}-minute runtime`
       ).toBeGreaterThan(entry.baselineMinutes)
     }
+  })
+})
+
+// Task 6's own guards — spec §9. Each prevents a specific way two screens (or
+// a screen and its own route) could tell an operator two different things
+// about the same pipeline.
+describe('creation and workspace integrity guards (spec §9)', () => {
+  // §9.1 — a catalogue entry with no workspace route would be a dead link on
+  // the list page (Name links to a page that 404s); a workspace route with no
+  // entry behind it would be a page nothing on the list page ever reaches, and
+  // PipelineWorkspace would silently render null for it.
+  it('gives every catalogue entry exactly one workspace route, and every workspace route resolves to a real entry', () => {
+    for (const entry of allEntries()) {
+      const matches = WORKSPACE_ROUTES.filter(r => r.slug === `pipelines/${entry.id}`)
+      expect(matches, entry.id).toHaveLength(1)
+    }
+    for (const route of WORKSPACE_ROUTES) {
+      const id = route.slug.slice('pipelines/'.length)
+      expect(entryById(id), route.slug).toBeDefined()
+    }
+  })
+
+  // §9.2 — hrefFor is what every workspace link on the list page actually
+  // writes into the DOM; routeForPath is what the client router (and the
+  // build) resolves a browser path back to. If the two ever disagreed, a
+  // click that looks like it goes to the right pipeline would land on the
+  // wrong one (or nowhere).
+  it("round-trips every workspace href hrefFor writes back through routeForPath to the same entry's slug", () => {
+    for (const entry of allEntries()) {
+      const slug = `pipelines/${entry.id}`
+      const href = hrefFor(slug, '')
+      const pathname = `${DEMO_BASE}${href}`
+      expect(routeForPath(pathname)?.slug, `${pathname} -> `).toBe(slug)
+    }
+  })
+
+  // §9.3 — the Executions tab scopes its rows to entryById(entryId)! (a
+  // non-null assertion): a RUN_HISTORY record citing an id the catalogue
+  // doesn't have would throw when that pipeline's own workspace tries to
+  // render its own history. Already asserted above under "the numbers agree
+  // across screens"; restated here because Task 6 is what made it load-bearing
+  // for a screen, not just a data-hygiene rule.
+  it('cites only real catalogue entries in RUN_HISTORY, the assumption the Executions tab relies on to resolve entryById(entryId)!', () => {
+    for (const h of RUN_HISTORY) {
+      expect(entryById(h.entryId), `${h.id} cites unknown entry "${h.entryId}"`).toBeDefined()
+    }
+  })
+
+  // §9.4 — the Executions tab opens a run's detail drawer by execution id
+  // (executionId(row.id)); two rows across the whole demo hashing to the same
+  // id would make one drawer open for the wrong run. Already asserted in
+  // executions.test.ts in these exact terms; restated here as part of the
+  // consolidated cross-screen guard list.
+  it('gives every seeded RUN_HISTORY record and every plausible session run id a unique execution id', () => {
+    const ids = [
+      ...RUN_HISTORY.map(h => executionId(h.id)),
+      ...Array.from({ length: 50 }, (_, i) => executionId(`run-${i + 1}`)),
+    ]
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  // §9.5 — the Pipelines list's Trigger column and a structuring workspace's
+  // Triggers tab both read triggersFor(entry).find(t => t.kind === 'schedule').
+  // If that trigger's own label ever drifted from entry.schedule, the list
+  // page's Trigger cell and the catalogue row it was built from would name two
+  // different cadences for the same pipeline. Already asserted in
+  // triggers.test.ts; restated here as a cross-screen guard.
+  it("labels every structuring entry's schedule trigger with exactly entry.schedule", () => {
+    for (const entry of allEntries().filter(e => e.kind === 'structuring')) {
+      const schedule = triggersFor(entry).find(t => t.kind === 'schedule')
+      expect(schedule?.label, entry.name).toBe(entry.schedule)
+    }
+  })
+
+  // §9.6 — a remediation entry's Triggers tab offers an event trigger worded
+  // from a RED_FLAGS entry. If it offered one for a domain with no open flag,
+  // the trigger would describe a gap the Ready screen no longer shows as open;
+  // if it offered none for a domain that does have an open flag, the Triggers
+  // tab would understate how the pipeline actually starts. Already asserted in
+  // triggers.test.ts; restated here as a cross-screen guard.
+  it("gives a remediation entry a readiness-flag trigger if and only if a RED_FLAGS entry shares its plan step's domain", () => {
+    for (const step of PLAN) {
+      const entry = entryById(`plan-${step.id}`)!
+      const flag = RED_FLAGS.find(f => f.domain === step.domain)
+      const event = triggersFor(entry).find(t => t.kind === 'event')
+      if (flag) expect(event?.label, step.id).toContain(flag.title)
+      else expect(event, step.id).toBeUndefined()
+    }
+  })
+
+  // §9.7 — ComponentConfigPanel decides which controls a component's panel
+  // shows; supportsChunkStrategy/supportsRedaction (runConfig.ts) decide which
+  // entries the option even applies to (tables and streams never chunk; only
+  // structuring chains with a Mask/Redact stage carry personal data). A panel
+  // that offered Chunk strategy on an entry with no Chunk stage, or Personal
+  // data on one with no redaction stage, would be a control that does nothing —
+  // exactly the "greyed control with no explanation" failure this whole task
+  // was told to avoid, just inverted (a live control with no effect). Renders
+  // the real panel for every stage of every catalogue entry, not just the
+  // predicate functions in isolation.
+  it('offers the Chunk strategy control only on a Chunk stage of an entry supportsChunkStrategy allows, and Personal data only on a redaction stage of an entry supportsRedaction allows', () => {
+    for (const entry of allEntries()) {
+      const config = defaultConfigFor(entry)
+      const projection = projectRun(entry, config)
+      for (const stage of projection.stages) {
+        const { unmount } = render(
+          createElement(ComponentConfigPanel, {
+            entry,
+            config,
+            componentId: stage.name,
+            onChange: () => {},
+            onClose: () => {},
+          })
+        )
+        const expectChunk = supportsChunkStrategy(entry) && stage.name === 'Chunk'
+        const expectRedaction = supportsRedaction(entry) && isRedactionStage(stage.name)
+        expect(!!screen.queryByText('Chunk strategy'), `${entry.name} / ${stage.name}`).toBe(expectChunk)
+        expect(!!screen.queryByText('Personal data'), `${entry.name} / ${stage.name}`).toBe(expectRedaction)
+        unmount()
+      }
+    }
+  })
+
+  // §9.8 — the list page's Last execution cell and a workspace's own
+  // Executions tab both claim to describe the same pipeline's most recent run.
+  // Rendered side by side from one shared DemoStateProvider so this is the
+  // actual DOM, not two derivations compared on paper — a mismatch here is an
+  // operator seeing "Succeeded 12 min ago" on the list and a different status
+  // the moment they open the pipeline.
+  it("agrees the list page's Last execution cell with the same entry's first Executions row", () => {
+    const entry = entryById('structuring-tables')!
+    render(
+      createElement(DemoStateProvider, null,
+        createElement(Pipelines, null),
+        createElement(ExecutionsTable, { entryId: entry.id })
+      )
+    )
+
+    const listRow = screen.getByRole('link', { name: entry.name }).closest('tr')!
+    const execTable = screen.getByRole('table', { name: `${entry.name} executions` })
+    const firstDataRow = within(execTable).getAllByRole('row')[1]
+
+    const execution = lastExecutionFor(entry.id, [])
+    const pill = executionStatusPill(execution.status)
+
+    expect(within(listRow).getByText(pill.label), 'list status').toBeDefined()
+    expect(within(listRow).getByText(execution.label), 'list label').toBeDefined()
+    expect(within(firstDataRow).getByText(pill.label), 'executions status').toBeDefined()
+    expect(within(firstDataRow).getByText(execution.label), 'executions label').toBeDefined()
+  })
+
+  // §9.9 — a created pipeline's id lives in the same id space every workspace
+  // route and every RUN_HISTORY entryId reference uses; a collision would let
+  // a session-created pipeline silently overwrite a catalogue route. A
+  // baselineMinutes of 0 would mean a schedule (structuring) that fires
+  // infinitely often, or a chain with a stage claiming a runtime share of a
+  // duration that rounds to nothing. Already asserted in
+  // createPipeline.test.tsx; restated here as a cross-screen guard against
+  // the catalogue's own id space and the routes built from it.
+  it("keeps a created pipeline's id out of the catalogue's id space, and its derived runtime at or above one minute", () => {
+    const draft = {
+      name: 'Integrity guard check',
+      kind: 'structuring' as const,
+      sourceIds: [SOURCES.find(s => s.status === 'connected')!.id],
+      stageNames: defaultStagesFor('structuring'),
+    }
+    const created = buildEntry(draft, 'created-9001')
+    expect(allEntries().some(e => e.id === created.id), created.id).toBe(false)
+    expect(created.baselineMinutes).toBeGreaterThanOrEqual(1)
+  })
+
+  // §9.10 — carried forward from the console build this replaced: that build
+  // shipped a heading phrased as an explanation ("How...") and marketing copy
+  // ("agent-ready", "two shapes") the console rewrite was explicitly meant to
+  // remove. This is the regression guard against either creeping back into
+  // the Pipelines area.
+  it('titles nothing in the Pipelines area with a "How" heading, and never says "agent-ready" or "two shapes"', () => {
+    render(createElement(DemoStateProvider, null, createElement(Pipelines, null)))
+    for (const heading of screen.getAllByRole('heading')) {
+      expect(heading.textContent, heading.textContent ?? '').not.toMatch(/^how /i)
+    }
+    expect(screen.queryByText(/agent-ready/i)).toBeNull()
+    expect(screen.queryByText(/two shapes/i)).toBeNull()
   })
 })

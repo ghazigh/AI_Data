@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react'
 import { Rail } from './Rail'
 import { TopBar } from './TopBar'
-import { ROUTES, ALL_ROUTES } from '../routes'
+import { ROUTES, routeForSlug } from '../routes'
 
 export interface AppShellProps { current: string; prefix: string; children: ReactNode }
 
 export function AppShell({ current, prefix, children }: AppShellProps) {
-  const route = ALL_ROUTES.find(r => r.slug === current) ?? ROUTES[0]
+  // routeForSlug(), not a raw ALL_ROUTES lookup — see DemoApp.tsx's own note.
+  const route = routeForSlug(current) ?? ROUTES[0]
   return (
     <div className="dm-root">
       <Rail current={current} prefix={prefix} />

@@ -67,6 +67,25 @@ const ORG_JSONLD = JSON.stringify({
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
+// Inline script for the 404 page only: a pipeline created in a demo session
+// exists only in that browser's state (see demo/state.tsx's createdPipelines),
+// so a hard refresh on its /demo/pipelines/<id>/ URL is a path GitHub Pages
+// never wrote a file for, and Pages serves this 404 page for it. Without this
+// script that operator lands on a plain not-found page for a pipeline that,
+// from their point of view, genuinely exists; this sends them back to the
+// list page instead, where every pipeline (created or catalogue) is listed.
+// No hydration, no React — this runs before any bundle would load.
+const PIPELINES_REDIRECT = `<script>
+(function () {
+  var marker = '/demo/pipelines/';
+  var i = location.pathname.indexOf(marker);
+  if (i !== -1) {
+    location.replace(location.origin + location.pathname.slice(0, i + marker.length));
+  }
+})();
+</script>
+`
+
 for (const page of PAGES) {
   const body = renderToStaticMarkup(createElement(page.Component))
   const path = page.slug === 'index' ? '' : `${page.slug}.html`
@@ -99,7 +118,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 </head>
 <body>
 ${body}
-<script src="./assets/site.js" defer></script>
+${page.slug === '404' ? PIPELINES_REDIRECT : ''}<script src="./assets/site.js" defer></script>
 </body>
 </html>
 `

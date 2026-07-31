@@ -15,6 +15,12 @@ import { allEntries } from '../data/pipelineCatalogue'
 const OUT = new URL('../../../website/demo/', import.meta.url).pathname
 const built = existsSync(`${OUT}index.html`)
 
+// website/404.html is scripts/build-site.mjs's own output (site root, not
+// demo/), generated whether or not the demo build has run — checked
+// independently of `built` above.
+const SITE_OUT = new URL('../../../website/', import.meta.url).pathname
+const siteBuilt = existsSync(`${SITE_OUT}404.html`)
+
 describe.skipIf(!built)('build output', () => {
   it('writes one html file per route', () => {
     for (const r of ALL_ROUTES) {
@@ -71,5 +77,28 @@ describe.skipIf(!built)('build output', () => {
       const file = `${OUT}${resolved.slice('/demo/'.length)}index.html`
       expect(existsSync(file), `${href} -> ${file}`).toBe(true)
     }
+  })
+})
+
+describe.skipIf(!siteBuilt)('the 404 page', () => {
+  // A pipeline created in a demo session exists only in that browser's state
+  // (demo/state.tsx's createdPipelines), so a hard refresh on its
+  // /demo/pipelines/<id>/ URL is a path the build never wrote a file for —
+  // GitHub Pages serves this 404 page for it. Without the redirect script this
+  // asserts, that operator would land on a plain not-found page for a
+  // pipeline that, from their point of view, genuinely exists. This guards
+  // scripts/build-site.mjs (which owns 404.html — the site's own copy, OG
+  // tags and canonical URL) against a future edit silently dropping the
+  // script build-site.mjs is supposed to inline into it.
+  it('redirects a /demo/pipelines/ path back to the pipelines list', () => {
+    const html = readFileSync(`${SITE_OUT}404.html`, 'utf8')
+    expect(html).toContain('/demo/pipelines/')
+    expect(html).toMatch(/location\.replace/)
+  })
+
+  it('keeps the site\'s own not-found copy, unrelated to the redirect', () => {
+    const html = readFileSync(`${SITE_OUT}404.html`, 'utf8')
+    expect(html).toContain('isn')
+    expect(html).toContain('graph')
   })
 })
