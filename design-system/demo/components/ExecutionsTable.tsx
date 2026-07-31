@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { Panel } from './Panel'
 import { DataTable, type Column } from './DataTable'
 import { Drawer } from './Drawer'
-import { StatusPill, type PillTone } from './StatusPill'
+import { StatusPill } from './StatusPill'
 import { formatMinutes } from '../runConfig'
 import { useDemoState, type RunRecord } from '../state'
-import { RUN_HISTORY, type RunHistoryEntry, type RunOutcome } from '../data/runHistory'
-import { entryById } from '../data/pipelineCatalogue'
+import { RUN_HISTORY, type RunHistoryEntry } from '../data/runHistory'
+import { entryById, type CatalogueEntry } from '../data/pipelineCatalogue'
+import { triggersFor } from '../data/triggers'
+import { executionId, type ExecutionStatus } from '../data/executions'
+import { executionStatusPill } from './PipelineTable'
 
 interface StageExecuted {
   name: string
@@ -14,15 +17,14 @@ interface StageExecuted {
   minutes: number
 }
 
-/** One row of run history, whichever of the two sources it came from. */
+/** One row of this pipeline's execution history, whichever of the two sources it came from. */
 interface HistoryRow {
   id: string
-  entryName: string
+  status: ExecutionStatus
+  trigger: 'Schedule' | 'Manual'
   finished: string
   duration: string
   records: number
-  readinessDelta: number
-  outcome: RunOutcome
   configSummary: string
   note?: string
   /** Present only for a run this session produced — the seeded history has no per-stage detail. */
@@ -47,7 +49,11 @@ const summarizeConfig = (run: RunRecord): string => {
   return `${scope}${run.config.dryRun ? ', dry run' : ''}`
 }
 
-/** A run this session started, once it has left 'running' — completed or cancelled. */
+/**
+ * A run this session started — this entry's, running or already left
+ * 'running'. A session run is always triggered by hand: whatever the entry's
+ * schedule says, this run began because the operator pressed Run.
+ */
 const rowFromRun = (run: RunRecord): HistoryRow => {
   const executed = run.projection.stages.slice(0, run.stageIndex + 1)
   const fraction = Math.min(1, run.ticks / run.ticksBudget)
@@ -55,14 +61,13 @@ const rowFromRun = (run: RunRecord): HistoryRow => {
 
   return {
     id: run.id,
-    entryName: run.entryName,
+    status: run.status === 'running' ? 'running' : run.status === 'cancelled' ? 'cancelled' : 'succeeded',
+    trigger: 'Manual',
     // A fixed literal, same as settleSource's lastSync elsewhere in state.tsx — never
-    // computed from a clock, and true for the length of this session either way.
-    finished: 'Just now',
+    // computed from a clock.
+    finished: run.status === 'running' ? 'In progress' : 'Just now',
     duration: formatMinutes(Math.max(1, Math.round(run.projection.minutes * fraction))),
     records: run.recordsProcessed,
-    readinessDelta: run.status === 'completed' ? run.projection.readinessDelta : 0,
-    outcome: run.status === 'completed' ? 'succeeded' : 'cancelled',
     configSummary: summarizeConfig(run),
     note: run.status === 'cancelled'
       ? `Cancelled after ${lastStage?.name ?? 'starting'} — the operator stopped it before it finished.`
@@ -79,72 +84,78 @@ const rowFromRun = (run: RunRecord): HistoryRow => {
   }
 }
 
-const rowFromHistory = (h: RunHistoryEntry): HistoryRow => ({
-  id: h.id,
-  entryName: h.entryName,
-  finished: h.finished,
-  duration: h.duration,
-  records: h.records,
-  readinessDelta: h.readinessDelta,
-  outcome: h.outcome,
-  configSummary: h.configSummary,
-  note: h.note,
-  stagesCompleted: h.stagesCompleted,
-  stagesTotal: h.stagesTotal,
-})
-
-const OUTCOME: Record<RunOutcome, { tone: PillTone; label: string }> = {
-  succeeded: { tone: 'ok', label: 'Succeeded' },
-  failed: { tone: 'warn', label: 'Failed' },
-  cancelled: { tone: 'neutral', label: 'Cancelled' },
+/**
+ * A seeded RUN_HISTORY record. Reflects the entry's own schedule — 'Schedule'
+ * only where that trigger is still switched on, 'Manual' once an operator
+ * has turned it off on the Triggers tab.
+ */
+const rowFromHistory = (h: RunHistoryEntry, entry: CatalogueEntry, triggerEnabled: (id: string) => boolean): HistoryRow => {
+  const schedule = triggersFor(entry).find(t => t.kind === 'schedule')
+  return {
+    id: h.id,
+    status: h.outcome,
+    trigger: schedule && triggerEnabled(schedule.id) ? 'Schedule' : 'Manual',
+    finished: h.finished,
+    duration: h.duration,
+    records: h.records,
+    configSummary: h.configSummary,
+    note: h.note,
+    stagesCompleted: h.stagesCompleted,
+    stagesTotal: h.stagesTotal,
+  }
 }
 
 /**
- * Every run that has left the "running" state: what this session produced, newest
- * first (state.runs is itself newest-first, since startRun prepends), followed by
- * the seeded RUN_HISTORY — every seeded entry is at least minutes old, so nothing
- * this session just finished can rank behind one.
+ * Every execution of one pipeline: what this session produced for it, newest
+ * first (state.runs is itself newest-first, since startRun prepends),
+ * followed by its seeded RUN_HISTORY record if it has one — RUN_HISTORY
+ * carries at most one record per entryId.
  */
-export function RunHistoryTable() {
-  const { runs } = useDemoState()
+export function ExecutionsTable({ entryId }: { entryId: string }) {
+  const entry = entryById(entryId)!
+  const { runs, triggerEnabled } = useDemoState()
   const [openId, setOpenId] = useState<string | null>(null)
 
   const rows: HistoryRow[] = [
-    ...runs.filter(r => r.status !== 'running').map(rowFromRun),
-    ...RUN_HISTORY.map(rowFromHistory),
+    ...runs.filter(r => r.entryId === entryId).map(rowFromRun),
+    ...RUN_HISTORY.filter(h => h.entryId === entryId).map(h => rowFromHistory(h, entry, triggerEnabled)),
   ]
   const open = rows.find(r => r.id === openId) ?? null
 
   const columns: Column<HistoryRow>[] = [
     {
-      key: 'pipeline',
-      header: 'Pipeline',
-      sortValue: r => r.entryName,
+      key: 'id',
+      header: 'Execution ID',
       render: r => (
-        <button type="button" onClick={() => setOpenId(r.id)}>
-          {r.entryName}
+        <button type="button" className="dm-mono" onClick={() => setOpenId(r.id)}>
+          {executionId(r.id)}
         </button>
       ),
     },
+    {
+      key: 'status',
+      header: 'Status',
+      render: r => {
+        const pill = executionStatusPill(r.status)
+        return <StatusPill tone={pill.tone} label={pill.label} />
+      },
+    },
+    { key: 'trigger', header: 'Trigger', render: r => r.trigger },
     { key: 'finished', header: 'Finished', render: r => r.finished },
     { key: 'duration', header: 'Duration', render: r => r.duration },
     { key: 'records', header: 'Records', align: 'end', render: r => r.records.toLocaleString('en-US') },
-    {
-      key: 'delta',
-      header: 'Delta',
-      align: 'end',
-      sortValue: r => r.readinessDelta,
-      render: r => (r.readinessDelta > 0 ? `+${r.readinessDelta}` : `${r.readinessDelta}`),
-    },
-    { key: 'outcome', header: 'Outcome', render: r => <StatusPill tone={OUTCOME[r.outcome].tone} label={OUTCOME[r.outcome].label} /> },
   ]
 
   return (
-    <Panel title="Run history">
-      <DataTable caption="Run history" columns={columns} rows={rows} rowKey={r => r.id} />
+    <Panel title="Executions">
+      {rows.length === 0 ? (
+        <p className="dm-exec-empty">No executions yet. Run this pipeline to see it here.</p>
+      ) : (
+        <DataTable caption={`${entry.name} executions`} columns={columns} rows={rows} rowKey={r => r.id} />
+      )}
 
       {open && (
-        <Drawer open title={open.entryName} onClose={() => setOpenId(null)}>
+        <Drawer open title={`Execution ${executionId(open.id)}`} onClose={() => setOpenId(null)}>
           <h3 className="dm-drawer-sub">Stages executed</h3>
           {open.stagesExecuted ? (
             <div>

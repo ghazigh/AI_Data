@@ -74,3 +74,59 @@ describe('pipeline workspace tick interval', () => {
     vi.useRealTimers()
   })
 })
+
+describe('workspace tabs', () => {
+  it('lists this pipeline executions and no other pipeline runs', () => {
+    renderWorkspace('structuring-tables')
+    fireEvent.click(screen.getByRole('tab', { name: 'Executions' }))
+    const table = screen.getByRole('table')
+    expect(within(table).getAllByRole('row')).toHaveLength(2)
+    expect(within(table).getByText('12 min ago')).toBeDefined()
+    expect(within(table).queryByText(/57 min/)).toBeNull()
+  })
+
+  it('opens an execution to show the stages it ran and the configuration used', () => {
+    renderWorkspace('structuring-tables')
+    fireEvent.click(screen.getByRole('tab', { name: 'Executions' }))
+    fireEvent.click(within(screen.getByRole('table')).getAllByRole('button')[0])
+    const drawer = screen.getByRole('dialog')
+    expect(within(drawer).getByText(/stages executed/i)).toBeDefined()
+    expect(within(drawer).getByText('Full scope, 15 sources, personal data masked')).toBeDefined()
+  })
+
+  it('says so when a pipeline has never run', () => {
+    renderWorkspace('plan-p2')
+    fireEvent.click(screen.getByRole('tab', { name: 'Executions' }))
+    expect(screen.getByText(/no executions yet/i)).toBeDefined()
+  })
+
+  it('turns a schedule off, and the pipeline becomes manual', () => {
+    renderWorkspace('structuring-documents')
+    fireEvent.click(screen.getByRole('tab', { name: 'Triggers' }))
+    const schedule = screen.getByRole('switch', { name: /runs every/i })
+    expect(schedule.getAttribute('aria-checked')).toBe('true')
+    fireEvent.click(schedule)
+    expect(schedule.getAttribute('aria-checked')).toBe('false')
+  })
+
+  it('will not let the manual trigger be switched off', () => {
+    renderWorkspace('structuring-documents')
+    fireEvent.click(screen.getByRole('tab', { name: 'Triggers' }))
+    expect(screen.queryByRole('switch', { name: /^manual$/i })).toBeNull()
+  })
+
+  it('keeps a settings change when the tab is left and returned to', () => {
+    renderWorkspace('plan-p1')
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    fireEvent.click(screen.getByLabelText(/dry run/i))
+    fireEvent.click(screen.getByRole('tab', { name: 'Pipeline' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    expect((screen.getByLabelText(/dry run/i) as HTMLInputElement).checked).toBe(true)
+  })
+
+  it('offers no dry-run default on a pipeline that cannot dry run', () => {
+    renderWorkspace('structuring-documents')
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    expect(screen.queryByLabelText(/dry run/i)).toBeNull()
+  })
+})

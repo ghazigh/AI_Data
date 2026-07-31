@@ -30,6 +30,25 @@ export interface RunRecord {
   ticksBudget: number
 }
 
+/**
+ * The declared, honest settings a pipeline's Settings tab stores and displays.
+ * defaultDryRun reaches the header's Run action for a remediation entry (see
+ * PipelineWorkspace); notifyOnFailure and retentionDays are stored and shown
+ * and nothing else in the demo reads them — there is no failure-notification
+ * or retention system here to wire them into.
+ */
+export interface PipelineSettings {
+  defaultDryRun: boolean
+  notifyOnFailure: boolean
+  retentionDays: 30 | 90 | 365
+}
+
+export const DEFAULT_SETTINGS: PipelineSettings = {
+  defaultDryRun: false,
+  notifyOnFailure: true,
+  retentionDays: 90,
+}
+
 export interface DemoState {
   sources: Source[]
   /** Adds a source in `scanning` state; the caller settles it to `connected`. */
@@ -51,6 +70,14 @@ export interface DemoState {
   cancelRun: (runId: string) => void
   /** Advances every running run one tick. Called by an interval in the screen. */
   advanceRuns: () => void
+  /** Whether one trigger (keyed by its own Trigger.id, not the entry id — an
+   * entry can offer more than one switchable trigger) is on. Defaults to on
+   * until an operator switches it off. */
+  triggerEnabled: (id: string) => boolean
+  setTriggerEnabled: (id: string, enabled: boolean) => void
+  /** An entry's declared settings, defaulting to DEFAULT_SETTINGS until something writes one. */
+  settingsFor: (entryId: string) => PipelineSettings
+  setSettings: (entryId: string, settings: PipelineSettings) => void
 }
 
 const Ctx = createContext<DemoState | null>(null)
@@ -103,6 +130,13 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
   // Empty until an operator changes something, so every entry starts from
   // defaultConfigFor and the first render is identical on the server and the client.
   const [configs, setConfigs] = useState<Record<string, RunConfig>>({})
+  // Empty until an operator flips a switch on the Triggers tab, keyed by each
+  // trigger's own id (data/triggers.ts) so two switchable triggers on the same
+  // entry — a structuring pipeline's schedule and its event trigger — hold
+  // independent state.
+  const [triggerOverrides, setTriggerOverrides] = useState<Record<string, boolean>>({})
+  // Empty until an operator changes something on the Settings tab, keyed by entryId.
+  const [settingsOverrides, setSettingsOverrides] = useState<Record<string, PipelineSettings>>({})
   // Monotonic counter for run ids — never derived from a clock or a random source.
   const nextRunId = useRef(1)
 
@@ -115,9 +149,15 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       setSources(SOURCES)
       setRuns([])
       setConfigs({})
+      setTriggerOverrides({})
+      setSettingsOverrides({})
     },
     configFor: entry => configs[entry.id] ?? defaultConfigFor(entry),
     setConfig: (entryId, config) => setConfigs(prev => ({ ...prev, [entryId]: config })),
+    triggerEnabled: id => triggerOverrides[id] ?? true,
+    setTriggerEnabled: (id, enabled) => setTriggerOverrides(prev => ({ ...prev, [id]: enabled })),
+    settingsFor: entryId => settingsOverrides[entryId] ?? DEFAULT_SETTINGS,
+    setSettings: (entryId, next) => setSettingsOverrides(prev => ({ ...prev, [entryId]: next })),
     runs,
     startRun: (entry, config) => {
       const projection = projectRun(entry, config)
@@ -139,7 +179,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
     cancelRun: runId =>
       setRuns(prev => prev.map(r => (r.id === runId && r.status === 'running' ? { ...r, status: 'cancelled' } : r))),
     advanceRuns: () => setRuns(prev => prev.map(tickRun)),
-  }), [sources, runs, configs])
+  }), [sources, runs, configs, triggerOverrides, settingsOverrides])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

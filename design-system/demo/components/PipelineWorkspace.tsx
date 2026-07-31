@@ -8,6 +8,9 @@ import { executionStatusPill, KIND_LABEL } from './PipelineTable'
 import { StageChain, NO_SOURCES_REASON, SOURCE_COMPONENT_ID, fittingCounterpart } from './StageChain'
 import { ComponentConfigPanel } from './ComponentConfigPanel'
 import { WorkspaceTabs, WORKSPACE_PANEL_ID, workspaceTabId, type WorkspaceTab } from './WorkspaceTabs'
+import { ExecutionsTable } from './ExecutionsTable'
+import { TriggersTab } from './TriggersTab'
+import { SettingsTab } from './SettingsTab'
 
 const TABS: WorkspaceTab[] = [
   { id: 'pipeline', label: 'Pipeline' },
@@ -32,7 +35,7 @@ const RUN_BLOCKED_ID = 'dm-run-blocked'
  * this replaces. */
 export function PipelineWorkspace({ entryId }: { entryId: string }) {
   const entry = entryById(entryId)
-  const { runs, startRun, cancelRun, advanceRuns, configFor, setConfig } = useDemoState()
+  const { runs, startRun, cancelRun, advanceRuns, configFor, setConfig, settingsFor } = useDemoState()
   const [active, setActive] = useState<string>(TABS[0].id)
   // Null on first paint — no component's panel may be open before the operator
   // opens one, or the server's markup and the client's first render disagree.
@@ -60,6 +63,13 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
 
   const config = configFor(entry)
   const projection = projectRun(entry, config)
+  // The Settings tab's dry-run default only means anything for a remediation
+  // entry — RunConfig.dryRun is otherwise never read — and is applied only at
+  // the moment a run starts, not written into the config the Pipeline tab
+  // itself edits.
+  const runConfig = entry.kind === 'remediation'
+    ? { ...config, dryRun: settingsFor(entry.id).defaultDryRun }
+    : config
   // The newest run for this entry, running or finished — runs are newest-first —
   // so the chain keeps reporting what happened after a run ends.
   const latestRun = runs.find(r => r.entryId === entry.id)
@@ -106,7 +116,7 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
                 className="dm-btn is-ink"
                 disabled={!projection.runnable}
                 aria-describedby={projection.runnable ? undefined : RUN_BLOCKED_ID}
-                onClick={() => startRun(entry, config)}
+                onClick={() => startRun(entry, runConfig)}
               >
                 Run pipeline
               </button>
@@ -135,9 +145,9 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
             onSelect={setSelected}
           />
         )}
-        {active === 'executions' && <p>Execution history is coming in a later task.</p>}
-        {active === 'triggers' && <p>Trigger configuration is coming in a later task.</p>}
-        {active === 'settings' && <p>Run settings are coming in a later task.</p>}
+        {active === 'executions' && <ExecutionsTable entryId={entry.id} />}
+        {active === 'triggers' && <TriggersTab entry={entry} />}
+        {active === 'settings' && <SettingsTab entry={entry} />}
       </div>
 
       <ComponentConfigPanel

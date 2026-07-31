@@ -3,6 +3,7 @@ import { StatusPill, type PillTone } from './StatusPill'
 import { hrefFor } from '../routes'
 import type { CatalogueEntry, SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
+import { triggersFor } from '../data/triggers'
 import { useDemoState } from '../state'
 
 /** How a catalogue entry's kind reads, defined once — the table's Kind column
@@ -35,7 +36,7 @@ export interface PipelineTableProps {
  * offers no way to configure or start a run.
  */
 export function PipelineTable({ entries, prefix }: PipelineTableProps) {
-  const { runs } = useDemoState()
+  const { runs, triggerEnabled } = useDemoState()
 
   const columns: Column<CatalogueEntry>[] = [
     {
@@ -64,7 +65,10 @@ export function PipelineTable({ entries, prefix }: PipelineTableProps) {
     {
       key: 'trigger',
       header: 'Trigger',
-      render: e => e.schedule ?? 'Manual',
+      render: e => {
+        const schedule = triggersFor(e).find(t => t.kind === 'schedule')
+        return schedule && triggerEnabled(schedule.id) ? schedule.label : 'Manual'
+      },
     },
     {
       key: 'lastExecution',
