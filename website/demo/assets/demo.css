@@ -280,24 +280,14 @@
 .dm-field input:focus, .dm-field select:focus { border-color: var(--dl-blue); outline: none; }
 .dm-connect-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: var(--dl-space-6); }
 
-/* ===== pipelines console ===== */
-.dm-progress { position: relative; height: 8px; background: var(--dl-grey-1); }
-.dm-progress i { position: absolute; inset: 0 auto 0 0; background: var(--dl-blue); transition: width var(--dl-ease); }
-.dm-run-meta { margin-top: var(--dl-space-3); font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-4); }
-/* .dm-plan-t / .dm-plan-d also carry the pipeline name and summary in the
-   catalogue section's own table (CatalogueSection.tsx) — one row treatment
-   shared across every list of pipelines on this screen. */
-.dm-plan-t { font-size: 13px; font-weight: 600; }
-.dm-plan-d { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
-
-.dm-run-empty { padding: var(--dl-space-4) 18px; font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
-.dm-runlist li { display: grid; grid-template-columns: 1fr 240px 96px; gap: var(--dl-space-5); align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--dl-grey-1); }
-.dm-runlist li:last-child { border-bottom: 0; }
-.dm-run-name { font-size: 13px; font-weight: 600; }
-.dm-run-stage { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
-.dm-run-progress { display: flex; flex-direction: column; gap: 6px; }
-.dm-run-progress .dm-run-meta { margin-top: 0; }
-.dm-runlist .dm-btn { justify-self: end; padding: 7px 14px; font-size: 11.5px; }
+/* ===== pipelines list ===== */
+.dm-pipe-count { margin: 0 0 14px; font-size: 12.5px; color: var(--dl-grey-4); }
+.dm-filter-select { display: flex; align-items: center; gap: 8px; }
+.dm-filter-select select { padding: 6px 10px; border: var(--dl-hairline); border-radius: 0; background: var(--dl-canvas); font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-ink); }
+.dm-filter-select select:focus { border-color: var(--dl-blue); outline: none; }
+.dm-exec { display: inline-flex; align-items: center; gap: 8px; }
+.dm-exec-label { font-size: 12px; color: var(--dl-grey-4); }
+.dm-list-empty { margin-top: 18px; padding: var(--dl-space-4) 18px; border: var(--dl-hairline); background: var(--dl-paper); font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
 
 /* ===== graph canvas ===== */
 .dm-canvas { position: relative; border: var(--dl-hairline); background: var(--dl-paper); }
@@ -389,31 +379,75 @@
 .dm-result-sub { display: block; margin-top: 2px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
 .dm-results-empty { padding: 11px 14px; font-size: 12.5px; color: var(--dl-grey-4); }
 
-/* ===== stage detail rows (configure drawer + run history drawer) ===== */
+/* ===== stage detail rows (run history drawer) ===== */
 .dm-stage-row { display: grid; grid-template-columns: 1fr 96px 84px; gap: var(--dl-space-4); align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--dl-grey-1); }
 .dm-stage-row:last-child { border-bottom: 0; }
 .dm-stage-name { font-size: 13px; font-weight: 600; }
 .dm-stage-name .dm-pill { margin-left: var(--dl-space-2); vertical-align: middle; }
-.dm-stage-detail { margin-top: 3px; font-size: 11.5px; color: var(--dl-grey-4); }
 .dm-stage-count { font-family: var(--dl-font-display); font-weight: 700; font-size: var(--dl-text-body); letter-spacing: -0.02em; text-align: right; }
 .dm-stage-count em { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
 .dm-stage-runtime { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-3); text-align: right; }
-.dm-sample { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dl-space-4); margin-top: var(--dl-space-4); }
-.dm-sample pre { margin: 0; padding: var(--dl-space-3); border: var(--dl-hairline); background: var(--dl-canvas); font-family: var(--dl-font-mono); font-size: 10.5px; line-height: 1.6; white-space: pre-wrap; overflow-x: auto; }
-.dm-sample figcaption { margin-top: var(--dl-space-2); font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-grey-3); }
 
-/* ===== catalogue sections + configure drawer ===== */
-/* The section's own "what kind of thing these are" line — reused for the
-   run-history drawer's stage-count summary below via .dm-uc-summary instead,
-   so this one stays scoped to CatalogueSection. */
-.dm-gpipe-lead { padding: 14px 18px 0; font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
-/* Action bar sits between the section's lead line and its table, so its
-   border pairs with the table below it the same way .dm-filterbar pairs
-   with the panel that follows it elsewhere in the demo. */
-.dm-cat-actions { display: flex; justify-content: flex-end; padding: 12px 18px; border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); background: var(--dl-blue-wash); }
-/* One row per scope source or per kind-specific option in the configure
-   drawer — a compact label+control row, reused for both. */
-.dm-cfg-check { display: flex; align-items: center; gap: var(--dl-space-2); padding: 7px 0; font-size: 12.5px; color: var(--dl-ink); }
+/* ===== run history drawer ===== */
 .dm-cfg-warning { margin-top: var(--dl-space-2); font-size: 12.5px; line-height: 1.5; color: var(--dl-warn-text); }
+
+/* ===== pipeline workspace ===== */
+.dm-workspace-h { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--dl-space-5); margin-bottom: 18px; }
+.dm-workspace-h h1 { margin-top: 8px; font-family: var(--dl-font-display); font-size: 29px; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+.dm-workspace-summary { margin-top: 8px; max-width: 620px; font-size: 13px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-workspace-actions { display: flex; align-items: center; gap: var(--dl-space-5); flex: none; }
+.dm-run { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.dm-run-blocked { max-width: 210px; font-size: 11.5px; line-height: 1.4; text-align: right; color: var(--dl-warn-text); }
+
+.dm-tablist { display: flex; gap: var(--dl-space-5); border-bottom: var(--dl-hairline); margin-bottom: 18px; }
+.dm-tab { padding: 10px 1px; border: 0; border-bottom: 2px solid transparent; background: none; font-size: 13px; font-weight: 600; color: var(--dl-grey-4); cursor: pointer; }
+.dm-tab:hover { color: var(--dl-ink); }
+.dm-tab.is-on { border-bottom-color: var(--dl-ink); color: var(--dl-ink); }
+
+/* The pipeline drawn as its connected components. Every card is a button; the
+   connector between two of them is drawn entirely from the lower card's own
+   pseudo-elements — a vertical rule and an arrowhead — so the chain reads as N
+   components to a screen reader rather than N components and N-1 decorations. */
+.dm-chain { display: flex; flex-direction: column; align-items: stretch; max-width: 620px; }
+.dm-chain-card { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; border: var(--dl-hairline); background: var(--dl-paper); text-align: left; cursor: pointer; transition: border-color var(--dl-ease), background var(--dl-ease); }
+.dm-chain-card:hover { border-color: var(--dl-grey-3); background: var(--dl-blue-wash); }
+.dm-chain-card.is-on { border-color: var(--dl-ink); box-shadow: inset 3px 0 0 var(--dl-blue); }
+.dm-chain-card + .dm-chain-card { margin-top: 30px; }
+.dm-chain-card + .dm-chain-card::before { content: ''; position: absolute; top: -30px; left: 50%; width: 1px; height: 30px; background: var(--dl-grey-2); }
+.dm-chain-card + .dm-chain-card::after { content: ''; position: absolute; top: -9px; left: 50%; width: 7px; height: 7px; margin-left: -4px; border-right: 1px solid var(--dl-grey-3); border-bottom: 1px solid var(--dl-grey-3); transform: rotate(45deg); }
+.dm-chain-head { display: flex; align-items: center; justify-content: space-between; gap: var(--dl-space-3); }
+.dm-chain-name { font-family: var(--dl-font-display); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.dm-chain-detail { font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-chain-meta { display: flex; align-items: baseline; gap: var(--dl-space-3); font-family: var(--dl-font-mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--dl-grey-3); }
+.dm-chain-option { color: var(--dl-blue); }
+.dm-chain-bar { position: relative; display: block; height: 4px; margin-top: 2px; background: var(--dl-grey-1); }
+.dm-chain-bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--dl-blue); }
+
+/* ===== executions tab ===== */
+.dm-exec-empty { padding: 13px 18px; font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+
+/* ===== triggers tab ===== */
+.dm-triggers li { display: grid; grid-template-columns: 90px 1fr 40px; gap: var(--dl-space-4); align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--dl-grey-1); }
+.dm-triggers li:last-child { border-bottom: 0; }
+.dm-trigger-kind { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-trigger-label { display: block; font-size: 13px; font-weight: 600; }
+.dm-trigger-detail { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.5; color: var(--dl-grey-4); }
+
+.dm-switch { position: relative; flex: none; width: 34px; height: 20px; padding: 0; border: var(--dl-hairline); border-radius: var(--dl-radius-pill); background: var(--dl-grey-1); cursor: pointer; justify-self: end; }
+.dm-switch.is-on { background: var(--dl-ink); border-color: var(--dl-ink); }
+.dm-switch-knob { position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; border-radius: var(--dl-radius-pill); background: #fff; transition: transform var(--dl-ease); }
+.dm-switch.is-on .dm-switch-knob { transform: translateX(14px); }
+
+/* ===== settings tab ===== */
+.dm-settings { padding: 14px 18px 18px; }
+
+/* ===== a component's own configuration panel ===== */
+.dm-cfg-check { display: flex; align-items: flex-start; gap: 10px; padding: var(--dl-space-2) 0; font-size: 13px; cursor: pointer; }
+.dm-cfg-check input { margin-top: 2px; flex: none; }
+.dm-cfg-opt { display: block; font-weight: 500; }
+.dm-cfg-note { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-cfg-none { margin-top: var(--dl-space-5); font-size: 13px; color: var(--dl-grey-4); }
+.dm-io > div { display: grid; grid-template-columns: 110px 1fr; gap: var(--dl-space-3); padding: var(--dl-space-2) 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; }
+.dm-io dt { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
 
 html, body { margin: 0; background: var(--dl-canvas); }
