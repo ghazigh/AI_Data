@@ -90,6 +90,59 @@ describe('run state', () => {
     expect(JSON.parse(val('config')!)).toEqual(defaultConfigFor(entry))
   })
 
+  it('remembers a pipeline configuration per entry and clears it on reset', () => {
+    // The configure controls live on the components in the Pipeline tab, while the
+    // Run button lives in the workspace header — so the configuration cannot be
+    // local to either. It is held per entry in shared state, which is what this
+    // asserts: a written value survives, and reset puts the entry back to default.
+    const configured = entryById('structuring-documents')!
+
+    const ConfigProbe = () => {
+      const { configFor, setConfig, resetDemo } = useDemoState()
+      const config = configFor(configured)
+      return (
+        <div>
+          <p data-testid="cfg-sources">{config.sourceIds.join(',')}</p>
+          <p data-testid="cfg-chunk">{config.chunkStrategy}</p>
+          <button onClick={() => setConfig(configured.id, { ...config, chunkStrategy: 'semantic' })}>semantic</button>
+          <button onClick={resetDemo}>reset config</button>
+        </div>
+      )
+    }
+
+    render(<DemoStateProvider><ConfigProbe /></DemoStateProvider>)
+
+    expect(val('cfg-sources')).toBe(configured.sourceIds.join(','))
+    expect(val('cfg-chunk')).toBe('clause')
+
+    fireEvent.click(screen.getByText('semantic'))
+    expect(val('cfg-chunk')).toBe('semantic')
+
+    fireEvent.click(screen.getByText('reset config'))
+    expect(val('cfg-chunk')).toBe('clause')
+  })
+
+  it('keeps one entry\'s configuration out of another\'s', () => {
+    const a = entryById('structuring-email')!
+    const b = entryById('structuring-transcripts')!
+
+    const TwoProbe = () => {
+      const { configFor, setConfig } = useDemoState()
+      return (
+        <div>
+          <p data-testid="cfg-a">{configFor(a).chunkStrategy}</p>
+          <p data-testid="cfg-b">{configFor(b).chunkStrategy}</p>
+          <button onClick={() => setConfig(a.id, { ...configFor(a), chunkStrategy: 'fixed' })}>fix a</button>
+        </div>
+      )
+    }
+
+    render(<DemoStateProvider><TwoProbe /></DemoStateProvider>)
+    fireEvent.click(screen.getByText('fix a'))
+    expect(val('cfg-a')).toBe('fixed')
+    expect(val('cfg-b')).toBe('clause')
+  })
+
   it('clears runs on reset', () => {
     const Reset = () => {
       const { resetDemo } = useDemoState()

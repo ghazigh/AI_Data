@@ -3,7 +3,7 @@ import { SOURCES } from './data/sources'
 import type { Source } from './data/types'
 import type { CatalogueEntry, CatalogueStage, SectionKind } from './data/pipelineCatalogue'
 import type { RunConfig, RunProjection } from './runConfig'
-import { projectRun } from './runConfig'
+import { defaultConfigFor, projectRun } from './runConfig'
 
 /**
  * No 'failed' status: a live run in this demo always finishes or is cancelled, by design —
@@ -37,6 +37,15 @@ export interface DemoState {
   /** Completes a scan: a settled source has a score AND a record count. */
   settleSource: (id: string, readiness: number, records: number) => void
   resetDemo: () => void
+  /**
+   * The configuration an entry will run with. A pipeline's options are
+   * configured component by component in its workspace's Pipeline tab, while the
+   * Run button lives in the workspace header — so the configuration can be local
+   * to neither. Falls back to the entry's own default until something writes one.
+   */
+  configFor: (entry: CatalogueEntry) => RunConfig
+  /** Replaces one entry's configuration wholesale; leaves every other entry's alone. */
+  setConfig: (entryId: string, config: RunConfig) => void
   runs: RunRecord[]
   startRun: (entry: CatalogueEntry, config: RunConfig) => void
   cancelRun: (runId: string) => void
@@ -91,6 +100,9 @@ const tickRun = (run: RunRecord): RunRecord => {
 export function DemoStateProvider({ children }: { children: ReactNode }) {
   const [sources, setSources] = useState<Source[]>(SOURCES)
   const [runs, setRuns] = useState<RunRecord[]>([])
+  // Empty until an operator changes something, so every entry starts from
+  // defaultConfigFor and the first render is identical on the server and the client.
+  const [configs, setConfigs] = useState<Record<string, RunConfig>>({})
   // Monotonic counter for run ids — never derived from a clock or a random source.
   const nextRunId = useRef(1)
 
@@ -102,7 +114,10 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
     resetDemo: () => {
       setSources(SOURCES)
       setRuns([])
+      setConfigs({})
     },
+    configFor: entry => configs[entry.id] ?? defaultConfigFor(entry),
+    setConfig: (entryId, config) => setConfigs(prev => ({ ...prev, [entryId]: config })),
     runs,
     startRun: (entry, config) => {
       const projection = projectRun(entry, config)
@@ -124,7 +139,7 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
     cancelRun: runId =>
       setRuns(prev => prev.map(r => (r.id === runId && r.status === 'running' ? { ...r, status: 'cancelled' } : r))),
     advanceRuns: () => setRuns(prev => prev.map(tickRun)),
-  }), [sources, runs])
+  }), [sources, runs, configs])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

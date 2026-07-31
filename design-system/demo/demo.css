@@ -321,5 +321,30 @@
 .dm-tab:hover { color: var(--dl-ink); }
 .dm-tab.is-on { border-bottom-color: var(--dl-ink); color: var(--dl-ink); }
 
-.dm-stage-list { padding-left: 20px; }
-.dm-stage-list li { padding: 5px 0; font-size: 13px; }
+/* The pipeline drawn as its connected components. Every card is a button; the
+   connector between two of them is drawn entirely from the lower card's own
+   pseudo-elements — a vertical rule and an arrowhead — so the chain reads as N
+   components to a screen reader rather than N components and N-1 decorations. */
+.dm-chain { display: flex; flex-direction: column; align-items: stretch; max-width: 620px; }
+.dm-chain-card { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; border: var(--dl-hairline); background: var(--dl-paper); text-align: left; cursor: pointer; transition: border-color var(--dl-ease), background var(--dl-ease); }
+.dm-chain-card:hover { border-color: var(--dl-grey-3); background: var(--dl-blue-wash); }
+.dm-chain-card.is-on { border-color: var(--dl-ink); box-shadow: inset 3px 0 0 var(--dl-blue); }
+.dm-chain-card + .dm-chain-card { margin-top: 30px; }
+.dm-chain-card + .dm-chain-card::before { content: ''; position: absolute; top: -30px; left: 50%; width: 1px; height: 30px; background: var(--dl-grey-2); }
+.dm-chain-card + .dm-chain-card::after { content: ''; position: absolute; top: -9px; left: 50%; width: 7px; height: 7px; margin-left: -4px; border-right: 1px solid var(--dl-grey-3); border-bottom: 1px solid var(--dl-grey-3); transform: rotate(45deg); }
+.dm-chain-head { display: flex; align-items: center; justify-content: space-between; gap: var(--dl-space-3); }
+.dm-chain-name { font-family: var(--dl-font-display); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.dm-chain-detail { font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-chain-meta { display: flex; align-items: baseline; gap: var(--dl-space-3); font-family: var(--dl-font-mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--dl-grey-3); }
+.dm-chain-option { color: var(--dl-blue); }
+.dm-chain-bar { position: relative; display: block; height: 4px; margin-top: 2px; background: var(--dl-grey-1); }
+.dm-chain-bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--dl-blue); }
+
+/* ===== a component's own configuration panel ===== */
+.dm-cfg-check { display: flex; align-items: flex-start; gap: 10px; padding: var(--dl-space-2) 0; font-size: 13px; cursor: pointer; }
+.dm-cfg-check input { margin-top: 2px; flex: none; }
+.dm-cfg-opt { display: block; font-weight: 500; }
+.dm-cfg-note { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-cfg-none { margin-top: var(--dl-space-5); font-size: 13px; color: var(--dl-grey-4); }
+.dm-io > div { display: grid; grid-template-columns: 110px 1fr; gap: var(--dl-space-3); padding: var(--dl-space-2) 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; }
+.dm-io dt { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }

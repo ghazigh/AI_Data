@@ -20,6 +20,15 @@ export const formatMinutes = (minutes: number): string => {
   return `~${h} h ${m} min`
 }
 
+/**
+ * A record count -> a grouped display string. Lives beside formatMinutes for the
+ * same reason: a projected volume is quoted in the pipeline chain, in a
+ * component's own panel and in the run history, and all three must group the
+ * digits identically. The locale is pinned so the server and the client never
+ * disagree about the separator.
+ */
+export const formatNumber = (count: number): string => count.toLocaleString('en-US')
+
 export interface RunConfig {
   sourceIds: string[]
   /** Structuring only, and only where the chain has a masking or redaction stage. */
@@ -62,8 +71,10 @@ const CHUNK_MULTIPLIER: Record<ChunkStrategy, number> = {
   semantic: 0.65,
 }
 
-/** Stage names, across the seven modality pipelines, that mask or strip personal data. */
-const REDACTION_STAGE_NAMES = new Set(['Mask', 'Redact'])
+/** Stage names, across the seven modality pipelines, that mask or strip personal data.
+ * Exported so the UI that offers the masking toggle decides which component owns it
+ * from this same set, rather than from a second hand-written copy of these names. */
+export const REDACTION_STAGE_NAMES = new Set(['Mask', 'Redact'])
 
 /** True only where the chain actually has a stage that removes personal data — the UI should
  * offer the redact toggle only here; elsewhere it would be a control that does nothing. */
