@@ -1,6 +1,6 @@
 import { DataTable, type Column } from './DataTable'
 import { StatusPill, type PillTone } from './StatusPill'
-import { hrefFor } from '../routes'
+import { hrefFor } from '../navigation'
 import type { CatalogueEntry, SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { triggersFor } from '../data/triggers'

@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, within, fireEvent } from '@testing-library/react'
 import { DemoStateProvider, useDemoState } from '../state'
 import { Pipelines } from '../screens/Pipelines'
+import { DemoRoot } from '../DemoRoot'
 import { allEntries, entryById } from '../data/pipelineCatalogue'
 import { defaultConfigFor } from '../runConfig'
 
@@ -90,8 +91,12 @@ describe('Pipelines list', () => {
 })
 
 describe('Create pipeline dialog', () => {
+  // DemoRoot rather than the bare screen: creating a pipeline navigates through
+  // the router now, so the slug that decides which screen renders lives above
+  // this screen. Rendering Pipelines alone would leave it showing the list
+  // forever — and would be testing a swap the product no longer performs.
   it('creates a pipeline and lands on its workspace', () => {
-    render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
+    render(<DemoRoot initialSlug="pipelines" />)
     fireEvent.click(screen.getByRole('button', { name: /create pipeline/i }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Broker email triage' } })

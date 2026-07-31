@@ -15,7 +15,8 @@ import { fileURLToPath } from 'node:url'
 // TypeScript parser rule tied to the .tsx extension, so guards 7, 8 and 10
 // build their elements with createElement instead of JSX angle brackets.
 import { createElement } from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, fireEvent } from '@testing-library/react'
+import { DemoRoot } from '../DemoRoot'
 import { ESTATE, DOMAINS } from '../data/tenant'
 import { SOURCES, estateScore } from '../data/sources'
 import { RED_FLAGS } from '../data/readiness'
@@ -365,20 +366,30 @@ describe('the numbers agree across screens', () => {
 // Task 6's own guards — spec §9. Each prevents a specific way two screens (or
 // a screen and its own route) could tell an operator two different things
 // about the same pipeline.
+//
+// Not ten independent protections: §9.3, §9.4, §9.5, §9.6 and §9.9 restate
+// assertions that already live in executions.test.ts, triggers.test.ts and
+// createPipeline.test.tsx. They are kept here because this file is where
+// someone looks for the cross-screen invariants, and each can still genuinely
+// fail on a bad edit — but the count should not be read as ten separate nets.
 describe('creation and workspace integrity guards (spec §9)', () => {
   // §9.1 — a catalogue entry with no workspace route would be a dead link on
-  // the list page (Name links to a page that 404s); a workspace route with no
-  // entry behind it would be a page nothing on the list page ever reaches, and
-  // PipelineWorkspace would silently render null for it.
-  it('gives every catalogue entry exactly one workspace route, and every workspace route resolves to a real entry', () => {
+  // the list page: the Name column links to a page the build never wrote.
+  //
+  // Only the entry-to-route direction is asserted. The reverse ("every
+  // workspace route resolves to an entry") cannot fail: routes.tsx builds
+  // WORKSPACE_ROUTES by mapping over allEntries(), so a route with no entry
+  // behind it is unconstructible, and a guard for it would assert the shape of
+  // a `.map()` rather than a product invariant. What can fail is the id space
+  // itself — two entries colliding on one id would silently give one pipeline
+  // the other's workspace — so that is what the second half checks.
+  it('gives every catalogue entry exactly one workspace route, over an id space with no collisions', () => {
     for (const entry of allEntries()) {
       const matches = WORKSPACE_ROUTES.filter(r => r.slug === `pipelines/${entry.id}`)
       expect(matches, entry.id).toHaveLength(1)
     }
-    for (const route of WORKSPACE_ROUTES) {
-      const id = route.slug.slice('pipelines/'.length)
-      expect(entryById(id), route.slug).toBeDefined()
-    }
+    const ids = allEntries().map(e => e.id)
+    expect(new Set(ids).size, 'two catalogue entries share an id').toBe(ids.length)
   })
 
   // §9.2 — hrefFor is what every workspace link on the list page actually
@@ -528,6 +539,33 @@ describe('creation and workspace integrity guards (spec §9)', () => {
     const created = buildEntry(draft, 'created-9001')
     expect(allEntries().some(e => e.id === created.id), created.id).toBe(false)
     expect(created.baselineMinutes).toBeGreaterThanOrEqual(1)
+  })
+
+  // §9.11 — the guard that was missing when this contradiction shipped. Every
+  // other guard here renders a screen on its own, so none of them could see
+  // the chrome and the content disagreeing: creating a pipeline swapped the
+  // content pane for the new workspace through local state, never through the
+  // router, so AppShell's `current` slug never changed and the breadcrumb went
+  // on naming "Pipelines" above a page whose own <h1> was the new pipeline.
+  // Mounting DemoApp — shell, breadcrumb and screen together — is what makes
+  // that visible to a test.
+  it('names the new pipeline in the breadcrumb once creation navigates to its workspace', () => {
+    const name = 'Broker submission triage'
+    // DemoRoot, not Pipelines on its own — the whole point is that the shell
+    // and the screen have to be mounted together for the disagreement to show.
+    render(createElement(DemoRoot, { initialSlug: 'pipelines' }))
+
+    fireEvent.click(screen.getByRole('button', { name: /create pipeline/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: name } })
+    fireEvent.click(within(dialog).getAllByRole('checkbox')[0])
+    fireEvent.click(within(dialog).getByRole('button', { name: /create pipeline/i }))
+
+    // The workspace is showing...
+    expect(screen.getByRole('heading', { level: 1, name })).toBeDefined()
+    // ...and the breadcrumb names it too, rather than still saying "Pipelines".
+    const crumb = document.querySelector('.dm-crumb')!
+    expect(crumb.querySelector('b')?.textContent).toBe(name)
   })
 
   // §9.10 — carried forward from the console build this replaced: that build

@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { PageHead } from '../components/PageHead'
 import { PipelineTable } from '../components/PipelineTable'
-import { PipelineWorkspace } from '../components/PipelineWorkspace'
 import { CreatePipelineDialog } from '../components/CreatePipelineDialog'
 import type { SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
-import { prefixForSlug } from '../router'
-import { hrefFor } from '../routes'
+import { prefixForSlug, useNavigate } from '../navigation'
 
 // This screen is always served at /demo/pipelines/ — one level deep — so its
 // own workspace links need one '../' back to /demo/ before descending into
@@ -66,13 +64,7 @@ export function Pipelines() {
   const [status, setStatus] = useState<ExecutionStatus | ''>('')
   const [search, setSearch] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
-  // Set only once a pipeline is created this session — this screen then swaps
-  // itself for that pipeline's own workspace, which is what "navigate to the
-  // new workspace" means for a screen that receives no navigation callback of
-  // its own (see routes.ts's routeForSlug for the fallback that lets a later,
-  // real link click or Back/Forward reach this same pipeline through the
-  // ordinary router instead).
-  const [justCreatedId, setJustCreatedId] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const entries = allEntriesWithCreated()
   const running = runs.filter(r => r.status === 'running').length
@@ -84,10 +76,6 @@ export function Pipelines() {
     if (query && !`${e.name} ${e.summary}`.toLowerCase().includes(query)) return false
     return true
   })
-
-  if (justCreatedId) {
-    return <PipelineWorkspace entryId={justCreatedId} />
-  }
 
   return (
     <>
@@ -147,11 +135,12 @@ export function Pipelines() {
         existingNames={entries.map(e => e.name)}
         onCreate={draft => {
           const id = createPipeline(draft)
-          // Keeps the address bar honest for a pipeline that now genuinely
-          // exists this session, and gives Back somewhere real to return to.
-          window.history.pushState({ slug: `pipelines/${id}` }, '', hrefFor(`pipelines/${id}`, PREFIX))
           setDialogOpen(false)
-          setJustCreatedId(id)
+          // Through the router, not a local swap: this pushes state, updates
+          // the title, and tells AppShell which slug is current, so the rail
+          // and the breadcrumb name the new pipeline rather than continuing to
+          // say "Pipelines" over its workspace.
+          navigate(`pipelines/${id}`)
         }}
       />
     </>

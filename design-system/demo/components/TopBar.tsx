@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DemoRoute } from '../routes'
-import { ALL_ROUTES, hrefFor } from '../routes'
+import { ALL_ROUTES, hrefFor, pipelineIdForSlug } from '../routes'
 import { TENANT, ESTATE } from '../data/tenant'
 import { searchEstate } from '../search'
 import { useDemoState } from '../state'
@@ -8,7 +8,7 @@ import { useDemoState } from '../state'
 export interface TopBarProps { route: DemoRoute; prefix: string }
 
 export function TopBar({ route, prefix }: TopBarProps) {
-  const { resetDemo } = useDemoState()
+  const { resetDemo, allEntriesWithCreated } = useDemoState()
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const results = searchEstate(query)
@@ -24,14 +24,25 @@ export function TopBar({ route, prefix }: TopBarProps) {
 
   const parent = route.parentSlug ? ALL_ROUTES.find(r => r.slug === route.parentSlug) : undefined
 
+  // route.title is accurate for every catalogue pipeline's workspace (routes.tsx
+  // builds WORKSPACE_ROUTES straight from allEntries(), name and all) — but a
+  // session-created pipeline's route is the synthetic fallback routeForSlug
+  // makes up on the fly, with no way to know the real name at that point (it
+  // lives only in this session's state). Reading it live from
+  // allEntriesWithCreated() here, the same source PipelineWorkspace's own <h1>
+  // reads from, is what keeps the breadcrumb from stalling on the generic
+  // "Pipeline" placeholder the moment Create pipeline navigates here.
+  const pipelineId = pipelineIdForSlug(route.slug)
+  const leaf = pipelineId ? allEntriesWithCreated().find(e => e.id === pipelineId)?.name ?? route.title : route.title
+
   return (
     <div className="dm-topbar">
       {parent ? (
         <p className="dm-crumb">
-          {TENANT.name} / <a href={hrefFor(parent.slug, prefix)} data-demo-link>{parent.title}</a> ▸ <b>{route.title}</b>
+          {TENANT.name} / <a href={hrefFor(parent.slug, prefix)} data-demo-link>{parent.title}</a> ▸ <b>{leaf}</b>
         </p>
       ) : (
-        <p className="dm-crumb">{TENANT.name} / <b>{route.title}</b></p>
+        <p className="dm-crumb">{TENANT.name} / <b>{leaf}</b></p>
       )}
 
       <div className="dm-search">

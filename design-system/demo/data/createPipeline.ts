@@ -74,8 +74,25 @@ const renormalize = (stages: CatalogueStage[]): CatalogueStage[] => {
   return stages.map(s => ({ ...s, weight: s.weight / total }))
 }
 
+/**
+ * Selected names put back into the order this kind's catalogue pipelines run
+ * them in. The dialog's checkboxes hand over whatever order the operator
+ * ticked, so without this a created chain could read Chunk before Mask — a
+ * sequence no real pipeline of that kind executes, drawn as a connected chain
+ * on the Pipeline tab as if it did. Names with no catalogue precedent sort
+ * last, in the order given.
+ */
+const inCatalogueOrder = (kind: SectionKind, names: string[]): string[] => {
+  const order = stageOptionsFor(kind)
+  const rank = (name: string): number => {
+    const i = order.indexOf(name)
+    return i === -1 ? order.length : i
+  }
+  return [...names].sort((a, b) => rank(a) - rank(b))
+}
+
 const buildStages = (kind: SectionKind, names: string[]): CatalogueStage[] => {
-  const raw = names.map(name => ({
+  const raw = inCatalogueOrder(kind, names).map(name => ({
     name,
     detail: detailFor(kind, name),
     // A name with no catalogue precedent at all (should never happen through
