@@ -35,7 +35,10 @@ export function Graph() {
                   <span className="dm-kb-name">{kb.name}</span>
                   <span className="dm-kb-row">
                     <span className="dm-kb-meta">{kb.entities} entities</span>
-                    <span className="dm-kb-score">{kb.score}</span>
+                    {/* The score carried no label, so it read as an unexplained
+                        number beside a count. Named the way the topbar chip and
+                        the Ready screen name it — it is the same 0–100 score. */}
+                    <span className="dm-kb-score"><em>readiness</em>{kb.score}</span>
                   </span>
                   <span className="dm-kb-meta">served to {kb.servedTo} agents</span>
                 </button>

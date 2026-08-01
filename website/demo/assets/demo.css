@@ -754,4 +754,7 @@
 /* the detail pane's resting state says what it is, and that selection replaces it */
 .dm-identity-lead { padding: 14px 24px 0; max-width: 78ch; font-size: 12.5px; line-height: 1.55; color: var(--dl-grey-4); }
 
+/* the knowledge-base score says what it is, in the topbar chip's own vocabulary */
+.dm-kb-score em { margin-right: 7px; font-family: var(--dl-font-mono); font-size: 9px; font-style: normal; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
+
 html, body { margin: 0; background: var(--dl-canvas); }

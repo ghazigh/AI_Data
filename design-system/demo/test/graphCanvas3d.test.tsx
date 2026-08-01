@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { GraphCanvas3D } from '../components/GraphCanvas3D'
 import { GraphLegend, LEGEND_KINDS } from '../components/GraphLegend'
+import { Graph } from '../screens/Graph'
 import { GRAPH_NODES, GRAPH_EDGES, nodesForDomain } from '../data/graph'
 
 const renderGraph = (nodes = GRAPH_NODES) =>
@@ -58,5 +59,16 @@ describe('GraphLegend', () => {
     expect(screen.getByText('Document')).toBeDefined()
     expect(screen.getByText('Event')).toBeDefined()
     expect(screen.getByText('Selected')).toBeDefined()
+  })
+})
+
+describe('knowledge base scores', () => {
+  it('names the score rather than leaving a bare number beside a count', () => {
+    render(<Graph />)
+    const policies = screen.getByRole('button', { name: /Policies/ })
+    // The accessible name has to carry the meaning too — "84" alone tells a
+    // screen-reader user as little as it told a sighted one.
+    expect(policies.textContent).toContain('readiness')
+    expect(policies.textContent).toContain('84')
   })
 })
