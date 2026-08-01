@@ -674,3 +674,4 @@
 
 /* the knowledge-base score says what it is, in the topbar chip's own vocabulary */
 .dm-kb-score em { margin-right: 7px; font-family: var(--dl-font-mono); font-size: 9px; font-style: normal; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-legend-dot.is-mote { width: 5px; height: 5px; margin-left: 2px; background: #BFBFC6; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildLayout, centroidFor } from '../components/graph3d/layout'
+import { buildLayout, buildMotes, centroidFor, moteCountFor, parseCount } from '../components/graph3d/layout'
 import { GRAPH_NODES } from '../data/graph'
 import { domainByKey } from '../data/tenant'
 import type { DomainKey } from '../data/types'
@@ -59,5 +59,42 @@ describe('buildLayout', () => {
     expect(counted).toBe(GRAPH_NODES.length)
     expect(clusters.every(c => c.name.length > 0)).toBe(true)
     expect(new Set(clusters.map(c => c.domain)).size).toBe(clusters.length)
+  })
+})
+
+describe('buildMotes', () => {
+  const clusters = buildLayout(GRAPH_NODES, nameFor).clusters
+
+  it('scales a cluster cloud with the size of its knowledge base', () => {
+    // Bigger base, more points — the ordering has to survive the square root.
+    expect(moteCountFor(670_000)).toBeGreaterThan(moteCountFor(330_000))
+    expect(moteCountFor(330_000)).toBeGreaterThan(moteCountFor(110_000))
+  })
+
+  it('keeps even the largest cloud from swamping the named nodes', () => {
+    expect(moteCountFor(50_000_000)).toBeLessThanOrEqual(46)
+    expect(moteCountFor(1)).toBeGreaterThanOrEqual(14)
+  })
+
+  it('reads the entity counts as the data writes them', () => {
+    expect(parseCount('330K')).toBe(330_000)
+    expect(parseCount('2.4M')).toBe(2_400_000)
+    expect(parseCount('nonsense')).toBe(0)
+  })
+
+  it('gives every point a home cluster and is deterministic', () => {
+    const a = buildMotes(clusters, () => 12)
+    const b = buildMotes(clusters, () => 12)
+    expect(a.positions).toHaveLength(clusters.length * 12)
+    expect(a.domains).toHaveLength(a.positions.length)
+    expect(a.positions).toEqual(b.positions)
+  })
+
+  it('spreads the cloud around its own centroid, not across the scene', () => {
+    const { positions, domains } = buildMotes(clusters, () => 12)
+    const centroid = new Map(clusters.map(c => [c.domain, c.centroid]))
+    for (const [i, p] of positions.entries()) {
+      expect(dist(p, centroid.get(domains[i])!)).toBeLessThan(6)
+    }
   })
 })

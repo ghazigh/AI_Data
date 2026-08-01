@@ -100,3 +100,60 @@ export const buildLayout = (nodes: GraphNode[], nameFor: (d: DomainKey) => strin
 
   return { positions, clusters }
 }
+
+/** How far a cluster's ambient points spread — wider than the named nodes, so
+ * the labelled entities stay readable inside their own cloud. */
+const MOTE_SPREAD = 2.3
+
+/**
+ * Parses the knowledge-base entity counts as written in the data ('330K',
+ * '2.4M') into numbers. Kept here beside the only thing that scales by them.
+ */
+export const parseCount = (text: string): number => {
+  const m = /^([\d.]+)\s*([KM])?$/.exec(text.trim())
+  if (!m) return 0
+  const n = Number(m[1])
+  return m[2] === 'M' ? n * 1e6 : m[2] === 'K' ? n * 1e3 : n
+}
+
+/**
+ * How many ambient points a knowledge base gets. Square-rooted rather than
+ * linear: 670K entities is six times 110K, and six times the dots would drown
+ * the smaller cluster entirely while still not being remotely to scale. The root
+ * keeps the ordering honest — bigger base, visibly more points — at a density
+ * the eye can actually compare.
+ */
+export const moteCountFor = (entities: number): number =>
+  Math.max(14, Math.min(46, Math.round(Math.sqrt(entities / 1000) * 1.6)))
+
+/**
+ * A cloud of unnamed points per cluster, standing for the rest of the entities
+ * in that knowledge base. They are deliberately not real entities: the demo has
+ * 30 named ones and the bases hold hundreds of thousands, so these are a density
+ * cue, never something to click. Deterministic, from the domain and the index.
+ */
+export const buildMotes = (
+  clusters: Cluster[],
+  countFor: (domain: DomainKey) => number,
+): { positions: Vec3[]; domains: DomainKey[] } => {
+  const positions: Vec3[] = []
+  const domains: DomainKey[] = []
+
+  for (const cluster of clusters) {
+    const [cx, cy, cz] = cluster.centroid
+    for (let i = 0; i < countFor(cluster.domain); i++) {
+      const [dx, dy, dz] = triple(hash(`${cluster.domain}:${i}`))
+      // Pushed outward from the centroid so the cloud reads as a halo around the
+      // named nodes rather than as noise mixed through them.
+      const drift = 0.4 + Math.abs(dx) * 0.5
+      positions.push([
+        cx + dx * MOTE_SPREAD * drift,
+        cy + dy * MOTE_SPREAD * 0.72 * drift,
+        cz + dz * MOTE_SPREAD * drift,
+      ])
+      domains.push(cluster.domain)
+    }
+  }
+
+  return { positions, domains }
+}

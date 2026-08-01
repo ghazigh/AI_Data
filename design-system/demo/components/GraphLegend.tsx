@@ -34,6 +34,13 @@ export function GraphLegend() {
           <b>Selected</b>
           <span className="dm-legend-detail">The node you are inspecting below</span>
         </li>
+        <li>
+          <span className="dm-legend-dot is-mote" aria-hidden="true" />
+          <b>Faint points</b>
+          <span className="dm-legend-detail">
+            The rest of each knowledge base, in proportion — not individually named
+          </span>
+        </li>
       </ul>
     </div>
   )

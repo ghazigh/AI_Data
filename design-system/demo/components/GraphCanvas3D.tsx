@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react'
 import { GraphCanvas, type GraphCanvasProps } from './GraphCanvas'
 import { domainByKey } from '../data/tenant'
+import { KNOWLEDGE_BASES } from '../data/graph'
+import { moteCountFor, parseCount } from './graph3d/layout'
 import type { DomainKey } from '../data/types'
 
 /**
@@ -29,6 +31,11 @@ const supportsWebGL = (): boolean => {
 const GraphScene = lazy(() => import('./graph3d/GraphScene'))
 
 const domainName = (d: DomainKey): string => domainByKey(d)?.name ?? d
+
+/** The ambient cloud is scaled by how many entities a knowledge base actually
+ * holds, so the drawing agrees with the count printed beside it. */
+const moteCount = (d: DomainKey): number =>
+  moteCountFor(parseCount(KNOWLEDGE_BASES.find(kb => kb.domain === d)?.entities ?? '0'))
 
 export interface GraphCanvas3DProps extends GraphCanvasProps {
   /** Every node in the graph, filtered or not. The 3D scene keeps them all
@@ -59,6 +66,7 @@ export function GraphCanvas3D({ allNodes, nodes, edges, selectedId, onSelect }: 
         selectedId={selectedId}
         onSelect={onSelect}
         nameFor={domainName}
+        moteCountFor={moteCount}
         summary={summary}
       />
     </Suspense>

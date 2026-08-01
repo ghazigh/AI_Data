@@ -13,7 +13,7 @@ import {
   Sprite,
   Vector3,
 } from 'three'
-import { buildLayout, type Cluster, type Vec3 } from './layout'
+import { buildLayout, buildMotes, type Cluster, type Vec3 } from './layout'
 import { drawLogoTexture } from './logoTexture'
 import type { GraphNode } from '../../data/graph'
 import type { DomainKey } from '../../data/types'
@@ -35,6 +35,9 @@ const HOVERED = '#0031E3'
 /** Structure — the links and the hub's halo — is drawn in ink at low opacity,
  * the same way the rest of the product draws a hairline. */
 const STRUCTURE = '#101013'
+/** The ambient cloud sits a clear step back from every named node, so density
+ * never competes with the entities a viewer can actually click. */
+const MOTE = '#BFBFC6'
 
 /** Scales are animated rather than mounted and unmounted, so a node leaving the
  * filter shrinks away instead of popping out of existence. */
@@ -50,6 +53,8 @@ interface SceneProps {
   selectedId: string | null
   onSelect: (id: string) => void
   nameFor: (d: DomainKey) => string
+  /** How many ambient points a knowledge base is worth — its entity count. */
+  moteCountFor: (d: DomainKey) => number
 }
 
 /**
@@ -121,6 +126,45 @@ function Nodes({ nodes, positions, visible, selectedId, onSelect }: {
     >
       <sphereGeometry args={[1, 12, 12]} />
       <meshBasicMaterial toneMapped={false} />
+    </instancedMesh>
+  )
+}
+
+/**
+ * The rest of each knowledge base, as a cloud of unnamed points. The demo names
+ * 30 entities; the bases hold hundreds of thousands, so a graph drawn only from
+ * the named ones makes a 670K-entity base look like five things. These are a
+ * density cue and nothing else: no pointer events, no selection, a step back in
+ * tone, and the legend says so.
+ */
+function Motes({ positions, domains, visibleDomains }: {
+  positions: Vec3[]
+  domains: DomainKey[]
+  visibleDomains: Set<DomainKey>
+}) {
+  const ref = useRef<InstancedMesh>(null)
+  const scales = useRef<number[]>(positions.map(() => 0))
+
+  useFrame((_, delta) => {
+    const mesh = ref.current
+    if (!mesh) return
+    const step = Math.min(1, delta * APPEAR)
+
+    positions.forEach(([x, y, z], i) => {
+      const target = visibleDomains.has(domains[i]) ? 1 : 0
+      scales.current[i] += (target - scales.current[i]) * step
+      scratch.position.set(x, y, z)
+      scratch.scale.setScalar(scales.current[i] * 0.045)
+      scratch.updateMatrix()
+      mesh.setMatrixAt(i, scratch.matrix)
+    })
+    mesh.instanceMatrix.needsUpdate = true
+  })
+
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, positions.length]} raycast={() => null}>
+      <sphereGeometry args={[1, 8, 8]} />
+      <meshBasicMaterial color={MOTE} toneMapped={false} transparent opacity={0.75} />
     </instancedMesh>
   )
 }
@@ -209,8 +253,16 @@ function ClusterLabel({ cluster, count, dimmed }: { cluster: Cluster; count: num
 
 /** Everything inside the canvas. Split out so the Canvas element itself stays a
  * thin shell — r3f hooks are only legal below it. */
-function Scene({ nodes, visible, selectedId, onSelect, nameFor }: SceneProps) {
+function Scene({ nodes, visible, selectedId, onSelect, nameFor, moteCountFor }: SceneProps) {
   const { positions, clusters } = useMemo(() => buildLayout(nodes, nameFor), [nodes, nameFor])
+  const motes = useMemo(() => buildMotes(clusters, moteCountFor), [clusters, moteCountFor])
+
+  // A cluster's cloud follows its named nodes: filter to one knowledge base and
+  // every other cloud shrinks away with the nodes it belongs to.
+  const visibleDomains = useMemo(
+    () => new Set(nodes.filter(n => visible.has(n.id)).map(n => n.domain)),
+    [nodes, visible]
+  )
 
   // Links and labels grow in on first paint for the same reason nodes do: the
   // scene assembles itself rather than appearing already built.
@@ -227,6 +279,8 @@ function Scene({ nodes, visible, selectedId, onSelect, nameFor }: SceneProps) {
       {clusters.map(c => (
         <HubLink key={c.domain} centroid={c.centroid} grown={grown} />
       ))}
+
+      <Motes positions={motes.positions} domains={motes.domains} visibleDomains={visibleDomains} />
 
       <Nodes
         nodes={nodes}
