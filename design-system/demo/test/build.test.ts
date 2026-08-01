@@ -51,6 +51,9 @@ describe.skipIf(!built)('build output', () => {
     const html = readFileSync(`${OUT}pipelines/${entry.id}/index.html`, 'utf8')
     expect(html).toContain('href="../../assets/demo.css"')
     expect(html).toContain('src="../../assets/demo.js"')
+    // A module script, so the 3D graph's chunk can be split out of the bundle
+    // every visitor downloads.
+    expect(html).toContain('type="module"')
   })
 
   it('emits the client bundle and stylesheet', () => {

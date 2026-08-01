@@ -24,11 +24,16 @@ await build({
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(`${OUT}/assets`, { recursive: true })
 
+// ESM with splitting, not a single iife: the 3D graph pulls in three, r3f and
+// drei, and bundling those into the main file would make every visitor download
+// a megabyte of WebGL to read a table. Splitting emits them as their own chunk,
+// fetched only when GraphCanvas3D decides the browser can render it.
 await build({
-  entryPoints: ['demo/client.tsx'],
-  outfile: `${OUT}/assets/demo.js`,
+  entryPoints: [{ in: 'demo/client.tsx', out: 'demo' }],
+  outdir: `${OUT}/assets`,
   bundle: true,
-  format: 'iife',
+  format: 'esm',
+  splitting: true,
   platform: 'browser',
   jsx: 'automatic',
   minify: true,
@@ -79,7 +84,7 @@ ${route.slug !== '' ? '<meta name="robots" content="noindex">' : `<link rel="can
 </head>
 <body>
 <div id="dm-app" data-slug="${route.slug}">${body}</div>
-<script src="${prefix}assets/demo.js" defer></script>
+<script type="module" src="${prefix}assets/demo.js"></script>
 </body>
 </html>
 `)

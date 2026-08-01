@@ -641,3 +641,23 @@
 .dm-ink .dm-dot.is-info { background: var(--dl-blue-bright); }
 .dm-ink .dm-dot.is-ok { background: var(--dm-on-ink-ok); }
 .dm-ink .dm-dot.is-warn { background: #D9A13B; }
+
+/* ===== the 3D knowledge graph =====
+   The canvas is its own dark world, so it does not take .dm-ink's shared
+   treatment — no radial wash over the top of a scene that lights itself. */
+.dm-g3 { position: relative; height: 640px; border: 1px solid var(--dl-ink); background: #050505; overflow: hidden; box-shadow: var(--dm-elev-2); }
+.dm-g3 canvas { display: block; touch-action: none; }
+
+/* floating cluster labels — glass over the star field */
+.dm-g3-label {
+  display: flex; align-items: baseline; gap: 8px; padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+  color: #fff; white-space: nowrap; user-select: none; cursor: default;
+  transition: transform var(--dl-ease), border-color var(--dl-ease), background var(--dl-ease);
+}
+.dm-g3-label:hover { transform: scale(1.12); border-color: rgba(255, 255, 255, 0.44); background: rgba(0, 0, 0, 0.66); }
+.dm-g3-label b { font-family: var(--dl-font-body); font-size: 11px; font-weight: 600; letter-spacing: -0.005em; }
+.dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.55); }
+/* a cluster with nothing left in scope fades rather than disappearing */
+.dm-g3-label.is-dim { opacity: 0.32; }
