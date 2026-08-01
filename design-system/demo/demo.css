@@ -1,3 +1,28 @@
+/* ===== console foundation =====
+   Three surface tiers carry the whole design. Chrome (rail, topbar, page frame)
+   stays gallery-white. Instrument surfaces are paper lifted off the canvas by
+   elevation, never by another border. Intelligence surfaces are ink, used at most
+   ONCE per screen, on whatever that screen's system is actually thinking about.
+   Hierarchy is elevation and density; it is never more hairlines. */
+.dm-root {
+  --dm-elev-1: 0 1px 2px rgba(16, 16, 19, 0.03), 0 14px 28px -22px rgba(16, 16, 19, 0.16);
+  --dm-elev-2: 0 18px 40px -26px rgba(16, 16, 19, 0.55);
+  --dm-rule: 1px solid var(--dl-grey-1);
+  --dm-fail: #C0392B;
+  --dm-on-ink-ok: #6FE3A0;
+}
+
+/* The ink surface. The radial falloff is what makes it read as depth rather than
+   as a black rectangle, and it sits in ::after so content stacks above it. */
+.dm-ink { position: relative; overflow: hidden; background: var(--dl-ink); color: var(--dl-on-ink); box-shadow: var(--dm-elev-2); }
+.dm-ink::after { content: ''; position: absolute; inset: 0; background: radial-gradient(760px 240px at 78% -30%, rgba(61, 95, 255, 0.3), transparent 70%); pointer-events: none; }
+.dm-ink > * { position: relative; z-index: 1; }
+.dm-ink .dm-eyebrow, .dm-ink .dm-when { color: var(--dl-on-ink-muted); }
+
+@keyframes dm-pulse { 0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; } 70% { box-shadow: 0 0 0 6px transparent; opacity: 0.85; } 100% { box-shadow: 0 0 0 0 transparent; opacity: 1; } }
+@keyframes dm-sweep { from { transform: translateX(-100%); } to { transform: translateX(320%); } }
+@keyframes dm-rise { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
 /* ===== demo shell ===== */
 .dm-root { display: flex; min-width: 1280px; min-height: 100vh; background: var(--dl-canvas); color: var(--dl-ink); font-family: var(--dl-font-body); }
 .dm-root *, .dm-root *::before, .dm-root *::after { box-sizing: border-box; }
@@ -367,3 +392,150 @@
 .dm-cfg-none { margin-top: var(--dl-space-5); font-size: 13px; color: var(--dl-grey-4); }
 .dm-io > div { display: grid; grid-template-columns: 110px 1fr; gap: var(--dl-space-3); padding: var(--dl-space-2) 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; }
 .dm-io dt { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+
+/* ===== telemetry primitives =====
+   The old chart layer was 105 lines over four components, which is why every
+   screen degraded into bars and tables: there was nothing to build a rich row
+   out of. These are the parts rows and panels are assembled from. */
+
+/* run-history sparkline */
+.dm-spark { display: block; }
+.dm-spark-line { fill: none; stroke: var(--dl-grey-4); stroke-width: 1.5; stroke-linejoin: round; }
+.dm-spark-line.is-run { stroke: var(--dl-blue); }
+.dm-spark-line.is-fail { stroke: var(--dm-fail); }
+.dm-spark-line.is-idle { stroke: var(--dl-grey-3); }
+.dm-spark-dot { fill: var(--dl-blue); }
+.dm-spark-dot.is-fail { fill: var(--dm-fail); }
+.dm-spark-empty { stroke: var(--dl-grey-2); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.dm-ink .dm-spark-line { stroke: var(--dl-on-ink-muted); }
+.dm-ink .dm-spark-line.is-run { stroke: var(--dl-blue-bright); }
+
+/* status dot — pulses only while something is actually running */
+.dm-live { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: var(--dl-radius-pill); background: var(--dl-grey-3); }
+.dm-live.is-ok { background: var(--dl-ok); }
+.dm-live.is-fail { background: var(--dm-fail); box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.13); }
+.dm-live.is-run { color: rgba(0, 49, 227, 0.28); background: var(--dl-blue); animation: dm-pulse 2s ease-out infinite; }
+.dm-ink .dm-live.is-run { color: rgba(111, 227, 160, 0.3); background: var(--dm-on-ink-ok); }
+.dm-ink .dm-live.is-ok { background: var(--dm-on-ink-ok); }
+
+/* value meter with an optional target mark */
+.dm-meter { position: relative; height: 6px; background: var(--dl-grey-1); }
+.dm-meter-fill { position: absolute; inset: 0 auto 0 0; background: var(--dl-ink); }
+.dm-meter-fill.is-under { background: var(--dl-warn); }
+.dm-meter-fill.is-run { background: var(--dl-blue); overflow: hidden; }
+.dm-meter-fill.is-run::after { content: ''; position: absolute; inset: 0; width: 30%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent); animation: dm-sweep 2.2s linear infinite; }
+.dm-meter-mark { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--dl-grey-3); }
+.dm-ink .dm-meter { background: var(--dl-rail-surface); }
+.dm-ink .dm-meter-fill { background: linear-gradient(90deg, #2B47C9, var(--dl-blue-bright)); }
+.dm-ink .dm-meter-mark { background: #55555F; }
+
+/* five-segment stage bar — shows the stage a run actually died at */
+.dm-segbar { display: flex; gap: 3px; }
+.dm-segbar i { flex: 1; height: 5px; background: var(--dl-grey-2); }
+.dm-segbar i.is-done { background: var(--dl-ink); }
+.dm-segbar i.is-fail { background: var(--dm-fail); }
+.dm-segbar i.is-run { background: var(--dl-blue); }
+
+/* ===== intelligent rows =====
+   Replaces the admin-grid tables. Rows group by the operator's real question —
+   what is running, what is broken, what is scheduled — and every row carries its
+   own history, reliability and live rate. */
+.dm-rows { border: var(--dl-hairline); background: var(--dl-paper); box-shadow: var(--dm-elev-1); }
+.dm-rowgrp { display: flex; align-items: center; gap: 10px; padding: 9px 18px; background: var(--dl-grey-1); border-bottom: var(--dl-hairline); font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dl-grey-4); }
+.dm-rowgrp span { color: var(--dl-grey-3); }
+.dm-rowgrp + .dm-row { border-top: 0; }
+.dm-row { display: grid; align-items: center; gap: 16px; padding: 13px 18px; border-top: var(--dm-rule); transition: background var(--dl-ease); }
+.dm-rows > .dm-row:first-child { border-top: 0; }
+.dm-row.is-live { background: linear-gradient(90deg, rgba(61, 95, 255, 0.05), transparent 42%); }
+.dm-row.is-clickable { cursor: pointer; }
+.dm-row.is-clickable:hover { background: var(--dl-blue-wash); }
+.dm-row-name { font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em; }
+.dm-row-name button { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; color: inherit; text-align: left; cursor: pointer; }
+.dm-row-name button:hover { color: var(--dl-blue); }
+.dm-row-meta { margin-top: 3px; display: flex; align-items: center; gap: 8px; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-row-meta em { font-style: normal; color: var(--dl-grey-4); }
+.dm-row-num { font-family: var(--dl-font-display); font-size: 15px; font-weight: 700; letter-spacing: -0.02em; text-align: right; }
+.dm-row-num.is-none { color: var(--dl-grey-3); }
+.dm-row-lbl { margin-top: 2px; font-family: var(--dl-font-mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); text-align: right; }
+.dm-row-mono { font-family: var(--dl-font-mono); font-size: 10.5px; color: var(--dl-grey-4); }
+.dm-row-end { font-size: 12px; color: var(--dl-grey-4); text-align: right; }
+.dm-row-state { display: block; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; }
+.dm-row-state.is-ok { color: var(--dl-ok); }
+.dm-row-state.is-fail { color: var(--dm-fail); }
+.dm-row-state.is-run { color: var(--dl-blue); }
+.dm-row-state.is-idle { color: var(--dl-grey-3); }
+
+/* ===== estate telemetry header (the Overview ink surface) ===== */
+.dm-tele { padding: 20px 24px 0; margin-bottom: 16px; }
+.dm-tele-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--dl-space-5); }
+.dm-tele-live { display: inline-flex; align-items: center; gap: 8px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dm-on-ink-ok); }
+.dm-tele-body { display: flex; align-items: flex-end; gap: var(--dl-space-7); padding: 6px 0 20px; }
+.dm-tele-score { display: flex; align-items: baseline; gap: 4px; font-family: var(--dl-font-display); font-size: 76px; font-weight: 700; line-height: 0.92; letter-spacing: -0.045em; }
+.dm-tele-score span { font-size: 20px; font-weight: 500; letter-spacing: -0.02em; color: var(--dl-on-ink-muted); }
+.dm-tele-body > div { padding-bottom: 8px; }
+.dm-tele-delta { font-family: var(--dl-font-mono); font-size: 11px; color: var(--dm-on-ink-ok); }
+.dm-tele-sub { margin-top: 6px; font-size: 12.5px; color: var(--dl-on-ink-muted); }
+.dm-tele-trend { margin: 0 0 0 auto; padding: 0 6px 6px 0; }
+.dm-tele-target { stroke: #2A2A30; stroke-width: 1; }
+.dm-tele-tlabel { font-family: var(--dl-font-mono); font-size: 8px; letter-spacing: 1px; fill: var(--dl-on-ink-muted); }
+.dm-tele-area { fill: url(#dm-tele-fill); }
+.dm-tele-line { fill: none; stroke: var(--dl-blue-bright); stroke-width: 1.8; stroke-linejoin: round; }
+.dm-tele-head { fill: var(--dl-blue-bright); }
+.dm-tele-halo { fill: var(--dl-blue-bright); opacity: 0.22; }
+.dm-tele-x { font-family: var(--dl-font-mono); font-size: 8.5px; letter-spacing: 1px; fill: var(--dl-on-ink-muted); }
+.dm-tele-x.is-end { text-anchor: end; }
+.dm-tele-kpis { display: grid; grid-template-columns: repeat(4, 1fr); border-top: var(--dl-hairline-ink); }
+.dm-tele-kpi { padding: 14px 20px 16px; }
+.dm-tele-kpi + .dm-tele-kpi { border-left: var(--dl-hairline-ink); }
+.dm-tele-kpi-row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--dl-space-3); margin-top: 8px; }
+.dm-tele-kpi-v { font-family: var(--dl-font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
+.dm-tele-kpi-v small { font-size: 14px; font-weight: 500; color: var(--dl-on-ink-muted); }
+.dm-tele-kpi-n { margin-top: 7px; font-size: 11.5px; color: var(--dl-on-ink-muted); }
+
+/* domain rows gain a target mark and a delta — a score with no reference is
+   just a number, and the threshold is the whole point of the readiness pitch */
+.dm-bar-row { grid-template-columns: 1fr 168px 44px 40px; }
+.dm-bar-delta { font-family: var(--dl-font-mono); font-size: 10px; text-align: right; color: var(--dl-ok); }
+.dm-bar-delta.is-down { color: var(--dl-warn-text); }
+
+/* activity stream: newest entry rises in as it arrives */
+.dm-activity li:first-child { animation: dm-rise 0.45s ease both; }
+
+/* panels sit above the canvas rather than being drawn on it */
+.dm-panel { box-shadow: var(--dm-elev-1); }
+
+/* a stacked column inside dm-grid2 — lets two short panels balance one tall one */
+.dm-col { display: grid; gap: 18px; align-content: start; }
+
+/* ===== pipeline rows =====
+   A real table so the columns keep their screen-reader context, laid out as
+   rows an operator can scan: state, what it is, how it has behaved, how it ended. */
+.dm-rowtable { width: 100%; border-collapse: collapse; }
+.dm-rowtable .dm-grouprow th { padding: 9px 18px; background: var(--dl-grey-1); border-top: var(--dl-hairline); border-bottom: var(--dl-hairline); text-align: left; font-family: var(--dl-font-mono); font-size: 9.5px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dl-grey-4); }
+.dm-rowtable tbody:first-of-type .dm-grouprow th { border-top: 0; }
+.dm-rowtable .dm-grouprow span { color: var(--dl-grey-3); }
+.dm-prow > td { padding: 13px 18px; border-top: var(--dm-rule); vertical-align: middle; }
+.dm-rowtable tbody .dm-grouprow + .dm-prow > td { border-top: 0; }
+.dm-prow { transition: background var(--dl-ease); }
+.dm-prow:hover { background: var(--dl-blue-wash); }
+.dm-prow.is-live { background: linear-gradient(90deg, rgba(61, 95, 255, 0.06), transparent 42%); }
+.dm-prow.is-live:hover { background: linear-gradient(90deg, rgba(61, 95, 255, 0.11), var(--dl-blue-wash) 42%); }
+.dm-prow-dot { width: 16px; padding-right: 0 !important; }
+.dm-prow-spark { width: 148px; }
+.dm-prow .dm-row-name { display: block; }
+.dm-prow .dm-row-meta { display: flex; }
+.dm-prow .dm-row-meta span + span::before,
+.dm-prow .dm-row-meta em + span::before { content: '·'; margin-right: 8px; color: var(--dl-grey-2); }
+.dm-prow td:nth-child(4) { width: 92px; }
+.dm-prow td:nth-child(5) { width: 118px; }
+.dm-prow td:nth-child(6) { width: 128px; }
+
+.dm-filter-summary { margin-left: auto; font-family: var(--dl-font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
+
+/* the row's second line is context: one line, clipped, never wrapped */
+.dm-prow .dm-row-meta { min-width: 0; flex-wrap: nowrap; white-space: nowrap; }
+.dm-prow .dm-row-chain { overflow: hidden; text-overflow: ellipsis; }
+.dm-prow td:nth-child(2) { max-width: 0; width: 100%; }
+.dm-prow .dm-row-lbl, .dm-prow .dm-row-mono, .dm-prow .dm-row-state { white-space: nowrap; }
+.dm-prow td:nth-child(4) { width: 104px; }
+.dm-prow td:nth-child(5) { width: 104px; }

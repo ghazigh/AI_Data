@@ -52,7 +52,21 @@ describe('DomainBars', () => {
   it('marks domains under the threshold', () => {
     const { container } = render(<DomainBars domains={DOMAINS} threshold={70} />)
     const under = DOMAINS.filter(d => d.score < 70).length
-    expect(container.querySelectorAll('.dm-bar-fill.is-under')).toHaveLength(under)
+    expect(container.querySelectorAll('.dm-meter-fill.is-under')).toHaveLength(under)
+  })
+
+  it('draws the threshold itself on every bar, not just the ones that miss it', () => {
+    const { container } = render(<DomainBars domains={DOMAINS} threshold={70} />)
+    const marks = container.querySelectorAll<HTMLElement>('.dm-meter-mark')
+    expect(marks).toHaveLength(DOMAINS.length)
+    expect(marks[0].style.left).toBe('70%')
+  })
+
+  it('states which way each domain moved', () => {
+    render(<DomainBars domains={DOMAINS} />)
+    // Policies climbed 4, Contracts slipped 1 — signs, not just magnitudes.
+    expect(screen.getByText('+4')).toBeDefined()
+    expect(screen.getByText('−1')).toBeDefined()
   })
 
   it('never numbers the rows', () => {

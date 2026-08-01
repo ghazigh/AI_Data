@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { PageHead } from '../components/PageHead'
-import { PipelineTable } from '../components/PipelineTable'
+import { PipelineRows, stateCounts } from '../components/PipelineRows'
 import { CreatePipelineDialog } from '../components/CreatePipelineDialog'
 import type { SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
@@ -81,6 +81,10 @@ export function Pipelines() {
   // 1 in progress" above a table where nothing is running.
   const runningShown = shown.filter(e => lastExecutionFor(e.id, runs).status === 'running').length
 
+  // Same scoping rule as the count line: summarise what is on screen, not the
+  // whole catalogue, or filtering to Graph claims a failure the rows don't show.
+  const counts = stateCounts(shown, runs)
+
   return (
     <>
       <PageHead
@@ -123,13 +127,17 @@ export function Pipelines() {
             ))}
           </select>
         </label>
+
+        <p className="dm-filter-summary">
+          {counts.running} running · {counts.failed} failed · {counts.idle} idle
+        </p>
       </div>
 
       {shown.length === 0 ? (
         <p className="dm-list-empty">No pipelines match these filters.</p>
       ) : (
-        <div className="dm-panel">
-          <PipelineTable entries={shown} prefix={PREFIX} />
+        <div className="dm-rows">
+          <PipelineRows entries={shown} prefix={PREFIX} />
         </div>
       )}
 

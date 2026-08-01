@@ -8,6 +8,9 @@ import { defaultConfigFor } from '../runConfig'
 
 const renderScreen = () => render(<DemoStateProvider><Pipelines /></DemoStateProvider>)
 
+/** Data rows only — the table also carries one header row per state group. */
+const dataRows = () => document.querySelectorAll('.dm-prow')
+
 describe('Pipelines console', () => {
   // The whole point of this task: the screen names itself operationally, and
   // carries none of the marketing language the user objected to.
@@ -32,8 +35,27 @@ describe('Pipelines console', () => {
 describe('Pipelines list', () => {
   it('lists every pipeline in one table', () => {
     renderScreen()
-    const table = screen.getByRole('table')
-    expect(within(table).getAllByRole('row')).toHaveLength(allEntries().length + 1)
+    expect(screen.getByRole('table')).toBeDefined()
+    expect(dataRows()).toHaveLength(allEntries().length)
+  })
+
+  it('groups the rows by state rather than sorting them by name', () => {
+    renderScreen()
+    // The seeded estate has a failed run in its history but nothing in flight,
+    // so three groups appear and "Running now" does not — an empty group is
+    // never rendered, which is what keeps the grouping honest.
+    const groups = [...document.querySelectorAll('.dm-grouprow')].map(g => g.textContent)
+    expect(groups.some(g => g?.startsWith('Needs attention'))).toBe(true)
+    expect(groups.some(g => g?.startsWith('Scheduled'))).toBe(true)
+    expect(groups.some(g => g?.startsWith('Manual'))).toBe(true)
+    expect(groups.some(g => g?.startsWith('Running now'))).toBe(false)
+  })
+
+  it('carries each pipeline reliability on the row itself', () => {
+    renderScreen()
+    const row = screen.getByRole('link', { name: 'Tables structuring' }).closest('tr')!
+    expect(within(row).getByText(/%$/)).toBeDefined()
+    expect(within(row).getByRole('img', { name: /last 13 runs/i })).toBeDefined()
   })
 
   it('counts the pipelines above the table, with no in-progress clause when nothing runs', () => {
@@ -60,14 +82,13 @@ describe('Pipelines list', () => {
   it('filters the table by kind', () => {
     renderScreen()
     fireEvent.change(screen.getByLabelText(/kind/i), { target: { value: 'graph' } })
-    const rows = within(screen.getByRole('table')).getAllByRole('row')
-    expect(rows).toHaveLength(allEntries().filter(e => e.kind === 'graph').length + 1)
+    expect(dataRows()).toHaveLength(allEntries().filter(e => e.kind === 'graph').length)
   })
 
   it('filters the table by search text', () => {
     renderScreen()
     fireEvent.change(screen.getByLabelText(/search/i), { target: { value: 'topic model' } })
-    expect(within(screen.getByRole('table')).getAllByRole('row')).toHaveLength(2)
+    expect(dataRows()).toHaveLength(1)
   })
 
   it('says so when a filter matches nothing', () => {

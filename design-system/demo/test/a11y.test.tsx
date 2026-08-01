@@ -31,7 +31,10 @@ describe.each(ROUTES.map(r => [r.slug || 'index', r.slug] as const))('%s screen'
   it('scopes every column header', () => {
     const { container } = setup()
     for (const th of container.querySelectorAll('th')) {
-      expect(th.getAttribute('scope'), th.textContent ?? '').toBe('col')
+      // Column headers scope to their column; a state-group heading spans the
+      // row group it introduces, so it scopes to that instead.
+      const expected = th.hasAttribute('colspan') ? 'rowgroup' : 'col'
+      expect(th.getAttribute('scope'), th.textContent ?? '').toBe(expected)
     }
   })
 
@@ -64,7 +67,10 @@ describe('graph screen, node selected', () => {
   it('scopes every column header', () => {
     const { container } = setup()
     for (const th of container.querySelectorAll('th')) {
-      expect(th.getAttribute('scope'), th.textContent ?? '').toBe('col')
+      // Column headers scope to their column; a state-group heading spans the
+      // row group it introduces, so it scopes to that instead.
+      const expected = th.hasAttribute('colspan') ? 'rowgroup' : 'col'
+      expect(th.getAttribute('scope'), th.textContent ?? '').toBe(expected)
     }
   })
 })

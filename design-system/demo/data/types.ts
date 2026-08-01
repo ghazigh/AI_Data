@@ -11,6 +11,9 @@ export interface Domain {
   name: string
   /** Agent-Readiness Score 0–100. */
   score: number
+  /** Movement since last quarter, signed. Shown beside the score so a domain
+   * that is climbing reads differently from one that is sliding. */
+  delta: number
 }
 
 export interface Source {
@@ -35,6 +38,8 @@ export interface Source {
 export interface Estate {
   score: number
   scoreDelta: number
+  /** The score this estate is being steered towards — drawn as the target mark. */
+  scoreTarget: number
   sourcesConnected: number
   sourcesPending: number
   entitiesResolved: string
