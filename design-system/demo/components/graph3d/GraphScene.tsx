@@ -10,9 +10,11 @@ import {
   InstancedMesh,
   Object3D,
   Quaternion,
+  Sprite,
   Vector3,
 } from 'three'
 import { buildLayout, type Cluster, type Vec3 } from './layout'
+import { drawLogoTexture } from './logoTexture'
 import type { GraphNode } from '../../data/graph'
 import type { DomainKey } from '../../data/types'
 
@@ -123,22 +125,35 @@ function Nodes({ nodes, positions, visible, selectedId, onSelect }: {
   )
 }
 
-/** The centre of the estate: one emissive sphere everything else is measured
- * from. Pulses very slightly so the scene never looks frozen. */
+/**
+ * The centre of the estate, wearing the company mark: an ink badge with the
+ * datalith logo knocked out of it. A sprite rather than a mesh, so the mark
+ * always faces the viewer however far the scene has drifted — a logo the camera
+ * can see edge-on is not a logo. Pulses very slightly so the scene never looks
+ * frozen, and the mark stays legible because the pulse is 4%.
+ */
 function Hub() {
-  const ref = useRef<InstancedMesh>(null)
+  const ref = useRef<Sprite>(null)
+  const texture = useMemo(() => drawLogoTexture(SELECTED, STRUCTURE), [])
+
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime()
-    ref.current?.scale.setScalar(1 + Math.sin(t * 1.2) * 0.04)
+    ref.current?.scale.setScalar(1.16 * (1 + Math.sin(t * 1.2) * 0.04))
   })
+
+  // The texture is built from a canvas, which needs releasing when the scene
+  // unmounts — three does not garbage-collect GPU resources on its own.
+  useEffect(() => () => texture?.dispose(), [texture])
+
   return (
     <group>
-      <mesh ref={ref as never}>
-        <sphereGeometry args={[0.46, 32, 32]} />
-        <meshBasicMaterial color={STRUCTURE} toneMapped={false} />
-      </mesh>
+      {texture && (
+        <sprite ref={ref} scale={1.16}>
+          <spriteMaterial map={texture} toneMapped={false} transparent depthWrite={false} />
+        </sprite>
+      )}
       <mesh>
-        <sphereGeometry args={[0.86, 24, 24]} />
+        <sphereGeometry args={[0.98, 24, 24]} />
         <meshBasicMaterial color={SELECTED} transparent opacity={0.05} toneMapped={false} side={DoubleSide} />
       </mesh>
     </group>
