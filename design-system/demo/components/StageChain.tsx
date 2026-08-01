@@ -105,6 +105,14 @@ const progressFor = (index: number, weights: number[], run?: RunRecord): Progres
   return { pill: { tone: 'blue', label: 'In progress' }, fraction }
 }
 
+/** How a node on the rail reads: filled once the stage is done, haloed while it
+ * runs, outlined until then. Decorative — the card states the same in its pill. */
+const nodeState = (progress?: Progress): string =>
+  progress === undefined ? ''
+  : progress.pill.label === 'Succeeded' ? ' is-done'
+  : progress.fraction !== undefined ? ' is-run'
+  : ''
+
 export interface StageChainProps {
   entry: CatalogueEntry
   config: RunConfig
@@ -149,12 +157,15 @@ export function StageChain({ entry, config, run, selected, onSelect }: StageChai
         aria-pressed={selected === SOURCE_COMPONENT_ID}
         onClick={() => onSelect(SOURCE_COMPONENT_ID)}
       >
-        <span className="dm-chain-head">
-          <span className="dm-chain-name">Source</span>
-        </span>
-        <span className="dm-chain-detail">Where the run reads from, and how much of it is in scope.</span>
-        <span className="dm-chain-meta">
-          <span className="dm-chain-option">{scope}</span>
+        <span className="dm-chain-node is-source" aria-hidden="true">◇</span>
+        <span className="dm-chain-body">
+          <span className="dm-chain-head">
+            <span className="dm-chain-name">Source</span>
+          </span>
+          <span className="dm-chain-detail">Where the run reads from, and how much of it is in scope.</span>
+          <span className="dm-chain-meta">
+            <span className="dm-chain-option">{scope}</span>
+          </span>
         </span>
       </button>
 
@@ -169,20 +180,25 @@ export function StageChain({ entry, config, run, selected, onSelect }: StageChai
             aria-pressed={selected === stage.name}
             onClick={() => onSelect(stage.name)}
           >
-            <span className="dm-chain-head">
-              <span className="dm-chain-name">{stage.name}</span>
-              {progress && <StatusPill tone={progress.pill.tone} label={progress.pill.label} />}
+            <span className={`dm-chain-node${nodeState(progress)}`} aria-hidden="true">
+              {progress?.pill.label === 'Succeeded' ? '✓' : index + 1}
             </span>
-            <span className="dm-chain-detail">{stage.detail}</span>
-            <span className="dm-chain-meta">
-              <span className="dm-chain-runtime">{share(stage.weight)}</span>
-              {option && <span className="dm-chain-option">{option}</span>}
-            </span>
-            {progress?.fraction !== undefined && (
-              <span className="dm-chain-bar">
-                <span className="dm-chain-bar-fill" style={{ width: `${Math.round(progress.fraction * 100)}%` }} />
+            <span className="dm-chain-body">
+              <span className="dm-chain-head">
+                <span className="dm-chain-name">{stage.name}</span>
+                {progress && <StatusPill tone={progress.pill.tone} label={progress.pill.label} />}
               </span>
-            )}
+              <span className="dm-chain-detail">{stage.detail}</span>
+              <span className="dm-chain-meta">
+                <span className="dm-chain-runtime">{share(stage.weight)}</span>
+                {option && <span className="dm-chain-option">{option}</span>}
+              </span>
+              {progress?.fraction !== undefined && (
+                <span className="dm-chain-bar">
+                  <span className="dm-chain-bar-fill" style={{ width: `${Math.round(progress.fraction * 100)}%` }} />
+                </span>
+              )}
+            </span>
           </button>
         )
       })}

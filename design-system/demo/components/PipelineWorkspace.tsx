@@ -8,6 +8,7 @@ import { StageChain, NO_SOURCES_REASON, SOURCE_COMPONENT_ID, fittingCounterpart 
 import { ComponentConfigPanel } from './ComponentConfigPanel'
 import { WorkspaceTabs, WORKSPACE_PANEL_ID, workspaceTabId, type WorkspaceTab } from './WorkspaceTabs'
 import { ExecutionsTable } from './ExecutionsTable'
+import { RunMonitor } from './RunMonitor'
 import { TriggersTab } from './TriggersTab'
 import { SettingsTab } from './SettingsTab'
 
@@ -152,13 +153,24 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
         aria-labelledby={workspaceTabId(active)}
       >
         {active === 'pipeline' && (
-          <StageChain
-            entry={entry}
-            config={config}
-            run={latestRun}
-            selected={selected}
-            onSelect={setSelected}
-          />
+          // The run graph and the run itself, side by side: the chain says what
+          // this pipeline does, the monitor says what it is doing. Before this
+          // the chain sat alone in a 620px column with the rest of the screen
+          // empty.
+          <div className="dm-ws-grid">
+            <StageChain
+              entry={entry}
+              config={config}
+              run={latestRun}
+              selected={selected}
+              onSelect={setSelected}
+            />
+            <RunMonitor entry={entry} projection={projection} run={latestRun} />
+
+            <div className="dm-ws-wide">
+              <ExecutionsTable entry={entry} limit={4} title="Recent executions" />
+            </div>
+          </div>
         )}
         {active === 'executions' && <ExecutionsTable entry={entry} />}
         {active === 'triggers' && <TriggersTab entry={entry} />}

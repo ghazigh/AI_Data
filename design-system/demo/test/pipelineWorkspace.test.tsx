@@ -40,8 +40,11 @@ describe('pipeline workspace', () => {
   })
 
   it('reports the pipeline last execution in the header', () => {
-    renderWorkspace('structuring-tables')
-    expect(screen.getByText('12 min ago')).toBeDefined()
+    const { container } = renderWorkspace('structuring-tables')
+    // Scoped to the header: the run monitor beside the chain reports the same
+    // last run, so an unscoped query finds both and says nothing about which.
+    const header = container.querySelector('.dm-workspace-h')!
+    expect(within(header as HTMLElement).getByText('12 min ago')).toBeDefined()
   })
 
   it('renders nothing for an unknown pipeline id', () => {

@@ -10,6 +10,7 @@ import type { CatalogueEntry } from '../data/pipelineCatalogue'
 import { triggersFor } from '../data/triggers'
 import { executionId, type ExecutionStatus } from '../data/executions'
 import { executionStatusPill } from './PipelineTable'
+import { SegBar } from './telemetry/Meter'
 
 interface StageExecuted {
   name: string
@@ -110,7 +111,14 @@ const rowFromHistory = (h: RunHistoryEntry, entry: CatalogueEntry, triggerEnable
  * followed by its seeded RUN_HISTORY record if it has one — RUN_HISTORY
  * carries at most one record per entryId.
  */
-export function ExecutionsTable({ entry }: { entry: CatalogueEntry }) {
+export interface ExecutionsTableProps {
+  entry: CatalogueEntry
+  /** Shows only the newest N runs — the Pipeline tab's summary. Omit for all. */
+  limit?: number
+  title?: string
+}
+
+export function ExecutionsTable({ entry, limit, title = 'Executions' }: ExecutionsTableProps) {
   // The entry arrives as a prop rather than being looked up here: entryById
   // only knows the catalogue, so a pipeline created this session resolved to
   // undefined and this component threw the moment it had a row to render.
@@ -123,6 +131,7 @@ export function ExecutionsTable({ entry }: { entry: CatalogueEntry }) {
     ...runs.filter(r => r.entryId === entryId).map(run => rowFromRun(run, entry)),
     ...RUN_HISTORY.filter(h => h.entryId === entryId).map(h => rowFromHistory(h, entry, triggerEnabled)),
   ]
+  const shown = limit === undefined ? rows : rows.slice(0, limit)
   const open = rows.find(r => r.id === openId) ?? null
 
   const columns: Column<HistoryRow>[] = [
@@ -143,6 +152,21 @@ export function ExecutionsTable({ entry }: { entry: CatalogueEntry }) {
         return <StatusPill tone={pill.tone} label={pill.label} />
       },
     },
+    {
+      key: 'stages',
+      header: 'Stages',
+      // A status pill says a run failed; this says where it failed, which is the
+      // only part an operator can act on.
+      render: r => (
+        <SegBar
+          done={r.stagesCompleted}
+          total={r.stagesTotal}
+          failedAt={r.status === 'failed' ? r.stagesCompleted : undefined}
+          runningAt={r.status === 'running' ? r.stagesCompleted : undefined}
+          label={`${r.stagesCompleted} of ${r.stagesTotal} stages completed`}
+        />
+      ),
+    },
     { key: 'trigger', header: 'Trigger', render: r => r.trigger },
     { key: 'finished', header: 'Finished', render: r => r.finished },
     { key: 'duration', header: 'Duration', render: r => r.duration },
@@ -150,11 +174,14 @@ export function ExecutionsTable({ entry }: { entry: CatalogueEntry }) {
   ]
 
   return (
-    <Panel title="Executions">
-      {rows.length === 0 ? (
+    <Panel
+      title={title}
+      eyebrow={limit !== undefined && rows.length > limit ? `Newest ${limit} of ${rows.length}` : undefined}
+    >
+      {shown.length === 0 ? (
         <p className="dm-exec-empty">No executions yet. Run this pipeline to see it here.</p>
       ) : (
-        <DataTable caption={`${entry.name} executions`} columns={columns} rows={rows} rowKey={r => r.id} />
+        <DataTable caption={`${entry.name} executions`} columns={columns} rows={shown} rowKey={r => r.id} />
       )}
 
       {open && (

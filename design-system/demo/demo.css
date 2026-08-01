@@ -351,13 +351,7 @@
    connector between two of them is drawn entirely from the lower card's own
    pseudo-elements — a vertical rule and an arrowhead — so the chain reads as N
    components to a screen reader rather than N components and N-1 decorations. */
-.dm-chain { display: flex; flex-direction: column; align-items: stretch; max-width: 620px; }
-.dm-chain-card { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; border: var(--dl-hairline); background: var(--dl-paper); text-align: left; cursor: pointer; transition: border-color var(--dl-ease), background var(--dl-ease); }
-.dm-chain-card:hover { border-color: var(--dl-grey-3); background: var(--dl-blue-wash); }
-.dm-chain-card.is-on { border-color: var(--dl-ink); box-shadow: inset 3px 0 0 var(--dl-blue); }
-.dm-chain-card + .dm-chain-card { margin-top: 30px; }
-.dm-chain-card + .dm-chain-card::before { content: ''; position: absolute; top: -30px; left: 50%; width: 1px; height: 30px; background: var(--dl-grey-2); }
-.dm-chain-card + .dm-chain-card::after { content: ''; position: absolute; top: -9px; left: 50%; width: 7px; height: 7px; margin-left: -4px; border-right: 1px solid var(--dl-grey-3); border-bottom: 1px solid var(--dl-grey-3); transform: rotate(45deg); }
+.dm-chain-card { text-align: left; cursor: pointer; transition: background var(--dl-ease); }
 .dm-chain-head { display: flex; align-items: center; justify-content: space-between; gap: var(--dl-space-3); }
 .dm-chain-name { font-family: var(--dl-font-display); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
 .dm-chain-detail { font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
@@ -539,3 +533,54 @@
 .dm-prow .dm-row-lbl, .dm-prow .dm-row-mono, .dm-prow .dm-row-state { white-space: nowrap; }
 .dm-prow td:nth-child(4) { width: 104px; }
 .dm-prow td:nth-child(5) { width: 104px; }
+
+/* ===== pipeline workspace: run graph + live monitor ===== */
+.dm-ws-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr); align-items: start; gap: 18px; }
+
+/* The chain is one connector rail with a node per component, rather than five
+   detached cards joined by arrows — it reads as a single pipeline that way. The
+   rail is drawn by the card (not the node) so it passes behind every node and
+   stays visible between them. */
+.dm-chain { display: grid; max-width: none; border: var(--dl-hairline); background: var(--dl-paper); box-shadow: var(--dm-elev-1); }
+.dm-chain-card { position: relative; display: grid; grid-template-columns: 38px 1fr; gap: 0 14px; padding: 14px 18px 14px 0; border: 0; background: none; }
+.dm-chain-card + .dm-chain-card { margin-top: 0; border-top: var(--dm-rule); }
+.dm-chain-card::before { content: ''; position: absolute; left: 19px; top: 0; bottom: 0; width: 1px; background: var(--dl-grey-2); }
+.dm-chain-card:first-child::before { top: 26px; }
+.dm-chain-card:last-child::before { bottom: calc(100% - 26px); }
+.dm-chain-card:hover { background: var(--dl-blue-wash); border-color: transparent; }
+.dm-chain-card.is-on { box-shadow: inset 3px 0 0 var(--dl-blue); background: var(--dl-blue-wash); }
+.dm-chain-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dm-chain-node { position: relative; z-index: 1; justify-self: center; align-self: start; margin-top: 1px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: var(--dl-radius-pill); border: 1px solid var(--dl-grey-2); background: var(--dl-paper); font-family: var(--dl-font-mono); font-size: 9px; color: var(--dl-grey-4); }
+.dm-chain-node.is-done { background: var(--dl-ink); border-color: var(--dl-ink); color: #fff; }
+.dm-chain-node.is-run { background: var(--dl-blue); border-color: var(--dl-blue); color: #fff; box-shadow: 0 0 0 5px rgba(0, 49, 227, 0.14); }
+.dm-chain-node.is-source { color: var(--dl-blue); }
+.dm-chain-bar { height: 5px; }
+
+/* the ink run monitor */
+.dm-mon-h { display: flex; align-items: center; justify-content: space-between; gap: var(--dl-space-4); padding: 13px 18px; border-bottom: var(--dl-hairline-ink); }
+.dm-mon-t { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dl-on-ink-muted); }
+.dm-mon-t span { color: var(--dl-rail-heading); }
+.dm-mon-live { display: inline-flex; align-items: center; gap: 7px; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dm-on-ink-ok); }
+.dm-mon-b { padding: 16px 18px 14px; }
+.dm-mon-pct { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; font-family: var(--dl-font-display); font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
+.dm-mon-pct span { font-family: var(--dl-font-body); font-size: 12.5px; font-weight: 400; letter-spacing: 0; color: var(--dl-on-ink-muted); }
+.dm-mon-meta { display: flex; justify-content: space-between; gap: var(--dl-space-4); margin-top: 9px; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-on-ink-muted); }
+.dm-mon-kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-top: var(--dl-hairline-ink); }
+.dm-mon-k { padding: 12px 14px 13px; min-width: 0; }
+.dm-mon-k + .dm-mon-k { border-left: var(--dl-hairline-ink); }
+.dm-mon-kl { font-family: var(--dl-font-mono); font-size: 8.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dl-on-ink-muted); }
+.dm-mon-kv { margin-top: 6px; font-family: var(--dl-font-display); font-size: 17px; font-weight: 700; letter-spacing: -0.025em; }
+.dm-mon-kv small { font-size: 11px; font-weight: 500; color: var(--dl-on-ink-muted); }
+.dm-mon-kv.is-text { font-size: 12.5px; font-weight: 500; letter-spacing: -0.01em; }
+.dm-mon-log { border-top: var(--dl-hairline-ink); padding: 11px 18px 14px; }
+.dm-mon-log li { display: grid; grid-template-columns: 46px 1fr; gap: 10px; padding: 3px 0; font-family: var(--dl-font-mono); font-size: 10px; color: var(--dl-rail-link); }
+.dm-mon-log li span { color: var(--dl-rail-heading); }
+.dm-mon-log li:first-child { color: #fff; animation: dm-rise 0.45s ease both; }
+.dm-mon-impact { padding: 13px 18px; border-top: var(--dl-hairline-ink); font-size: 12px; line-height: 1.5; color: var(--dl-on-ink-muted); }
+.dm-mon-impact b { display: block; font-family: var(--dl-font-display); font-size: 20px; letter-spacing: -0.03em; color: var(--dm-on-ink-ok); }
+
+/* the executions stage bar needs a column wide enough to read segment by segment */
+.dm-table .dm-segbar { min-width: 84px; }
+
+/* the recent-runs summary spans both columns under the graph and the monitor */
+.dm-ws-wide { grid-column: 1 / -1; }
