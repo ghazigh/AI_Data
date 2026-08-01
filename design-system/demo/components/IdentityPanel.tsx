@@ -11,6 +11,14 @@ import type { IdentityMatch } from '../data/graph'
 export function IdentityPanel({ match }: { match: IdentityMatch }) {
   return (
     <Panel eyebrow="Identity resolution" title="One policyholder, resolved across systems">
+      {/* This panel is the detail pane's resting state — selecting a node in the
+          graph replaces it with that node's own detail. Saying so is the
+          difference between a worked example and a mystery panel. */}
+      <p className="dm-identity-lead">
+        Nothing selected, so this is the graph's own worked example: the same person found in
+        three systems and resolved into one entity. Select any node above to inspect it instead.
+      </p>
+
       <p className="dm-identity-entity">{match.entity}</p>
 
       <div className="dm-identity-row">

@@ -652,3 +652,22 @@
 .dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--dl-grey-3); }
 /* a cluster with nothing left in scope fades rather than disappearing */
 .dm-g3-label.is-dim { opacity: 0.34; }
+
+/* ===== graph legend =====
+   Colour in the graph encodes a category the product never used to explain.
+   The legend sits directly under the drawing, in the same grid cell, so the two
+   can never be separated by a layout change. */
+.dm-graph-main { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.dm-legend { padding: 14px 18px 15px; border: var(--dl-hairline); background: var(--dl-paper); box-shadow: var(--dm-elev-1); }
+.dm-legend-lead { font-size: 12.5px; line-height: 1.5; color: var(--dl-grey-4); }
+.dm-legend-keys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 26px; margin-top: 12px; }
+.dm-legend-keys li { display: grid; grid-template-columns: 10px auto 1fr; align-items: baseline; gap: 9px; min-width: 0; }
+.dm-legend-dot { width: 8px; height: 8px; align-self: center; border-radius: var(--dl-radius-pill); background: var(--dl-ink); }
+.dm-legend-dot.is-document { background: var(--dl-grey-4); }
+.dm-legend-dot.is-event { background: var(--dl-warn); }
+.dm-legend-dot.is-on { background: var(--dl-blue); box-shadow: 0 0 0 3px rgba(0, 49, 227, 0.14); }
+.dm-legend-keys b { font-size: 12.5px; font-weight: 600; }
+.dm-legend-detail { font-size: 12px; line-height: 1.45; color: var(--dl-grey-3); min-width: 0; }
+
+/* the detail pane's resting state says what it is, and that selection replaces it */
+.dm-identity-lead { padding: 14px 24px 0; max-width: 78ch; font-size: 12.5px; line-height: 1.55; color: var(--dl-grey-4); }

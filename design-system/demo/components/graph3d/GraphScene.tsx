@@ -26,7 +26,7 @@ import type { DomainKey } from '../../data/types'
  */
 const NODE_COLOR: Record<GraphNode['kind'], string> = {
   entity: '#101013',
-  document: '#9A9AA2',
+  document: '#6D6D76', // --dl-grey-4, matching the SVG fallback
   event: '#B7791F',
 }
 const SELECTED = '#0031E3'

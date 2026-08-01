@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { GraphCanvas3D } from '../components/GraphCanvas3D'
+import { GraphLegend, LEGEND_KINDS } from '../components/GraphLegend'
 import { GRAPH_NODES, GRAPH_EDGES, nodesForDomain } from '../data/graph'
 
 const renderGraph = (nodes = GRAPH_NODES) =>
@@ -38,5 +39,24 @@ describe('GraphCanvas3D', () => {
     const drawn = container.querySelectorAll('[data-node]')
     expect(drawn.length).toBe(claims.length)
     expect(drawn.length).toBeLessThan(GRAPH_NODES.length)
+  })
+})
+
+describe('GraphLegend', () => {
+  it('explains every node kind the data actually contains', () => {
+    render(<GraphLegend />)
+    // The guard that matters: if a new kind is added to the data and not to the
+    // legend, the graph gains a colour nothing on screen explains.
+    for (const kind of new Set(GRAPH_NODES.map(n => n.kind))) {
+      expect(LEGEND_KINDS, kind).toContain(kind)
+    }
+  })
+
+  it('names each kind in text, not colour alone', () => {
+    render(<GraphLegend />)
+    expect(screen.getByText('Entity')).toBeDefined()
+    expect(screen.getByText('Document')).toBeDefined()
+    expect(screen.getByText('Event')).toBeDefined()
+    expect(screen.getByText('Selected')).toBeDefined()
   })
 })

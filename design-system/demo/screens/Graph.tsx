@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { PageHead } from '../components/PageHead'
 import { Panel } from '../components/Panel'
 import { GraphCanvas3D } from '../components/GraphCanvas3D'
+import { GraphLegend } from '../components/GraphLegend'
 import { EntityDetail } from '../components/EntityDetail'
 import { IdentityPanel } from '../components/IdentityPanel'
 import { GRAPH_NODES, GRAPH_EDGES, KNOWLEDGE_BASES, IDENTITY_MATCH, nodesForDomain } from '../data/graph'
@@ -43,16 +44,21 @@ export function Graph() {
           </ul>
         </Panel>
 
-        {/* allNodes as well as nodes: the 3D scene keeps every node mounted and
-            shrinks the filtered-out ones away, so it needs the whole graph.
-            The SVG fallback inside only ever sees `nodes`. */}
-        <GraphCanvas3D
-          allNodes={GRAPH_NODES}
-          nodes={nodes}
-          edges={edges}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
+        {/* The graph and the key to reading it are one grid cell, so the legend
+            stays with the drawing it explains and fills the space under it. */}
+        <div className="dm-graph-main">
+          {/* allNodes as well as nodes: the 3D scene keeps every node mounted and
+              shrinks the filtered-out ones away, so it needs the whole graph.
+              The SVG fallback inside only ever sees `nodes`. */}
+          <GraphCanvas3D
+            allNodes={GRAPH_NODES}
+            nodes={nodes}
+            edges={edges}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+          <GraphLegend />
+        </div>
 
         <div className="dm-graph-detail">
           {selected ? <EntityDetail node={selected} /> : <IdentityPanel match={IDENTITY_MATCH} />}
