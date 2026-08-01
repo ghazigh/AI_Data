@@ -96,7 +96,7 @@ export function Governance() {
         {/* The full 12-entry feed Overview's "Full stream" link promises —
             Overview itself only teases the first 7, to keep its two-column
             layout balanced against the 5-row domain panel beside it. */}
-        <Panel eyebrow="Live" title="Estate activity">
+        <Panel eyebrow="Live" title="Estate activity" tone="ink">
           <ActivityList entries={ACTIVITY} />
         </Panel>
       </div>

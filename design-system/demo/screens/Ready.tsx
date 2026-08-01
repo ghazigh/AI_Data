@@ -28,7 +28,7 @@ export function Ready() {
       <PageHead eyebrow="Stage 02 — Ready" title="A score for how usable this estate is" />
 
       <div className="dm-grid2">
-        <Panel title="Agent-readiness score">
+        <Panel title="Agent-readiness score" tone="ink">
           <ScoreMeter score={ESTATE.score} delta={ESTATE.scoreDelta} />
           <TrendLine points={TREND} ariaLabel="Estate score by quarter" />
         </Panel>
@@ -53,7 +53,7 @@ export function Ready() {
           )}
           <ul className="dm-flags">
             {flags.map(f => (
-              <li key={f.id}>
+              <li key={f.id} className={`is-${f.severity}`}>
                 <StatusPill tone={SEVERITY[f.severity].tone} label={SEVERITY[f.severity].label} />
                 <div>
                   <p className="dm-flag-t">{f.title}</p>

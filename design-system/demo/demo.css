@@ -584,3 +584,60 @@
 
 /* the recent-runs summary spans both columns under the graph and the monitor */
 .dm-ws-wide { grid-column: 1 / -1; }
+
+/* ===== charts on an ink surface =====
+   .dm-panel is declared after .dm-ink and sets its own paper background, so the
+   combined selector has to restate the ground or an ink panel renders
+   white-on-white. Same reason .dm-canvas.dm-ink restates it. */
+.dm-panel.dm-ink { background: var(--dl-ink); color: var(--dl-on-ink); border-color: var(--dl-ink); }
+
+.dm-ink .dm-panel-h { border-bottom: var(--dl-hairline-ink); }
+.dm-ink .dm-panel-title { color: var(--dl-on-ink); }
+.dm-ink .dm-panel-link { color: var(--dl-blue-bright); border-bottom-color: var(--dl-blue-bright); }
+.dm-ink .dm-scoremeter-v { color: #fff; }
+.dm-ink .dm-scoremeter-v small { color: var(--dl-on-ink-muted); }
+.dm-ink .dm-delta { color: var(--dm-on-ink-ok); }
+.dm-ink .dm-ticks { background:
+  repeating-linear-gradient(90deg, #33333B 0 1px, transparent 1px 4%) left top / 100% 7px no-repeat,
+  repeating-linear-gradient(90deg, var(--dl-on-ink) 0 1px, transparent 1px 20%) left top / 100% 100% no-repeat; }
+.dm-ink .dm-ticks i { background: var(--dl-blue-bright); }
+.dm-ink .dm-axis { stroke: #2A2A30; }
+.dm-ink .dm-trend-line { stroke: var(--dl-blue-bright); }
+.dm-ink .dm-trend-dot { fill: var(--dl-blue-bright); }
+.dm-ink .dm-trend-value { fill: var(--dl-on-ink); }
+.dm-ink .dm-trend-label { fill: var(--dl-on-ink-muted); }
+
+/* ===== red flags: severity is a stripe, not only a pill ===== */
+.dm-flags li { position: relative; }
+.dm-flags li::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: transparent; }
+.dm-flags li.is-high::before { background: var(--dl-warn); }
+.dm-flags li.is-medium::before { background: var(--dl-grey-3); }
+.dm-flags li.is-low::before { background: var(--dl-grey-2); }
+
+/* ===== the graph canvas is the Graph screen's ink surface =====
+   It is also the literal brand idea — many sources merging into one — so it is
+   the one drawing in the product that earns depth. */
+.dm-canvas.dm-ink { background: var(--dl-ink); color: var(--dl-on-ink); border-color: var(--dl-ink); }
+.dm-canvas.dm-ink::after { background: radial-gradient(680px 420px at 50% 40%, rgba(61, 95, 255, 0.16), transparent 72%); }
+.dm-ink .dm-edge { stroke: #34343E; stroke-width: 1.1; }
+.dm-ink .dm-node { fill: var(--dl-on-ink); }
+.dm-ink .dm-node.is-document { fill: #7A7A86; }
+.dm-ink .dm-node.is-event { fill: #D9A13B; }
+.dm-ink .dm-node.is-on { fill: var(--dl-blue-bright); filter: drop-shadow(0 0 6px rgba(61, 95, 255, 0.85)); }
+.dm-ink .dm-node-label { fill: var(--dl-on-ink-muted); }
+.dm-ink .dm-canvas-controls button { border-color: #2A2A30; background: var(--dl-ink-2); color: var(--dl-on-ink); }
+.dm-ink .dm-canvas-controls button:hover { background: var(--dl-rail-surface); }
+.dm-canvas.dm-ink svg { position: relative; z-index: 1; }
+
+/* a readiness cell reads as a measurement, not a bare integer */
+.dm-cell-meter { display: inline-grid; grid-template-columns: 64px 26px; align-items: center; gap: 10px; }
+.dm-cell-meter b { font-family: var(--dl-font-display); font-size: 14px; font-weight: 700; letter-spacing: -0.02em; text-align: right; }
+.dm-stale { color: var(--dl-warn-text); }
+
+/* the activity stream on ink */
+.dm-ink .dm-activity li { border-bottom-color: #22222A; }
+.dm-ink .dm-activity p { color: var(--dl-rail-link); }
+.dm-ink .dm-activity b { color: #fff; }
+.dm-ink .dm-dot.is-info { background: var(--dl-blue-bright); }
+.dm-ink .dm-dot.is-ok { background: var(--dm-on-ink-ok); }
+.dm-ink .dm-dot.is-warn { background: #D9A13B; }
