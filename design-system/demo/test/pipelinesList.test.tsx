@@ -157,6 +157,23 @@ describe('Pipelines tick interval', () => {
       </DemoStateProvider>
     )
 
+  it('lifts a running pipeline into its own group and marks the row live', () => {
+    renderWithStarter()
+    // Nothing in flight: no Running group, and no row is marked live.
+    expect(document.querySelectorAll('.dm-prow.is-live')).toHaveLength(0)
+
+    fireEvent.click(screen.getByText('start'))
+
+    const groups = [...document.querySelectorAll('.dm-grouprow')].map(g => g.textContent)
+    expect(groups.some(g => g?.startsWith('Running now'))).toBe(true)
+
+    const live = document.querySelectorAll('.dm-prow.is-live')
+    expect(live).toHaveLength(1)
+    expect(live[0].textContent).toContain(entry.name)
+    // The dot pulses only while something actually runs — state, not decoration.
+    expect(live[0].querySelector('.dm-live.is-run')).not.toBeNull()
+  })
+
   it('only advances runs while at least one is running, and clears the interval on unmount', () => {
     vi.useFakeTimers()
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')

@@ -572,7 +572,7 @@
 .dm-mon-kv { margin-top: 6px; font-family: var(--dl-font-display); font-size: 17px; font-weight: 700; letter-spacing: -0.025em; }
 .dm-mon-kv small { font-size: 11px; font-weight: 500; color: var(--dl-on-ink-muted); }
 .dm-mon-kv.is-text { font-size: 12.5px; font-weight: 500; letter-spacing: -0.01em; }
-.dm-mon-log { border-top: var(--dl-hairline-ink); padding: 11px 18px 14px; }
+.dm-mon .dm-mon-log { border-top: var(--dl-hairline-ink); padding: 11px 18px 14px; }
 .dm-mon-log li { display: grid; grid-template-columns: 46px 1fr; gap: 10px; padding: 3px 0; font-family: var(--dl-font-mono); font-size: 10px; color: var(--dl-rail-link); }
 .dm-mon-log li span { color: var(--dl-rail-heading); }
 .dm-mon-log li:first-child { color: #fff; animation: dm-rise 0.45s ease both; }

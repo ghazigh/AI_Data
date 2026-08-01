@@ -47,7 +47,8 @@ export function TelemetryHeader({ kpis }: { kpis: TelemetryKpi[] }) {
   // means the estate actually cleared its target.
   const targetY = 8 + (1 - (ESTATE.scoreTarget - lo) / ((hi - lo) || 1)) * (h - 16)
   // The target is usually the top of the scale, which leaves no room above the
-  // rule — drop the label underneath it rather than letting it clip.
+  // rule — drop the label underneath it rather than letting it clip. It also
+  // sits at the left, since the line's endpoint always occupies the right.
   const targetLabelY = targetY < 14 ? targetY + 12 : targetY - 5
 
   return (
@@ -77,7 +78,7 @@ export function TelemetryHeader({ kpis }: { kpis: TelemetryKpi[] }) {
               </linearGradient>
             </defs>
             <line className="dm-tele-target" x1="0" y1={targetY} x2={w} y2={targetY} />
-            <text className="dm-tele-tlabel" x={w - 62} y={targetLabelY}>TARGET {ESTATE.scoreTarget}</text>
+            <text className="dm-tele-tlabel" x="0" y={targetLabelY}>TARGET {ESTATE.scoreTarget}</text>
             <path className="dm-tele-area" d={`M${pts.join(' L')} L${lastX},${h} L${pts[0].split(',')[0]},${h}Z`} />
             <polyline className="dm-tele-line" points={pts.join(' ')} />
             <circle className="dm-tele-head" cx={lastX} cy={lastY} r="3.2" />
