@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber'
 import { Html } from '@react-three/drei/web/Html'
 import { OrbitControls } from '@react-three/drei/core/OrbitControls'
-import { Stars } from '@react-three/drei/core/Stars'
 import {
   BufferGeometry,
   Color,
@@ -17,16 +16,23 @@ import { buildLayout, type Cluster, type Vec3 } from './layout'
 import type { GraphNode } from '../../data/graph'
 import type { DomainKey } from '../../data/types'
 
-/** Near-black rather than pure black: pure #000 flattens the star field into the
- * background and kills the sense of depth the whole scene depends on. */
-const SPACE = '#050505'
-
+/**
+ * The canvas is transparent and the page's own paper shows through it, so the
+ * graph reads as floating on the screen rather than sitting in a window onto
+ * somewhere else. That inverts everything drawn: on white, light geometry
+ * disappears, so nodes, links and the hub are all ink.
+ */
 const NODE_COLOR: Record<GraphNode['kind'], string> = {
-  entity: '#EAEAF2',
-  document: '#8E8E9C',
-  event: '#D9A13B',
+  entity: '#101013',
+  document: '#9A9AA2',
+  event: '#B7791F',
 }
-const SELECTED = '#5B7BFF'
+const SELECTED = '#0031E3'
+/** Hover and selection share the accent; size is what separates them. */
+const HOVERED = '#0031E3'
+/** Structure — the links and the hub's halo — is drawn in ink at low opacity,
+ * the same way the rest of the product draws a hairline. */
+const STRUCTURE = '#101013'
 
 /** Scales are animated rather than mounted and unmounted, so a node leaving the
  * filter shrinks away instead of popping out of existence. */
@@ -68,7 +74,7 @@ function Nodes({ nodes, positions, visible, selectedId, onSelect }: {
     const mesh = ref.current
     if (!mesh) return
     nodes.forEach((n, i) => {
-      const colour = n.id === selectedId ? SELECTED : hovered === i ? '#FFFFFF' : NODE_COLOR[n.kind]
+      const colour = n.id === selectedId ? SELECTED : hovered === i ? HOVERED : NODE_COLOR[n.kind]
       mesh.setColorAt(i, scratchColor.set(colour))
     })
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
@@ -129,11 +135,11 @@ function Hub() {
     <group>
       <mesh ref={ref as never}>
         <sphereGeometry args={[0.46, 32, 32]} />
-        <meshBasicMaterial color="#FFFFFF" toneMapped={false} />
+        <meshBasicMaterial color={STRUCTURE} toneMapped={false} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[0.9, 24, 24]} />
-        <meshBasicMaterial color="#3D5FFF" transparent opacity={0.09} toneMapped={false} side={DoubleSide} />
+        <sphereGeometry args={[0.86, 24, 24]} />
+        <meshBasicMaterial color={SELECTED} transparent opacity={0.05} toneMapped={false} side={DoubleSide} />
       </mesh>
     </group>
   )
@@ -163,11 +169,11 @@ function HubLink({ centroid, grown }: { centroid: Vec3; grown: number }) {
   return (
     <group scale={grown}>
       <lineSegments geometry={geometry}>
-        <lineDashedMaterial color="#FFFFFF" transparent opacity={0.17} dashSize={0.26} gapSize={0.34} toneMapped={false} />
+        <lineDashedMaterial color={STRUCTURE} transparent opacity={0.22} dashSize={0.26} gapSize={0.34} toneMapped={false} />
       </lineSegments>
       <mesh position={position} quaternion={quaternion}>
         <coneGeometry args={[0.09, 0.3, 10]} />
-        <meshBasicMaterial color="#FFFFFF" transparent opacity={0.42} toneMapped={false} />
+        <meshBasicMaterial color={STRUCTURE} transparent opacity={0.45} toneMapped={false} />
       </mesh>
     </group>
   )
@@ -202,9 +208,6 @@ function Scene({ nodes, visible, selectedId, onSelect, nameFor }: SceneProps) {
 
   return (
     <>
-      <color attach="background" args={[SPACE]} />
-      <Stars radius={110} depth={56} count={4200} factor={4.2} saturation={0} fade speed={0.35} />
-
       <Hub />
       {clusters.map(c => (
         <HubLink key={c.domain} centroid={c.centroid} grown={grown} />
@@ -245,9 +248,11 @@ export default function GraphScene({ summary, ...scene }: GraphSceneProps) {
   return (
     <div className="dm-g3" role="img" aria-label={summary}>
       <Canvas
+        // Transparent clear colour: the page's paper is the background, which is
+        // the whole point of the scene floating rather than being framed.
         camera={{ position: [0, 2.4, 19], fov: 46 }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: true, alpha: true }}
         // The demo is a static page that may sit open for a long time; a
         // continuously rendering canvas would spin a laptop fan for nothing when
         // the tab is not visible. r3f pauses automatically on visibility change.

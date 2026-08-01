@@ -52,7 +52,7 @@ export function GraphCanvas({ nodes, edges, selectedId, onSelect }: GraphCanvasP
   const transform = `translate(${W / 2} ${H / 2}) scale(${zoom}) translate(${-W / 2} ${-H / 2}) translate(${pan.x} ${pan.y})`
 
   return (
-    <div className="dm-canvas dm-ink">
+    <div className="dm-canvas">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="application"

@@ -614,20 +614,8 @@
 .dm-flags li.is-medium::before { background: var(--dl-grey-3); }
 .dm-flags li.is-low::before { background: var(--dl-grey-2); }
 
-/* ===== the graph canvas is the Graph screen's ink surface =====
-   It is also the literal brand idea — many sources merging into one — so it is
-   the one drawing in the product that earns depth. */
-.dm-canvas.dm-ink { background: var(--dl-ink); color: var(--dl-on-ink); border-color: var(--dl-ink); }
-.dm-canvas.dm-ink::after { background: radial-gradient(680px 420px at 50% 40%, rgba(61, 95, 255, 0.16), transparent 72%); }
-.dm-ink .dm-edge { stroke: #34343E; stroke-width: 1.1; }
-.dm-ink .dm-node { fill: var(--dl-on-ink); }
-.dm-ink .dm-node.is-document { fill: #7A7A86; }
-.dm-ink .dm-node.is-event { fill: #D9A13B; }
-.dm-ink .dm-node.is-on { fill: var(--dl-blue-bright); filter: drop-shadow(0 0 6px rgba(61, 95, 255, 0.85)); }
-.dm-ink .dm-node-label { fill: var(--dl-on-ink-muted); }
-.dm-ink .dm-canvas-controls button { border-color: #2A2A30; background: var(--dl-ink-2); color: var(--dl-on-ink); }
-.dm-ink .dm-canvas-controls button:hover { background: var(--dl-rail-surface); }
-.dm-canvas.dm-ink svg { position: relative; z-index: 1; }
+/* The graph is the one drawing that left the panel system entirely — see the
+   3D scene below. Its SVG fallback stays on paper for the same reason. */
 
 /* a readiness cell reads as a measurement, not a bare integer */
 .dm-cell-meter { display: inline-grid; grid-template-columns: 64px 26px; align-items: center; gap: 10px; }
@@ -643,21 +631,24 @@
 .dm-ink .dm-dot.is-warn { background: #D9A13B; }
 
 /* ===== the 3D knowledge graph =====
-   The canvas is its own dark world, so it does not take .dm-ink's shared
-   treatment — no radial wash over the top of a scene that lights itself. */
-.dm-g3 { position: relative; height: 640px; border: 1px solid var(--dl-ink); background: #050505; overflow: hidden; box-shadow: var(--dm-elev-2); }
+   No frame, no ground of its own: the canvas is transparent and the page's own
+   paper shows through, so the graph reads as floating on the screen rather than
+   as a window onto somewhere else. That means no border and no shadow either —
+   a box drawn around it would put it straight back in a frame. */
+.dm-g3 { position: relative; height: 640px; background: transparent; }
 .dm-g3 canvas { display: block; touch-action: none; }
 
-/* floating cluster labels — glass over the star field */
+/* floating cluster labels — light glass over the page */
 .dm-g3-label {
   display: flex; align-items: baseline; gap: 8px; padding: 4px 9px;
-  border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
-  background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
-  color: #fff; white-space: nowrap; user-select: none; cursor: default;
+  border: 1px solid rgba(16, 16, 19, 0.12); border-radius: 6px;
+  background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(6px);
+  color: var(--dl-ink); white-space: nowrap; user-select: none; cursor: default;
+  box-shadow: 0 1px 2px rgba(16, 16, 19, 0.04), 0 8px 20px -14px rgba(16, 16, 19, 0.3);
   transition: transform var(--dl-ease), border-color var(--dl-ease), background var(--dl-ease);
 }
-.dm-g3-label:hover { transform: scale(1.12); border-color: rgba(255, 255, 255, 0.44); background: rgba(0, 0, 0, 0.66); }
+.dm-g3-label:hover { transform: scale(1.12); border-color: rgba(16, 16, 19, 0.28); background: rgba(255, 255, 255, 0.92); }
 .dm-g3-label b { font-family: var(--dl-font-body); font-size: 11px; font-weight: 600; letter-spacing: -0.005em; }
-.dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.55); }
+.dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--dl-grey-3); }
 /* a cluster with nothing left in scope fades rather than disappearing */
-.dm-g3-label.is-dim { opacity: 0.32; }
+.dm-g3-label.is-dim { opacity: 0.34; }
