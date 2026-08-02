@@ -45,6 +45,25 @@ const siteCss = readFileSync('site/site.css', 'utf8')
 writeFileSync(`${OUT}/assets/site.css`, `${fonts}\n${tokens}\n${styles}\n${siteCss}\nhtml, body { margin: 0; background: var(--dl-canvas); }\nhtml { scroll-behavior: smooth; }\n@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }\n`)
 
 cpSync('site/site.js', `${OUT}/assets/site.js`)
+
+// ---- stage 04's live graph ---------------------------------------------
+// The one piece of React the marketing site ships to a browser: the same 3D
+// knowledge graph the demo draws, mounted into the stage 04 figure. ESM with
+// splitting rather than one file, exactly as the demo bundles it — three, r3f
+// and drei are a megabyte, and they belong in a chunk that is fetched only
+// after the island has confirmed the browser can render the scene, never in
+// the bundle every visitor to the home page downloads.
+await build({
+  entryPoints: [{ in: 'site/graph-boot.ts', out: 'graph' }],
+  outdir: `${OUT}/assets`,
+  bundle: true,
+  format: 'esm',
+  splitting: true,
+  platform: 'browser',
+  jsx: 'automatic',
+  minify: true,
+  define: { 'process.env.NODE_ENV': '"production"' },
+})
 cpSync('site/assets/favicon.svg', `${OUT}/assets/favicon.svg`)
 cpSync('site/assets/logo-mark.svg', `${OUT}/assets/logo-mark.svg`)
 if (existsSync('site/assets/og.png')) cpSync('site/assets/og.png', `${OUT}/assets/og.png`)
@@ -119,6 +138,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <body>
 ${body}
 ${page.slug === '404' ? PIPELINES_REDIRECT : ''}<script src="./assets/site.js" defer></script>
+${page.slug === 'index' ? '<script type="module" src="./assets/graph.js"></script>' : ''}
 </body>
 </html>
 `

@@ -28,7 +28,7 @@ export function Hero({
   accent = 'Agent-ready.',
   lead = 'Datalith draws every database, warehouse, wiki and inbox into a single governed knowledge graph — then serves it to any agent, audited end to end.',
   primaryCta = { label: 'Begin the audit', href: '#audit' },
-  secondaryCta = { label: 'the method', href: '#method' },
+  secondaryCta,
   tertiaryCta,
   figure = <ConfluenceFigure />,
   note,

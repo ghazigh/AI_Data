@@ -8,7 +8,7 @@ import { HeroFigure } from '../components/HeroFigure'
 import { DashboardFigure } from '../components/figures'
 import { StageSection } from '../components/StageSection'
 import {
-  ConnectFigure, ReadyFigure, PipelineFigure, GraphStageFigure, UseCaseFigure,
+  ConnectFigure, ReadyFigure, PipelineFigure, GraphStageFigure, SearchFigure, UseCaseFigure,
 } from '../components/StageFigures'
 import {
   siSnowflake, siDatabricks, siGooglebigquery, siPostgresql, siMysql,
@@ -55,7 +55,6 @@ export function Home() {
           accent="usable by AI agents."
           lead="Datalith makes your company Agentic Friendly! One dashboard over every database, warehouse, wiki and app you run — showing what to fix, building the governed knowledge graph your agents read from, and proposing the workflows your data makes possible."
           primaryCta={{ label: 'Get your free readiness score', href: '#audit' }}
-          secondaryCta={{ label: 'see how it works', href: '#how' }}
           tertiaryCta={{ label: 'Explore the product', href: './demo/' }}
           note="Free 48-hour Agent-Readiness Score. Read-only credentials, no migration."
           figure={<HeroFigure />}
@@ -89,7 +88,7 @@ export function Home() {
           <SectionLabel>The agentic platform</SectionLabel>
           <h2 className="dl-h2">What the Datalith platform gives you.</h2>
           <p className="st-lead">
-            Five stages, in order — from the systems you already run to the agents your data
+            Six stages, in order — from the systems you already run to the agents your data
             makes possible.
           </p>
         </div>
@@ -125,7 +124,15 @@ export function Home() {
         figure={<GraphStageFigure />}
       />
       <StageSection
-        id="usecases" num="05" name="Use cases"
+        id="search" num="05" name="Search"
+        title="Answers questions across every dataset you own."
+        lead="Because every system is already plugged in, Datalith ships a search agent over the whole estate: ask in plain language, and it uses the knowledge graph to work out where the answer lives, queries those datasets directly, and comes back with the rows — and the source of each one."
+        value="One question instead of five tickets to five data owners. If the answer isn't in your data, it says so rather than inventing it."
+        note="Illustrative query and latencies. Datalith is pre-launch; these are not customer figures."
+        figure={<SearchFigure />}
+      />
+      <StageSection
+        id="usecases" num="06" name="Use cases" flip
         title="Tells you which agents are worth building."
         lead="Datalith reads the graph and proposes the agentic applications your data actually supports — what each one would need, and what it would be worth."
         value="You find out what to build before you spend a quarter building it."
@@ -136,6 +143,48 @@ export function Home() {
       <div className="dl-wrap st-more">
         <TextLink href="./platform.html">see each stage in depth</TextLink>
       </div>
+
+      <section id="security" className="st-section st-section--rule">
+        <div className="dl-wrap">
+          <SectionLabel>Security</SectionLabel>
+          <h2 className="dl-h2">Enterprise-grade from the first connection.</h2>
+          <p className="st-lead">
+            Connecting your estate is the part your security team will ask about first. Datalith
+            reads, never writes; it inherits the permissions your systems already enforce; and
+            every read an agent makes is logged against the person or service that asked.
+          </p>
+          <div className="st-cols-3" data-reveal-group>
+            <Card label="Access" title="Read-only and least-privilege">
+              Every connector runs on scoped, read-only credentials you issue and can revoke in
+              one click. Nothing is ever written back to your systems.
+            </Card>
+            <Card label="Encryption" title="Encrypted end to end">
+              TLS 1.3 in transit, AES-256 at rest, secrets held in a managed vault — and
+              bring-your-own-key on Enterprise, so you hold the key that unlocks your data.
+            </Card>
+            <Card label="Residency" title="Your region, or your VPC">
+              Pick the region your data stays in, or deploy Datalith entirely inside your own
+              cloud account so nothing crosses your perimeter.
+            </Card>
+            <Card label="Governance" title="Permissions travel with the data">
+              Source ACLs, row and column policy and PII masking are applied at ingest and
+              enforced at query time — an agent can only see what the person behind it could see.
+            </Card>
+            <Card label="Audit" title="Every query on the record">
+              A full trail of which agent read which dataset, on whose behalf, when, and what came
+              back — exportable to your SIEM.
+            </Card>
+            <Card label="Isolation" title="Never used to train models">
+              Your data, your graph and your queries stay yours. Nothing is used to train shared
+              models, and no tenant can reach another tenant&rsquo;s graph.
+            </Card>
+          </div>
+          <p className="st-footnote">
+            SOC 2 Type II and ISO 27001 are in progress; GDPR data-processing terms and a
+            security review pack are available to design partners on request.
+          </p>
+        </div>
+      </section>
 
       <div id="how" data-reveal><Steps /></div>
 

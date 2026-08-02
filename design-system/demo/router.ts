@@ -10,10 +10,16 @@ export { prefixForSlug }
 
 /**
  * Pushes state (only when the URL actually changes), tells the app which slug
- * is current, and fixes up the document title and focus — the whole
- * side-effect bundle any navigation needs, in one place, so a click and a
+ * is current, and fixes up the document title, focus and scroll position — the
+ * whole side-effect bundle any navigation needs, in one place, so a click and a
  * programmatic navigate() call (below) can never drift apart into two
  * slightly different ideas of what "go to this screen" does.
+ *
+ * The scroll reset is what a real page load would have given us for free: the
+ * page scrolls at the window level, so arriving on a new screen halfway down
+ * the previous one's scroll depth would drop the operator into the middle of
+ * content they have never seen. Not applied on popstate, where the browser
+ * restores the scroll offset the operator left that screen at.
  */
 function commitNavigation(route: DemoRoute, pathname: string, onNavigate: (slug: string) => void): void {
   if (pathname !== window.location.pathname) {
@@ -21,7 +27,8 @@ function commitNavigation(route: DemoRoute, pathname: string, onNavigate: (slug:
   }
   onNavigate(route.slug)
   document.title = titleFor(route.slug)
-  document.getElementById('dm-content')?.focus?.()
+  document.getElementById('dm-content')?.focus?.({ preventScroll: true })
+  window.scrollTo?.(0, 0)
 }
 
 /**

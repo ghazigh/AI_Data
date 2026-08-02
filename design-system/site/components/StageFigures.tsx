@@ -8,7 +8,7 @@ import { S3_BUCKET } from './HeroFigure'
 /**
  * One large figure per platform stage. Each animates the transformation it
  * describes rather than illustrating it generically, and each is authored on
- * the same 640×380 canvas so the five sections keep a common rhythm.
+ * the same 640×380 canvas so the six sections keep a common rhythm.
  *
  * Every animated property has a finished static default; the motion lives
  * behind `.js .is-visible` inside a prefers-reduced-motion gate in site.css,
@@ -271,7 +271,22 @@ const DOMAINS4 = [
   { label: 'Supply', cx: 104, cy: 274, r: 46, n: '560K', ready: false },
 ]
 
+/**
+ * Stage 04 is the one figure that is the product rather than a drawing of it:
+ * the live 3D knowledge graph from the demo's Graph screen mounts here, in
+ * place of this SVG, once site/graph-island.tsx has confirmed the browser can
+ * render it. The SVG below is what ships in the HTML and what stays with
+ * JavaScript off or WebGL unavailable, so the section never depends on either.
+ */
 export function GraphStageFigure() {
+  return (
+    <div className="st-graph-live" data-graph-island>
+      <GraphStageDrawing />
+    </div>
+  )
+}
+
+function GraphStageDrawing() {
   const bridges = ['M194 112 L278 100', 'M156 178 L228 226', 'M304 138 L278 208', 'M128 218 L110 230']
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
@@ -310,7 +325,90 @@ export function GraphStageFigure() {
 }
 
 /**
- * 05 — the recommender: agents ranked by payback, each showing the sources it
+ * 05 — the search engine: one plain-language question, the plan the agent
+ * derives from the graph, the datasets it actually queries, and an answer
+ * whose every row carries its source. The point is that the question is asked
+ * once, not once per system.
+ */
+const PLAN = [
+  { n: 'resolve the entities', d: '“EU customers” → Customers KB · 1.2M' },
+  { n: 'traverse the graph', d: 'customer → contract → ticket' },
+  { n: 'query the sources', d: '4 datasets, live · policy-filtered' },
+]
+const HITS = [
+  { s: 'Snowflake · crm_accounts', r: '12.4K rows scanned', ms: '41 ms' },
+  { s: 'Salesforce · contracts', r: '3.1K rows scanned', ms: '62 ms' },
+  { s: 'Zendesk · tickets', r: '8.7K rows scanned', ms: '38 ms' },
+  { s: 'Confluence · renewal policy', r: '24 pages read', ms: '55 ms' },
+]
+const MATCHES = [
+  { n: 'Acme GmbH', d: 'ends 12 Sep · 2 P1 open' },
+  { n: 'Nordwind SA', d: 'ends 30 Sep · 1 P1 open' },
+  { n: 'Vela Foods BV', d: 'ends 04 Oct · 3 P1 open' },
+]
+
+export function SearchFigure() {
+  return (
+    <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
+      <text className="st-sf-dashcap" x={14} y={21}>SEARCH &#183; ONE QUESTION, EVERY SOURCE</text>
+      <path className="st-sf-rule" d="M0 34 H640" />
+
+      {/* the question, asked in plain language */}
+      <g className="st-sf-query">
+        <rect className="st-sf-qbar" x={14} y={46} width={612} height={42} rx={10} />
+        <circle className="st-sf-qglass" cx={40} cy={65} r={6.5} />
+        <path className="st-sf-qglass" d="M45 70 L51 76" />
+        <text className="st-sf-qtext" x={62} y={72}>
+          Which EU customers have a contract expiring this quarter and an open P1?
+        </text>
+      </g>
+
+      {/* what the agent decided to do about it */}
+      <text className="st-sf-colcap" x={14} y={118}>QUERY PLAN</text>
+      {PLAN.map((p, i) => (
+        <g key={p.n} className="st-sf-step" style={s(i)}>
+          <rect x={14} y={132 + i * 54} width={280} height={44} rx={8} />
+          <circle className="st-sf-stepnum" cx={36} cy={154 + i * 54} r={9} />
+          <text className="st-sf-stepidx" x={36} y={158 + i * 54} textAnchor="middle">{i + 1}</text>
+          <text className="st-sf-stepname" x={54} y={150 + i * 54}>{p.n}</text>
+          <text className="st-sf-stepdetail" x={54} y={165 + i * 54}>{p.d}</text>
+        </g>
+      ))}
+      {[0, 1].map(i => (
+        <path key={'q' + i} className="st-sf-chain" pathLength={100} style={s(i)}
+          d={'M154 ' + (176 + i * 54) + ' V ' + (186 + i * 54)} />
+      ))}
+      <path className="st-sf-rule" d="M316 104 V292" />
+
+      {/* the datasets it read, and how long each took */}
+      <text className="st-sf-colcap" x={340} y={118}>SOURCES QUERIED</text>
+      {HITS.map((h, i) => (
+        <g key={h.s} className="st-sf-flagrow" style={s(i)}>
+          <text className="st-sf-flagtext" x={340} y={148 + i * 38}>{h.s}</text>
+          <text className="st-sf-flagsrc" x={340} y={161 + i * 38}>{h.r}</text>
+          <text className="st-sf-hitms" x={626} y={148 + i * 38} textAnchor="end">{h.ms}</text>
+        </g>
+      ))}
+
+      <path className="st-sf-rule" d="M0 300 H640" />
+      <text className="st-sf-dashcap" x={14} y={322}>ANSWER &#183; 3 MATCHES</text>
+      <g className="st-sf-kbbadge st-sf-kbbadge--ok">
+        <rect x={492} y={310} width={134} height={16} rx={8} />
+        <text x={502} y={321}>every row cited</text>
+      </g>
+      {MATCHES.map((m, i) => (
+        <g key={m.n} className="st-sf-card" style={s(i)}>
+          <rect x={14 + i * 204} y={334} width={190} height={36} rx={8} />
+          <text className="st-sf-kbname" x={26 + i * 204} y={350}>{m.n}</text>
+          <text className="st-sf-cardsrc" x={26 + i * 204} y={363}>{m.d}</text>
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/**
+ * 06 — the recommender: agents ranked by payback, each showing the sources it
  * draws on and whether the graph supports it yet. The blocked row is
  * deliberate; the honest output includes what you cannot build today.
  */

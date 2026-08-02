@@ -801,7 +801,7 @@
 .st-404-lead { color: var(--dl-on-ink-muted); font-size: var(--dl-text-lead); margin: var(--dl-space-4) 0 var(--dl-space-6); }
 .st-404-cta { margin-top: var(--dl-space-6); }
 
-/* ===== home: the five-stage capability flow ===== */
+/* ===== home: the six-stage capability flow ===== */
 .st-capflow {
   display: grid; grid-template-columns: repeat(5, 1fr);
   gap: var(--dl-space-5); margin-top: var(--dl-space-7);
@@ -891,6 +891,31 @@
 .st-stage-value { font-size: var(--dl-text-small); color: var(--dl-ink); margin-top: var(--dl-space-5); padding-top: var(--dl-space-4); border-top: var(--dl-hairline); max-width: 460px; line-height: 1.6; }
 .st-stage-fig { border: var(--dl-hairline); background: var(--dl-paper); }
 .st-sf { display: block; width: 100%; height: auto; }
+
+/* ===== stage 04's live knowledge graph =====
+   The demo's 3D scene mounts into .st-graph-live in place of the SVG figure
+   (see site/graph-island.tsx). These are the demo's own canvas rules, carried
+   over rather than imported: pulling the whole console stylesheet onto the
+   marketing site to style one canvas would ship several hundred rules the site
+   never uses. Kept in step with the .dm-g3 block in demo/demo.css. */
+.st-graph-live { position: relative; }
+/* Holds the figure's height while the scene's chunk downloads, so the section
+   below it never jumps up and then back down. */
+.st-graph-hold { height: 420px; }
+.st-graph-live .dm-g3 { position: relative; height: 420px; background: transparent; }
+.st-graph-live .dm-g3 canvas { display: block; touch-action: none; }
+.st-graph-live .dm-g3-label {
+  display: flex; align-items: baseline; gap: 8px; padding: 4px 9px;
+  border: 1px solid rgba(16, 16, 19, 0.12); border-radius: 6px;
+  background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(6px);
+  color: var(--dl-ink); white-space: nowrap; user-select: none; cursor: default;
+  box-shadow: 0 1px 2px rgba(16, 16, 19, 0.04), 0 8px 20px -14px rgba(16, 16, 19, 0.3);
+  transition: transform var(--dl-ease), border-color var(--dl-ease), background var(--dl-ease);
+}
+.st-graph-live .dm-g3-label:hover { transform: scale(1.12); border-color: rgba(16, 16, 19, 0.28); background: rgba(255, 255, 255, 0.92); }
+.st-graph-live .dm-g3-label b { font-family: var(--dl-font-body); font-size: 11px; font-weight: 600; letter-spacing: -0.005em; }
+.st-graph-live .dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--dl-grey-3); }
+.st-graph-live .dm-g3-label.is-dim { opacity: 0.34; }
 
 /* --- shared figure ink (static defaults: what reduced motion / no-JS shows) --- */
 /* stage 01 — provider tiles, accented by data modality */
@@ -1023,6 +1048,8 @@
   /* 05 use cases */
   .js .st-stage .st-sf-feed { stroke-dasharray: 100; stroke-dashoffset: 100; }
   .js .st-stage-in.is-visible .st-sf-feed { animation: st-sf-draw 0.7s ease 0.4s forwards; }
+  .js .st-stage .st-sf-query { opacity: 0; }
+  .js .st-stage-in.is-visible .st-sf-query { animation: st-sf-fade 0.5s ease 0.1s forwards; }
   .js .st-stage .st-sf-card { opacity: 0; }
   .js .st-stage-in.is-visible .st-sf-card { animation: st-sf-deal 0.6s cubic-bezier(0.22,1,0.36,1) forwards; animation-delay: calc(0.7s + var(--i) * 0.16s); }
   .js .st-stage .st-sf-cardbar { width: 0; }
@@ -1063,7 +1090,13 @@
 .st-sf-kbbadge--wait rect { fill: #F8EFDD; }
 .st-sf-kbbadge--wait text { fill: var(--dl-warn); }
 
-/* stage 05 — ranked agent proposals */
+/* stage 05 — the search console */
+.st-sf-qbar { fill: var(--dl-grey-1); stroke: var(--dl-grey-2); stroke-width: 1; }
+.st-sf-qglass { fill: none; stroke: var(--dl-grey-4); stroke-width: 1.8; stroke-linecap: round; }
+.st-sf-qtext { font-family: var(--dl-font-display); font-size: 13.5px; font-weight: 500; fill: var(--dl-ink); }
+.st-sf-hitms { font-family: var(--dl-font-mono); font-size: 10px; fill: var(--dl-grey-3); }
+
+/* stage 06 — ranked agent proposals */
 .st-sf-rankdot { fill: var(--dl-blue-wash); }
 .st-sf-cardrank { font-family: var(--dl-font-mono); font-size: 12px; font-weight: 600; fill: var(--dl-blue); }
 .st-sf-card--blocked rect:first-of-type { fill: var(--dl-canvas); stroke: var(--dl-grey-2); stroke-width: 1; }

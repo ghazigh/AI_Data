@@ -25,6 +25,20 @@ describe('installRouter', () => {
     expect(document.activeElement).toBe(document.getElementById('dm-content'))
   })
 
+  it('returns the page to the top so a new screen never opens mid-scroll', () => {
+    setup()
+    const scrolled: Array<[number, number]> = []
+    const original = window.scrollTo
+    window.scrollTo = ((x: number, y: number) => { scrolled.push([x, y]) }) as typeof window.scrollTo
+    try {
+      const nav = screen.getByRole('navigation', { name: 'Demo screens' })
+      fireEvent.click(within(nav).getByRole('link', { name: /^connect$/i }), { button: 0 })
+    } finally {
+      window.scrollTo = original
+    }
+    expect(scrolled).toContainEqual([0, 0])
+  })
+
   it('sets the document title from the destination route', () => {
     setup()
     const nav = screen.getByRole('navigation', { name: 'Demo screens' })

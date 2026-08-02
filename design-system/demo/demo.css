@@ -31,7 +31,11 @@
 .dm-root :where(h1, h2, h3, p) { margin: 0; }
 .dm-root :is(a, button, input, summary):focus-visible { outline: 2px solid var(--dl-blue); outline-offset: 2px; }
 
-.dm-rail { width: 236px; flex: none; display: flex; flex-direction: column; padding: var(--dl-space-5) 0 var(--dl-space-4); background: var(--dl-ink); color: var(--dl-on-ink); }
+/* Sticky and exactly one viewport tall, so the foot (audit CTA, signed-in
+   operator) stays put instead of being pushed to the bottom of a long screen's
+   scroll. align-self keeps the flex parent from stretching it back to document
+   height; overflow-y earns its keep only on short viewports. */
+.dm-rail { width: 236px; flex: none; position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; padding: var(--dl-space-5) 0 var(--dl-space-4); background: var(--dl-ink); color: var(--dl-on-ink); }
 .dm-rail :is(a, button):focus-visible { outline-color: var(--dl-blue-bright); }
 .dm-rail-logo { display: inline-flex; align-items: center; gap: var(--dl-space-2); padding: 0 20px; font-family: var(--dl-font-display); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
 .dm-demo-tag { display: block; margin: 12px 20px 0; padding: 4px 10px; align-self: flex-start; border-radius: var(--dl-radius-pill); background: var(--dl-rail-surface); color: var(--dl-on-ink-muted); font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
