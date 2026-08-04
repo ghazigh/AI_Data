@@ -762,4 +762,98 @@
 .dm-kb-score em { margin-right: 7px; font-family: var(--dl-font-mono); font-size: 9px; font-style: normal; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dl-grey-3); }
 .dm-legend-dot.is-mote { width: 5px; height: 5px; margin-left: 2px; background: #BFBFC6; }
 
+/* ===== stage 05 · the estate search agent =====
+   The composer stays put and the transcript grows under it, newest first — a
+   console panel, not a messenger. Two visual registers carry the two altitudes
+   the agent answers at: dataset cards (paper, elevated, attachable) are what it
+   found *about* the data, and record hits (recessed, field-by-field, cited) are
+   what it read *from* it. An answer never shows both as the same kind of thing. */
+.dm-ask { margin-bottom: 18px; }
+.dm-ask-mode { display: flex; align-items: center; gap: var(--dl-space-3); }
+.dm-ask-clear { padding: 4px 10px; border: var(--dl-hairline); background: var(--dl-paper); font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-grey-4); cursor: pointer; }
+.dm-ask-clear:hover { color: var(--dl-ink); border-color: var(--dl-grey-3); }
+
+.dm-ask-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 16px 18px; }
+.dm-ask-input { width: 100%; padding: 13px 16px; border: 1px solid var(--dl-grey-2); border-radius: 0; background: var(--dl-canvas); font-family: var(--dl-font-body); font-size: 15px; color: var(--dl-ink); }
+.dm-ask-input::placeholder { color: var(--dl-grey-3); }
+.dm-ask-input:focus { border-color: var(--dl-blue); background: var(--dl-paper); outline: none; }
+.dm-ask-form .dm-btn { padding: 9px 26px; }
+.dm-ask-form .dm-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* attachments are the loudest state in the panel: everything the agent says
+   from here on is bounded by this row */
+.dm-ask-attached { padding: 0 18px 15px; }
+.dm-ask-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.dm-ask-chips li { display: inline-flex; align-items: center; gap: 9px; padding: 6px 8px 6px 13px; border: 1px solid var(--dl-blue); border-radius: var(--dl-radius-pill); background: var(--dl-blue-wash); }
+.dm-ask-chips b { font-size: 12.5px; font-weight: 600; }
+.dm-ask-chips em { font-family: var(--dl-font-mono); font-style: normal; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dl-blue); }
+.dm-ask-chips button { width: 18px; height: 18px; padding: 0; border: 0; border-radius: var(--dl-radius-pill); background: rgba(0, 49, 227, 0.12); font-size: 12px; line-height: 1; color: var(--dl-blue); cursor: pointer; }
+.dm-ask-chips button:hover { background: var(--dl-blue); color: #fff; }
+
+.dm-ask-suggest { display: flex; align-items: center; gap: var(--dl-space-3); flex-wrap: wrap; padding: 0 18px 16px; }
+.dm-ask-suggest ul { display: flex; flex-wrap: wrap; gap: 8px; }
+.dm-ask-suggest button { padding: 5px 13px; border: var(--dl-hairline); border-radius: var(--dl-radius-pill); background: transparent; font-size: 12px; color: var(--dl-grey-4); cursor: pointer; }
+.dm-ask-suggest button:hover { border-color: var(--dl-blue); background: var(--dl-blue-wash); color: var(--dl-blue); }
+
+.dm-ask-thread { border-top: var(--dl-hairline); }
+.dm-ask-turn { padding: 18px; border-bottom: 1px solid var(--dl-grey-1); }
+.dm-ask-turn:last-child { border-bottom: 0; }
+.dm-ask-turn.is-system { padding: 11px 18px; background: var(--dl-blue-wash); }
+.dm-ask-sys { font-size: 12px; line-height: 1.55; color: var(--dl-grey-4); }
+.dm-ask-sys b { font-weight: 600; color: var(--dl-ink); }
+
+.dm-ask-q { display: flex; align-items: baseline; gap: 11px; font-family: var(--dl-font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.dm-ask-q span { flex: none; font-family: var(--dl-font-mono); font-size: 9.5px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dl-grey-3); }
+
+.dm-ask-a { margin-top: 12px; }
+.dm-ask-headline { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.dm-ask-a.is-nothing .dm-ask-headline { color: var(--dl-warn-text); }
+.dm-ask-lead { margin-top: 5px; max-width: 92ch; font-size: 12.5px; line-height: 1.6; color: var(--dl-grey-4); }
+
+/* the query plan, three steps across — the same shape stage 05 draws on the site */
+.dm-ask-plan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.dm-ask-plan li { display: grid; grid-template-columns: 20px 1fr; gap: 3px 10px; padding: 11px 13px; border: var(--dl-hairline); background: var(--dl-canvas); }
+.dm-ask-step-ix { grid-row: span 2; width: 18px; height: 18px; display: grid; place-items: center; margin-top: 1px; border-radius: var(--dl-radius-pill); background: var(--dl-ink); font-family: var(--dl-font-mono); font-size: 9px; color: #fff; }
+.dm-ask-step-n { font-size: 12.5px; font-weight: 600; }
+.dm-ask-step-d { font-family: var(--dl-font-mono); font-size: 10px; line-height: 1.55; color: var(--dl-grey-4); overflow-wrap: anywhere; }
+
+.dm-ask-cap { margin-top: 17px; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-ask-cap em { font-style: normal; text-transform: none; letter-spacing: 0.06em; }
+
+.dm-ask-ents { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 9px; }
+.dm-ask-ents li { padding: 10px 12px; border-left: 2px solid var(--dl-ink); background: var(--dl-canvas); }
+.dm-ask-ents b { display: block; font-size: 12.5px; font-weight: 600; }
+.dm-ask-ents span { display: block; margin-top: 3px; font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
+
+/* a record the specialist actually read: its fields, then the dataset it came
+   from, then whatever policy held back */
+.dm-ask-hits { display: grid; gap: 10px; margin-top: 9px; }
+.dm-ask-hits > li { padding: 13px 15px; border: var(--dl-hairline); background: var(--dl-canvas); }
+.dm-ask-hit-h { display: flex; align-items: baseline; gap: 11px; }
+.dm-ask-hit-n { font-size: 13.5px; font-weight: 600; }
+.dm-ask-hit-k { font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-ask-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin-top: 9px; }
+.dm-ask-fields > div { display: grid; grid-template-columns: 132px 1fr; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--dl-grey-1); font-size: 12.5px; }
+.dm-ask-fields dt { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--dl-grey-3); }
+.dm-ask-cite { margin-top: 10px; font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--dl-blue); }
+.dm-ask-cite::before { content: 'cited · '; color: var(--dl-grey-3); }
+.dm-ask-withheld { margin-top: 8px; padding-left: 11px; border-left: 3px solid var(--dl-warn); font-size: 11.5px; line-height: 1.5; color: var(--dl-warn-text); }
+
+.dm-ask-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 9px; }
+.dm-ask-cards li { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border: var(--dl-hairline); background: var(--dl-paper); box-shadow: var(--dm-elev-1); }
+.dm-ask-card-n { font-size: 13px; font-weight: 600; }
+.dm-ask-card-m { font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-ask-card-s { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 10px; font-size: 11.5px; color: var(--dl-grey-4); }
+.dm-ask-card-s b { font-family: var(--dl-font-display); font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: var(--dl-ink); }
+.dm-ask-card-s span { font-family: var(--dl-font-mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dl-grey-3); }
+.dm-ask-attach { margin-top: auto; padding: 7px 0; border: 1px solid var(--dl-ink); border-radius: var(--dl-radius-pill); background: var(--dl-ink); font-size: 12px; font-weight: 600; color: #fff; cursor: pointer; }
+.dm-ask-attach:hover { border-color: var(--dl-blue); background: var(--dl-blue); }
+.dm-ask-attach:disabled { border-color: var(--dl-grey-2); background: transparent; color: var(--dl-grey-3); cursor: default; }
+
+.dm-ask-notes { margin-top: 15px; border-top: 1px solid var(--dl-grey-1); }
+.dm-ask-notes li { position: relative; padding: 8px 0 8px 16px; font-size: 12px; line-height: 1.55; color: var(--dl-grey-4); }
+.dm-ask-notes li::before { content: ''; position: absolute; left: 0; top: 15px; width: 5px; height: 5px; border-radius: var(--dl-radius-pill); background: var(--dl-warn); }
+
+.dm-ask-foot { padding: 12px 18px 14px; border-top: var(--dl-hairline); font-size: 11.5px; line-height: 1.55; color: var(--dl-grey-3); }
+
 html, body { margin: 0; background: var(--dl-canvas); }

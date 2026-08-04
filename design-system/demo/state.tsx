@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { SOURCES } from './data/sources'
 import type { Source } from './data/types'
+import { answerQuestion, type Answer } from './ask'
 import { allEntries } from './data/pipelineCatalogue'
 import type { CatalogueEntry, CatalogueStage, SectionKind } from './data/pipelineCatalogue'
 import type { RunConfig, RunProjection } from './runConfig'
@@ -51,6 +52,18 @@ export const DEFAULT_SETTINGS: PipelineSettings = {
   retentionDays: 90,
 }
 
+/**
+ * One entry in the search agent's transcript. Attaching and detaching are turns
+ * of their own, not just a change to a chip row: the moment the agent stops
+ * answering about the data and starts answering from it is the thing Stage 05
+ * is demonstrating, and a transcript that skipped it would hide the demo's
+ * whole point.
+ */
+export type AskTurn =
+  | { id: string; kind: 'ask'; question: string; answer: Answer }
+  | { id: string; kind: 'attach'; datasetId: string }
+  | { id: string; kind: 'detach'; datasetId: string }
+
 export interface DemoState {
   sources: Source[]
   /** Adds a source in `scanning` state; the caller settles it to `connected`. */
@@ -89,6 +102,19 @@ export interface DemoState {
    * the Overview strip's count and a workspace's own id lookup all read,
    * so none of the three can disagree about which pipelines exist. */
   allEntriesWithCreated: () => CatalogueEntry[]
+  /** The search agent's transcript, oldest first. Empty on the server and on
+   * the client's first render, so the panel hydrates to identical markup. */
+  askTurns: AskTurn[]
+  /** Source ids the agent is currently specialised on. Empty means it answers
+   * about the estate; non-empty means it answers from these datasets. */
+  attachedDatasetIds: string[]
+  /** Answers a question at whatever altitude the current attachments imply,
+   * and records both in the transcript. */
+  ask: (question: string) => void
+  attachDataset: (sourceId: string) => void
+  detachDataset: (sourceId: string) => void
+  /** Empties the transcript and detaches everything — the agent forgets. */
+  clearAsk: () => void
 }
 
 const Ctx = createContext<DemoState | null>(null)
@@ -157,6 +183,14 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
   // never a clock or a random source, and never reset on resetDemo (matching
   // nextRunId's own convention), so an id already handed out is never reused.
   const nextCreatedId = useRef(1)
+  // The search agent's session: transcript and current specialisation. Both
+  // empty until an operator asks something, so a fresh load (server or client)
+  // renders the same empty composer.
+  const [askTurns, setAskTurns] = useState<AskTurn[]>([])
+  const [attachedDatasetIds, setAttachedDatasetIds] = useState<string[]>([])
+  // Monotonic, same discipline as nextRunId — a turn id never comes from a
+  // clock or a random source, so two renders of the same transcript agree.
+  const nextAskId = useRef(1)
 
   const value = useMemo<DemoState>(() => ({
     sources,
@@ -170,6 +204,8 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       setTriggerOverrides({})
       setSettingsOverrides({})
       setCreatedPipelines([])
+      setAskTurns([])
+      setAttachedDatasetIds([])
     },
     configFor: entry => configs[entry.id] ?? defaultConfigFor(entry),
     setConfig: (entryId, config) => setConfigs(prev => ({ ...prev, [entryId]: config })),
@@ -205,7 +241,34 @@ export function DemoStateProvider({ children }: { children: ReactNode }) {
       return id
     },
     allEntriesWithCreated: () => [...allEntries(), ...createdPipelines],
-  }), [sources, runs, configs, triggerOverrides, settingsOverrides, createdPipelines])
+    askTurns,
+    attachedDatasetIds,
+    ask: question => {
+      const text = question.trim()
+      if (!text) return
+      // The answer is computed once, here, and stored — not derived at render
+      // time from the current attachments. A transcript whose earlier answers
+      // silently rewrote themselves every time a dataset was attached would be
+      // lying about what the agent said when it said it.
+      const answer = answerQuestion(text, attachedDatasetIds)
+      setAskTurns(prev => [...prev, { id: `ask-${nextAskId.current++}`, kind: 'ask', question: text, answer }])
+    },
+    attachDataset: sourceId => {
+      if (attachedDatasetIds.includes(sourceId)) return
+      if (!SOURCES.some(s => s.id === sourceId && s.status === 'connected')) return
+      setAttachedDatasetIds(prev => [...prev, sourceId])
+      setAskTurns(prev => [...prev, { id: `ask-${nextAskId.current++}`, kind: 'attach', datasetId: sourceId }])
+    },
+    detachDataset: sourceId => {
+      if (!attachedDatasetIds.includes(sourceId)) return
+      setAttachedDatasetIds(prev => prev.filter(id => id !== sourceId))
+      setAskTurns(prev => [...prev, { id: `ask-${nextAskId.current++}`, kind: 'detach', datasetId: sourceId }])
+    },
+    clearAsk: () => {
+      setAskTurns([])
+      setAttachedDatasetIds([])
+    },
+  }), [sources, runs, configs, triggerOverrides, settingsOverrides, createdPipelines, askTurns, attachedDatasetIds])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

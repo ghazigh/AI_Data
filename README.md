@@ -29,7 +29,7 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 |---|---|
 | `docs/` | Market research, competitive landscape, product strategy, GTM plan and pitch narrative, plus the design specs and implementation plans. **Local only — gitignored, not in the repo.** |
 | [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404 + the `/demo/` product demo, SEO/OG/sitemap, animations. Published to GitHub Pages at <https://ghazigh.github.io/AI_Data/> |
-| [`website/demo/`](website/demo/) | The clickable product demo — seven screens over a sample estate. Open `website/demo/index.html` directly |
+| [`website/demo/`](website/demo/) | The clickable product demo — seven screens over a sample estate, with the estate search agent on the home screen. Open `website/demo/index.html` directly |
 | [`design-system/site/`](design-system/site/) | Website source (React pages + site.css/site.js) — rebuild with `npm run build:site` |
 | [`design-system/demo/`](design-system/demo/) | Demo source (React screens, static estate data, hydration guard) — rebuild with `npm run build:demo` |
 | [`landing/index.html`](landing/index.html) | Legacy single-file landing page — fully self-contained, open directly in a browser |

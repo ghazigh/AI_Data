@@ -1,4 +1,5 @@
 import { PageHead } from '../components/PageHead'
+import { AskPanel } from '../components/AskPanel'
 import { StageStrip } from '../components/StageStrip'
 import { Panel } from '../components/Panel'
 import { StatusPill, useCaseStatusPill } from '../components/StatusPill'
@@ -41,6 +42,12 @@ export function Overview() {
         title="Estate overview"
         actions={<a className="dm-btn is-ink" href="connect/" data-demo-link>Connect a source</a>}
       />
+
+      {/* The front door. A prospect opening the demo has one question — "what
+          do you actually have on us?" — and this answers it before they have
+          to learn the rail. It sits above the stage strip for that reason: the
+          five stages are how the answer is produced, not where you start. */}
+      <AskPanel />
 
       <StageStrip prefix="" />
 
