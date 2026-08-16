@@ -46,7 +46,7 @@ export const NavigateContext = createContext<(slug: string) => void>(() => {})
 export const useNavigate = (): ((slug: string) => void) => useContext(NavigateContext)
 
 /**
- * The five product stages, in order — slug, stage number and label.
+ * The six product stages, in order — slug, stage number and label.
  *
  * Here rather than derived from the route table because StageStrip renders
  * them and StageStrip is rendered by a screen, and the route table imports the
@@ -56,7 +56,7 @@ export const useNavigate = (): ((slug: string) => void) => useContext(NavigateCo
  */
 export interface StageDescriptor {
   slug: string
-  stage: '01' | '02' | '03' | '04' | '05'
+  stage: '01' | '02' | '03' | '04' | '05' | '06'
   title: string
 }
 
@@ -65,5 +65,6 @@ export const STAGES: StageDescriptor[] = [
   { slug: 'ready', stage: '02', title: 'Ready' },
   { slug: 'pipelines', stage: '03', title: 'Pipelines' },
   { slug: 'graph', stage: '04', title: 'Graph' },
-  { slug: 'use-cases', stage: '05', title: 'Use cases' },
+  { slug: 'search', stage: '05', title: 'Search' },
+  { slug: 'use-cases', stage: '06', title: 'Use cases' },
 ]

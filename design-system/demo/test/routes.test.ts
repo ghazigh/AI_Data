@@ -4,9 +4,9 @@ import { DOMAINS, ESTATE, TENANT } from '../data/tenant'
 import { allEntries } from '../data/pipelineCatalogue'
 
 describe('routes', () => {
-  it('defines the seven screens', () => {
+  it('defines the eight screens', () => {
     expect(ROUTES.map(r => r.slug)).toEqual([
-      '', 'connect', 'ready', 'pipelines', 'graph', 'use-cases', 'governance',
+      '', 'connect', 'ready', 'pipelines', 'graph', 'search', 'use-cases', 'governance',
     ])
   })
 
@@ -17,9 +17,9 @@ describe('routes', () => {
     }
   })
 
-  it('numbers only the five product stages', () => {
+  it('numbers only the six product stages', () => {
     const numbered = ROUTES.filter(r => r.stage !== undefined)
-    expect(numbered.map(r => r.stage)).toEqual(['01', '02', '03', '04', '05'])
+    expect(numbered.map(r => r.stage)).toEqual(['01', '02', '03', '04', '05', '06'])
   })
 
   it('resolves a path to its route', () => {
@@ -62,8 +62,8 @@ describe('workspace routes', () => {
     }
   })
 
-  it('keeps the rail at seven top-level routes', () => {
-    expect(ROUTES).toHaveLength(7)
+  it('keeps the rail at eight top-level routes', () => {
+    expect(ROUTES).toHaveLength(8)
     expect(ROUTES.some(r => r.slug.includes('/'))).toBe(false)
   })
 

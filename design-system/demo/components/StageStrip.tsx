@@ -31,6 +31,7 @@ export function StageStrip({ prefix }: { prefix: string }) {
       tone: runningCount > 0 ? 'warn' : 'ok',
     },
     graph: { text: `${ESTATE.entitiesResolved} entities`, tone: 'ok' },
+    search: { text: `${connectedCount} sources searchable`, tone: 'ok' },
     'use-cases': { text: `${USE_CASES.length} found · ${blockedCount} blocked`, tone: 'warn' },
   }
 

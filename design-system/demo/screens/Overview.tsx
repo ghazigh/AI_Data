@@ -60,7 +60,7 @@ export function Overview() {
           </Panel>
 
           <Panel
-            eyebrow="Stage 05 — Use cases"
+            eyebrow="Stage 06 — Use cases"
             title="What the graph already supports"
             action={<a className="dm-panel-link" href="use-cases/" data-demo-link>All 14 opportunities</a>}
           >

@@ -16,10 +16,10 @@ describe('Overview', () => {
     expect(screen.getByText('184')).toBeDefined()
   })
 
-  it('shows the five stages with live status', () => {
+  it('shows the six stages with live status', () => {
     renderOverview()
     const strip = screen.getByRole('list', { name: 'Product stages' })
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(6)
   })
 
   it('shows the five domains carrying the most sources, not all eight', () => {

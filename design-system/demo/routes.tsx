@@ -5,6 +5,7 @@ import { Connect } from './screens/Connect'
 import { Ready } from './screens/Ready'
 import { Pipelines } from './screens/Pipelines'
 import { Graph } from './screens/Graph'
+import { Search } from './screens/Search'
 import { UseCases } from './screens/UseCases'
 import { Governance } from './screens/Governance'
 import { PipelineWorkspace } from './components/PipelineWorkspace'
@@ -15,8 +16,8 @@ export interface DemoRoute {
   slug: string
   /** Browser title and TopBar breadcrumb leaf. */
   title: string
-  /** Product stage number, set only on the five pipeline stages. */
-  stage?: '01' | '02' | '03' | '04' | '05'
+  /** Product stage number, set only on the six pipeline stages. */
+  stage?: '01' | '02' | '03' | '04' | '05' | '06'
   /** Slug of the route this one breadcrumbs under. Set only on workspace routes. */
   parentSlug?: string
   Component: ComponentType
@@ -30,6 +31,7 @@ const STAGE_SCREENS: Record<string, ComponentType> = {
   ready: Ready,
   pipelines: Pipelines,
   graph: Graph,
+  search: Search,
   'use-cases': UseCases,
 }
 

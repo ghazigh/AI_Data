@@ -39,7 +39,7 @@ export function UseCases() {
 
   return (
     <>
-      <PageHead eyebrow="Stage 05 — Use cases" title="Which agents are worth building" />
+      <PageHead eyebrow="Stage 06 — Use cases" title="Which agents are worth building" />
 
       <FilterBar
         search={search} onSearch={setSearch} placeholder="Search use cases…"
