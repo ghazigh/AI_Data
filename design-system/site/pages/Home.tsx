@@ -5,7 +5,7 @@ import {
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { HeroFigure } from '../components/HeroFigure'
-import { DashboardFigure } from '../components/figures'
+import { ConsoleFigure } from '../components/ConsoleFigure'
 import { StageSection } from '../components/StageSection'
 import {
   ConnectFigure, ReadyFigure, PipelineFigure, GraphStageFigure, SearchFigure, UseCaseFigure,
@@ -111,8 +111,8 @@ export function Home() {
       />
       <StageSection
         id="pipelines" num="03" name="Pipelines"
-        title="Proposes the restructuring your estate actually needs."
-        lead="Based on what the score found, Datalith designs the pipelines that take your data from the state it is in today to a shape agents can consume — deduplicated, typed, chunked, masked."
+        title="Runs pipelines that turn any data modality into agent-ready data."
+        lead="One pipeline per modality: documents, images, tables, email, tickets, transcripts, streams. Each runs the best extraction stack for its format and lands the same output — typed records, resolved entities, citations back to the source."
         value="Built for your data as it is, not a generic template someone else's estate needed."
         figure={<PipelineFigure />}
       />
@@ -125,10 +125,10 @@ export function Home() {
       />
       <StageSection
         id="search" num="05" name="Search"
-        title="Answers questions across every dataset you own."
-        lead="Because every system is already plugged in, Datalith ships a search agent over the whole estate: ask in plain language, and it uses the knowledge graph to work out where the answer lives, queries those datasets directly, and comes back with the rows — and the source of each one."
-        value="One question instead of five tickets to five data owners. If the answer isn't in your data, it says so rather than inventing it."
-        note="Illustrative query and latencies. Datalith is pre-launch; these are not customer figures."
+        title="A search engine for the data itself."
+        lead="Ask whether the company holds anything on a subject and the agent searches your estate rather than your records — every table, document store and stream — and answers with the datasets that carry it: where each one lives, how large, how fresh, who owns it, and how ready it is."
+        value="Then attach one as your reference and ask about its contents. Datalith builds the retrieval against that dataset on the fly, anchored to the graph, so the answer stays inside the data you chose."
+        note="Illustrative estate and counts. Datalith is pre-launch; these are not customer figures."
         figure={<SearchFigure />}
       />
       <StageSection
@@ -180,8 +180,8 @@ export function Home() {
             </Card>
           </div>
           <p className="st-footnote">
-            SOC 2 Type II and ISO 27001 are in progress; GDPR data-processing terms and a
-            security review pack are available to design partners on request.
+            SOC 2 Type I is on the roadmap for GA, with Type II to follow. GDPR data-processing
+            terms and a security review pack are available to design partners on request.
           </p>
         </div>
       </section>
@@ -224,7 +224,7 @@ export function Home() {
             What data you have and where it lives, what changed, which agents are using it, and
             what it&rsquo;s costing you — in a view your board can read.
           </p>
-          <DashboardFigure />
+          <ConsoleFigure />
         </div>
       </section>
 

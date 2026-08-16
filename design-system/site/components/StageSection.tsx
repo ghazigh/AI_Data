@@ -11,13 +11,13 @@ export interface StageSectionProps {
   figure: ReactNode
   /** Optional qualifier under the copy, e.g. for modelled figures. */
   note?: string
-  /** Odd stages put the figure on the left so the five sections alternate. */
+  /** Odd stages put the figure on the left so the six sections alternate. */
   flip?: boolean
 }
 
 /**
  * One platform stage, full width. Copy on one side, its figure on the other,
- * alternating down the page so five consecutive sections don't read as a list.
+ * alternating down the page so six consecutive sections don't read as a list.
  */
 export function StageSection({ id, num, name, title, lead, value, figure, flip, note }: StageSectionProps) {
   return (

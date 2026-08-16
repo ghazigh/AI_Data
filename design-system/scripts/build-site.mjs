@@ -42,7 +42,12 @@ const styles = readFileSync('src/styles.css', 'utf8')
   .replace(`@import './fonts/fonts.css';`, '')
   .replace(`@import './tokens.css';`, '')
 const siteCss = readFileSync('site/site.css', 'utf8')
-writeFileSync(`${OUT}/assets/site.css`, `${fonts}\n${tokens}\n${styles}\n${siteCss}\nhtml, body { margin: 0; background: var(--dl-canvas); }\nhtml { scroll-behavior: smooth; }\n@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }\n`)
+// The console shot on Home and Platform is the demo, server-rendered into the
+// page (see site/components/ConsoleFigure.tsx), so the demo's own stylesheet
+// ships with the site. Every rule in it is scoped under .dm-*, and .st-console
+// in site.css neutralises the two viewport-sized rules the shell sets.
+const demoCss = readFileSync('demo/demo.css', 'utf8')
+writeFileSync(`${OUT}/assets/site.css`, `${fonts}\n${tokens}\n${styles}\n${siteCss}\n${demoCss}\nhtml, body { margin: 0; background: var(--dl-canvas); }\nhtml { scroll-behavior: smooth; }\n@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }\n`)
 
 cpSync('site/site.js', `${OUT}/assets/site.js`)
 

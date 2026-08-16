@@ -325,84 +325,74 @@ function GraphStageDrawing() {
 }
 
 /**
- * 05 — the search engine: one plain-language question, the plan the agent
- * derives from the graph, the datasets it actually queries, and an answer
- * whose every row carries its source. The point is that the question is asked
- * once, not once per system.
+ * 05 — search over the estate, not over the answers: you ask whether the
+ * company holds data on something, and what comes back is the datasets
+ * themselves — where each one lives, how big, how fresh, who owns it. Picking
+ * one attaches it as the reference for the next question, which is where the
+ * retrieval gets built. The composer carries that attachment so the two halves
+ * of the stage read as one flow.
  */
-const PLAN = [
-  { n: 'resolve the entities', d: '“EU customers” → Customers KB · 1.2M' },
-  { n: 'traverse the graph', d: 'customer → contract → ticket' },
-  { n: 'query the sources', d: '4 datasets, live · policy-filtered' },
-]
-const HITS = [
-  { s: 'Snowflake · crm_accounts', r: '12.4K rows scanned', ms: '41 ms' },
-  { s: 'Salesforce · contracts', r: '3.1K rows scanned', ms: '62 ms' },
-  { s: 'Zendesk · tickets', r: '8.7K rows scanned', ms: '38 ms' },
-  { s: 'Confluence · renewal policy', r: '24 pages read', ms: '55 ms' },
-]
-const MATCHES = [
-  { n: 'Acme GmbH', d: 'ends 12 Sep · 2 P1 open' },
-  { n: 'Nordwind SA', d: 'ends 30 Sep · 1 P1 open' },
-  { n: 'Vela Foods BV', d: 'ends 04 Oct · 3 P1 open' },
+const DATASETS = [
+  { n: 'prod_eu.crm.churn_events', d: 'Snowflake · 4.1M rows · daily · owner Growth · PII masked', ref: true },
+  { n: 'salesforce.account_health', d: 'Salesforce · 312K records · hourly · owner RevOps', ref: false },
+  { n: 'confluence/eu-churn-review', d: 'Confluence · 148 pages · weekly · owner Customer Success', ref: false },
 ]
 
 export function SearchFigure() {
   return (
     <svg viewBox="0 0 640 380" className="st-sf" aria-hidden="true">
-      <text className="st-sf-dashcap" x={14} y={21}>SEARCH &#183; ONE QUESTION, EVERY SOURCE</text>
+      <text className="st-sf-dashcap" x={14} y={21}>SEARCH &#183; WHAT DATA DO WE HAVE, AND WHERE</text>
       <path className="st-sf-rule" d="M0 34 H640" />
 
-      {/* the question, asked in plain language */}
-      <g className="st-sf-query">
-        <rect className="st-sf-qbar" x={14} y={46} width={612} height={42} rx={10} />
-        <circle className="st-sf-qglass" cx={40} cy={65} r={6.5} />
-        <path className="st-sf-qglass" d="M45 70 L51 76" />
-        <text className="st-sf-qtext" x={62} y={72}>
-          Which EU customers have a contract expiring this quarter and an open P1?
+      {/* the question is about the estate, not about a record in it */}
+      <g className="st-sf-msg" style={s(0)}>
+        <rect className="st-sf-bubble st-sf-bubble--you" x={216} y={46} width={410} height={38} rx={12} />
+        <text className="st-sf-qtext" x={232} y={70}>
+          Do we hold anything on EU customer churn?
         </text>
       </g>
 
-      {/* what the agent decided to do about it */}
-      <text className="st-sf-colcap" x={14} y={118}>QUERY PLAN</text>
-      {PLAN.map((p, i) => (
-        <g key={p.n} className="st-sf-step" style={s(i)}>
-          <rect x={14} y={132 + i * 54} width={280} height={44} rx={8} />
-          <circle className="st-sf-stepnum" cx={36} cy={154 + i * 54} r={9} />
-          <text className="st-sf-stepidx" x={36} y={158 + i * 54} textAnchor="middle">{i + 1}</text>
-          <text className="st-sf-stepname" x={54} y={150 + i * 54}>{p.n}</text>
-          <text className="st-sf-stepdetail" x={54} y={165 + i * 54}>{p.d}</text>
-        </g>
-      ))}
-      {[0, 1].map(i => (
-        <path key={'q' + i} className="st-sf-chain" pathLength={100} style={s(i)}
-          d={'M154 ' + (176 + i * 54) + ' V ' + (186 + i * 54)} />
-      ))}
-      <path className="st-sf-rule" d="M316 104 V292" />
-
-      {/* the datasets it read, and how long each took */}
-      <text className="st-sf-colcap" x={340} y={118}>SOURCES QUERIED</text>
-      {HITS.map((h, i) => (
-        <g key={h.s} className="st-sf-flagrow" style={s(i)}>
-          <text className="st-sf-flagtext" x={340} y={148 + i * 38}>{h.s}</text>
-          <text className="st-sf-flagsrc" x={340} y={161 + i * 38}>{h.r}</text>
-          <text className="st-sf-hitms" x={626} y={148 + i * 38} textAnchor="end">{h.ms}</text>
-        </g>
-      ))}
-
-      <path className="st-sf-rule" d="M0 300 H640" />
-      <text className="st-sf-dashcap" x={14} y={322}>ANSWER &#183; 3 MATCHES</text>
-      <g className="st-sf-kbbadge st-sf-kbbadge--ok">
-        <rect x={492} y={310} width={134} height={16} rx={8} />
-        <text x={502} y={321}>every row cited</text>
+      {/* what it looked through to answer */}
+      <g className="st-sf-msg" style={s(1)}>
+        <circle className="st-sf-thinkdot" cx={20} cy={99} r={4} />
+        <text className="st-sf-dashcap" x={32} y={103}>
+          SEARCHED 23 SOURCES &#183; 1.4K TABLES &#183; 84K DOCUMENTS &#183; 6 MATCHES
+        </text>
       </g>
-      {MATCHES.map((m, i) => (
-        <g key={m.n} className="st-sf-card" style={s(i)}>
-          <rect x={14 + i * 204} y={334} width={190} height={36} rx={8} />
-          <text className="st-sf-kbname" x={26 + i * 204} y={350}>{m.n}</text>
-          <text className="st-sf-cardsrc" x={26 + i * 204} y={363}>{m.d}</text>
+
+      {/* the datasets themselves — the answer is a catalogue, not a row */}
+      <g className="st-sf-msg" style={s(2)}>
+        <rect className="st-sf-bubble" x={14} y={112} width={584} height={180} rx={12} />
+        <text className="st-sf-msgtext" x={32} y={140}>
+          Six datasets carry it. These three have the coverage:
+        </text>
+      </g>
+      {DATASETS.map((d, i) => (
+        <g key={d.n} className="st-sf-mrow" style={s(i)}>
+          <text className="st-sf-kbname" x={32} y={173 + i * 44}>{d.n}</text>
+          <text className="st-sf-flagsrc" x={32} y={188 + i * 44}>{d.d}</text>
+          <g className={'st-sf-pick' + (d.ref ? ' st-sf-pick--on' : '')}>
+            <rect x={d.ref ? 486 : 466} y={160 + i * 44} width={d.ref ? 88 : 108} height={18} rx={9} />
+            <text x={d.ref ? 496 : 476} y={172 + i * 44}>
+              {d.ref ? 'reference ✓' : 'use as reference'}
+            </text>
+          </g>
         </g>
       ))}
+
+      {/* with one attached, the next question is answered from its contents */}
+      <g className="st-sf-msg" style={s(3)}>
+        <rect className="st-sf-composer" x={14} y={324} width={612} height={42} rx={10} />
+        <g className="st-sf-chip">
+          <rect x={28} y={335} width={186} height={20} rx={10} />
+          <text x={38} y={349}>churn_events &#183; attached</text>
+        </g>
+        <text className="st-sf-placeholder" x={226} y={350}>
+          Now ask what&#8217;s inside it&#8230;
+        </text>
+        <rect className="st-sf-send" x={586} y={333} width={28} height={24} rx={6} />
+        <path className="st-sf-sendarrow" d="M594 345 h9 m-3.5 -3.5 l3.5 3.5 l-3.5 3.5" />
+      </g>
     </svg>
   )
 }

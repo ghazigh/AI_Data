@@ -26,7 +26,7 @@ export const PAGES: PageDef[] = [
   {
     slug: 'platform',
     title: 'Platform — Datalith',
-    description: 'One platform, five stages: Connect, Ready, Pipelines, Graph, Use cases — from 150+ read-only connectors to the agent applications your data makes possible.',
+    description: 'One platform, six stages: Connect, Ready, Pipelines, Graph, Search, Use cases — from 150+ read-only connectors to a searchable estate and the agent applications your data makes possible.',
     Component: Platform,
   },
   {

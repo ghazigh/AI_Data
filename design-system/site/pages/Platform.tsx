@@ -5,7 +5,9 @@ import {
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { PageIntro } from '../components/PageIntro'
-import { LoopFigure, GraphFigure, DashboardFigure } from '../components/figures'
+import { LoopFigure, GraphFigure } from '../components/figures'
+import { SearchFigure } from '../components/StageFigures'
+import { ConsoleFigure } from '../components/ConsoleFigure'
 
 interface Stage {
   id: string
@@ -42,20 +44,20 @@ const STAGES: Stage[] = [
     figure: <div data-scoremeter data-reveal><ScoreMeter value={78} caption="Example score · illustrative" /></div>,
   },
   {
-    id: 'pipelines', num: '03', name: 'Pipelines', tagline: 'The restructuring your estate needs',
-    body: 'The score becomes a plan. Datalith designs the preparation your data actually requires — resolution, deduplication, semantic typing, PII masking, chunking and embedding — sized to what the scan found.',
+    id: 'pipelines', num: '03', name: 'Pipelines', tagline: 'One pipeline per data modality',
+    body: 'The score becomes a plan, and the plan runs as pipelines — one per modality. Documents, images, tables, email, tickets, transcripts and streams each get the extraction stack their format actually needs, and all of them land the same output: typed records, resolved entities, citations back to the source.',
     value: 'Built for your data as it is, not a generic template someone else’s estate needed.',
     points: [
-      'Each step carries the count that justifies it: 380 columns to type, 12 to mask',
+      'Each step carries the count that justifies it: 380 columns to type, 12 to mask, 22K documents to chunk',
       'Runs in place; nothing is written back to your source systems',
       'Re-runs as the estate drifts, so preparation never goes stale',
     ],
     figure: (
       <div className="st-topics" data-reveal>
-        {['resolve + dedupe', 'semantic typing', 'mask PII', 'chunk + embed'].map((s, i) => (
+        {['documents', 'images', 'tables', 'email', 'tickets', 'transcripts', 'streams'].map((s, i) => (
           <Badge key={s} tone={i === 0 ? 'blue' : 'neutral'}>{s}</Badge>
         ))}
-        <p className="st-topics-note">generated from your scan · 41K duplicates · 380 untyped columns · 12 unmasked PII</p>
+        <p className="st-topics-note">one pipeline each · same output: typed records, resolved entities, citations to source</p>
       </div>
     ),
   },
@@ -71,7 +73,18 @@ const STAGES: Stage[] = [
     figure: <GraphFigure />,
   },
   {
-    id: 'usecases', num: '05', name: 'Use cases', tagline: 'Which agents are worth building',
+    id: 'search', num: '05', name: 'Search', tagline: 'A search engine for the data itself',
+    body: 'Ask whether the company holds anything on a subject and Datalith searches the estate rather than the records — every table, document store and stream — and answers with the datasets that carry it: where each lives, how large, how fresh, who owns it, and how ready it is. Attach one as your reference and the retrieval over its contents is assembled on the fly, anchored to the graph.',
+    value: 'People stop asking colleagues whether the data exists — and stop standing up a retrieval stack per dataset.',
+    points: [
+      '“Do we hold anything on EU customer churn?” → the datasets that do, with location, size, freshness and owner',
+      'Attach a dataset as reference and ask about its contents — retrieval built per question, no index to keep warm',
+      'Governed like every other read: you only see the datasets your permissions already cover',
+    ],
+    figure: <div data-reveal><SearchFigure /></div>,
+  },
+  {
+    id: 'usecases', num: '06', name: 'Use cases', tagline: 'Which agents are worth building',
     body: 'Datalith reads the graph and proposes the agentic applications your data actually supports — the sources each would draw on, the effort, and the payback — including the ones the graph cannot support yet.',
     value: 'You find out what to build before you spend a quarter building it.',
     points: [
@@ -102,8 +115,8 @@ export function Platform() {
       <PageIntro
         label="The platform"
         title={'One platform.'}
-        accent="Five stages."
-        lead="Datalith sits between your data estate and your AI agents, in five stages: connect every system read-only, score how ready its data is, propose the restructuring that estate needs, build it into one knowledge graph, then name the agents that graph makes possible."
+        accent="Six stages."
+        lead="Datalith sits between your data estate and your AI agents, in six stages: connect every system read-only, score how ready its data is, propose the restructuring that estate needs, build it into one knowledge graph, make that estate searchable — what data you hold and where — then name the agents the graph makes possible."
       >
         <div className="dl-hero-ctas">
           <Button variant="ghost" size="lg" href="./demo/">Explore the product</Button>
@@ -119,7 +132,7 @@ export function Platform() {
             One pane: estate map, readiness-score trends, agent activity, policy violations, and the workflow
             pipeline with ROI — the whole agentic data program, in a view your board can read.
           </p>
-          <DashboardFigure />
+          <ConsoleFigure />
         </div>
       </section>
 
@@ -166,16 +179,28 @@ export function Platform() {
           <h2 className="dl-h2">Read-only in. Governed out. Audited always.</h2>
           <div className="st-cols-3" data-reveal-group>
             <Card tone="ink" label="Access" title="Read-only by default.">
-              Scoped, read-only credentials; nothing writes back to your systems. Value first,
-              write access never assumed.
+              Scoped, read-only credentials you issue and can revoke in one click; nothing writes
+              back to your systems. Write access is never assumed.
             </Card>
-            <Card tone="ink" label="Deployment" title="Your VPC, your rules.">
+            <Card tone="ink" label="Encryption" title="Encrypted end to end.">
+              TLS 1.3 in transit, AES-256 at rest, secrets in a managed vault — and
+              bring-your-own-key on Enterprise, so you hold the key that unlocks your data.
+            </Card>
+            <Card tone="ink" label="Deployment" title="Your region, or your VPC.">
               SaaS or fully in-VPC. Federate and prepare in place — no &ldquo;move your data to
               us,&rdquo; materialize only what serving requires.
             </Card>
+            <Card tone="ink" label="Governance" title="Permissions travel with the data.">
+              Source ACLs, row and column policy and PII masking applied at ingest and enforced at
+              query time — including on search, where you only see the datasets you are cleared for.
+            </Card>
             <Card tone="ink" label="Audit" title="Every query, logged.">
-              Per-agent identity and least-privilege scopes, with a complete audit trail. SOC 2
-              Type I on the roadmap at GA, Type II to follow.
+              Per-agent identity and least-privilege scopes, with a complete audit trail of what was
+              read, on whose behalf and when — exportable to your SIEM.
+            </Card>
+            <Card tone="ink" label="Isolation" title="Never used to train models.">
+              Your data, your graph and your queries stay yours. Nothing trains shared models, and
+              no tenant can reach another tenant&rsquo;s graph. SOC 2 Type I at GA, Type II to follow.
             </Card>
           </div>
         </div>

@@ -12,11 +12,12 @@ const STAGES = [
   { label: '02 · Ready', title: 'Scores how ready your data is for agents', body: 'An Agent-Readiness Score per source and per domain, with the red flags a data team can act on.', value: 'Continuous monitoring, not a one-off audit.' },
   { label: '03 · Pipelines', title: 'Proposes the restructuring your estate needs', body: 'The score becomes a plan: resolution, semantic typing, PII masking, chunking and embedding.', value: 'Built for your data as it is, not a generic template.' },
   { label: '04 · Graph', title: 'Builds one map of your whole business', body: 'Every system resolved into one knowledge graph, with its topics, domains and expertise named.', value: 'Knowledge bases any agentic AI can read.' },
-  { label: '05 · Use cases', title: 'Tells you which agents are worth building', body: 'Datalith reads the graph and proposes the agent applications your data actually supports.', value: 'You find out what to build before you build it.' },
+  { label: '05 · Search', title: 'Makes the estate itself searchable', body: 'Ask what data the company holds on a subject and get the datasets back — where they live, how fresh, who owns them — then attach one and ask about its contents.', value: 'Retrieval built per question, anchored to the graph.' },
+  { label: '06 · Use cases', title: 'Tells you which agents are worth building', body: 'Datalith reads the graph and proposes the agent applications your data actually supports.', value: 'You find out what to build before you build it.' },
 ]
 
-/** Hairline-divided grid of features — default content is the five Datalith stages. */
-export function FeatureGrid({ label = 'What you get', title = 'One platform. Five stages.', items = STAGES, columns = 3 }: FeatureGridProps) {
+/** Hairline-divided grid of features — default content is the six Datalith stages. */
+export function FeatureGrid({ label = 'What you get', title = 'One platform. Six stages.', items = STAGES, columns = 3 }: FeatureGridProps) {
   return (
     <section className="dl-featuregrid">
       <div className="dl-wrap">
