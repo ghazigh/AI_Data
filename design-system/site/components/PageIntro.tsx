@@ -19,7 +19,8 @@ export function PageIntro({ label, title, accent, lead, children }: PageIntroPro
         <div className="st-hero-anim">
           <SectionLabel>{label}</SectionLabel>
           <h1 className="st-intro-title">
-            {lines.map((l, i) => (<span key={i}>{l}<br /></span>))}
+            {/* the space keeps the words apart when site.css drops the break on a phone */}
+            {lines.map((l, i) => (<span key={i}>{l}{' '}<br /></span>))}
             {accent && <em>{accent}</em>}
           </h1>
           {lead && <p className="st-intro-lead">{lead}</p>}

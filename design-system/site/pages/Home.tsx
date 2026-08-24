@@ -142,6 +142,7 @@ export function Home() {
 
       <div className="dl-wrap st-more">
         <TextLink href="./platform.html">see each stage in depth</TextLink>
+        <TextLink href="./banking.html">or see what this looks like in a bank</TextLink>
       </div>
 
       <section id="security" className="st-section st-section--rule">

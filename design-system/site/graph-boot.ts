@@ -27,21 +27,34 @@ const supportsWebGL = (): boolean => {
   }
 }
 
-const mount = document.querySelector('[data-graph-island]')
+const mounts = document.querySelectorAll('[data-graph-island]')
 
-if (mount && supportsWebGL()) {
-  const load = () => import('./graph-island').then(m => m.mountStageGraph(mount))
+if (mounts.length && supportsWebGL()) {
+  // Each island names the estate it wants: the home page's stage 04 draws the
+  // demo tenant, the banking page draws a bank.
+  const load = (el: Element) => import('./graph-island').then(m => {
+    if (el.getAttribute('data-graph-island') === 'bank') m.mountBankGraph(el)
+    else m.mountStageGraph(el)
+  })
+
+  // The scene labels itself in HTML at a fixed size, which a phone-width column
+  // cannot hold — the cluster names run off both edges. There the static figure
+  // in the markup is the better answer, so the island simply never mounts.
+  const tooNarrow = () => window.innerWidth < 720
 
   // A generous root margin, so the download starts while the visitor is still
-  // reading stage 03 and the scene is already there when they arrive at 04.
-  if (typeof IntersectionObserver === 'function') {
-    const io = new IntersectionObserver(entries => {
-      if (!entries.some(e => e.isIntersecting)) return
-      io.disconnect()
-      void load()
-    }, { rootMargin: '600px 0px' })
-    io.observe(mount)
-  } else {
-    void load()
-  }
+  // reading the section above and the scene is already there when they arrive.
+  mounts.forEach(mount => {
+    if (tooNarrow()) return
+    if (typeof IntersectionObserver === 'function') {
+      const io = new IntersectionObserver(entries => {
+        if (!entries.some(e => e.isIntersecting)) return
+        io.disconnect()
+        void load(mount)
+      }, { rootMargin: '600px 0px' })
+      io.observe(mount)
+    } else {
+      void load(mount)
+    }
+  })
 }

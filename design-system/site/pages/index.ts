@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { Home } from './Home'
 import { Platform } from './Platform'
+import { Banking } from './Banking'
 import { Pricing } from './Pricing'
 import { Company } from './Company'
 import { Investors } from './Investors'
@@ -28,6 +29,12 @@ export const PAGES: PageDef[] = [
     title: 'Platform — Datalith',
     description: 'One platform, six stages: Connect, Ready, Pipelines, Graph, Search, Use cases — from 150+ read-only connectors to a searchable estate and the agent applications your data makes possible.',
     Component: Platform,
+  },
+  {
+    slug: 'banking',
+    title: 'Banking — Datalith',
+    description: 'The agent list every bank already has — KYC file refresh, credit memo drafting, complaint assembly, alert triage, arrears follow-up, desk exposure briefings — and the readiness score, per banking domain, that decides which ones ship. Read-only, entitlements inherited, every agent read audited.',
+    Component: Banking,
   },
   {
     slug: 'pricing',

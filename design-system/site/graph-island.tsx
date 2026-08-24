@@ -1,6 +1,10 @@
 import { lazy, StrictMode, Suspense, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import type { GraphNode } from '../demo/data/graph'
 import { GRAPH_NODES, KNOWLEDGE_BASES } from '../demo/data/graph'
+import {
+  BANK_NODES, BANK_DOMAIN_NAMES, BANK_DOMAIN_ENTITIES, BANK_GRAPH_SUMMARY, type BankDomain,
+} from './data/bank-graph'
 import { moteCountFor, parseCount } from '../demo/components/graph3d/layout'
 import { domainByKey } from '../demo/data/tenant'
 import type { DomainKey } from '../demo/data/types'
@@ -64,4 +68,34 @@ function StageGraph() {
  */
 export function mountStageGraph(el: Element): void {
   createRoot(el).render(<StrictMode><StageGraph /></StrictMode>)
+}
+
+/**
+ * The same scene over a bank's estate rather than the demo tenant's. The scene
+ * treats `domain` as an opaque grouping key and asks the caller for the label
+ * and the density, so the banking domains are passed straight through the two
+ * lookups below; the cast is the one place that crossing shows up.
+ */
+function BankGraph() {
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const visible = new Set(BANK_NODES.map(n => n.id))
+
+  return (
+    <Suspense fallback={<div className="st-graph-hold" aria-hidden="true" />}>
+      <GraphScene
+        nodes={BANK_NODES as unknown as GraphNode[]}
+        visible={visible}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        nameFor={d => BANK_DOMAIN_NAMES[d as BankDomain] ?? d}
+        moteCountFor={d => moteCountFor(parseCount(BANK_DOMAIN_ENTITIES[d as BankDomain] ?? '0'))}
+        summary={BANK_GRAPH_SUMMARY}
+      />
+    </Suspense>
+  )
+}
+
+/** Mounts the banking estate into the banking page's hero figure. */
+export function mountBankGraph(el: Element): void {
+  createRoot(el).render(<StrictMode><BankGraph /></StrictMode>)
 }

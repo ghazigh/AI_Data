@@ -143,7 +143,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <body>
 ${body}
 ${page.slug === '404' ? PIPELINES_REDIRECT : ''}<script src="./assets/site.js" defer></script>
-${page.slug === 'index' ? '<script type="module" src="./assets/graph.js"></script>' : ''}
+${page.slug === 'index' || page.slug === 'banking' ? '<script type="module" src="./assets/graph.js"></script>' : ''}
 </body>
 </html>
 `

@@ -395,7 +395,7 @@
 .st-section--rule { border-top: var(--dl-hairline); }
 .st-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.55; margin-top: var(--dl-space-5); max-width: 620px; }
 .dl-on-ink .st-lead { color: var(--dl-on-ink-muted); }
-.st-more { margin-top: var(--dl-space-5); }
+.st-more { display: flex; flex-wrap: wrap; gap: var(--dl-space-6); margin-top: var(--dl-space-5); }
 .st-footnote { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); color: var(--dl-grey-3); margin-top: var(--dl-space-4); max-width: 640px; line-height: 1.7; }
 .st-footnote--ink { color: var(--dl-on-ink-muted); }
 .st-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dl-space-5); margin-top: var(--dl-space-7); }
@@ -454,6 +454,9 @@
 .st-intro { padding: var(--dl-space-9) 0 var(--dl-space-8); }
 .st-intro-title { font-family: var(--dl-font-display); font-size: clamp(2.4rem, 5vw, var(--dl-text-h1)); font-weight: 700; letter-spacing: -0.03em; line-height: 1.02; margin-top: 18px; max-width: 800px; }
 .st-intro-title em { font-style: normal; color: var(--dl-blue); }
+/* A forced break in a title is a measure decision taken at desktop width; on a
+   phone the same break orphans a word, so let the headline reflow instead. */
+@media (max-width: 640px) { .st-intro-title br { display: none; } }
 .st-intro-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.55; margin-top: var(--dl-space-5); max-width: 640px; }
 
 /* ===== home: hero figure with connector logos ===== */
@@ -622,6 +625,224 @@
 .st-topics-note { flex-basis: 100%; font-family: var(--dl-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--dl-grey-3); border-top: var(--dl-hairline); padding-top: var(--dl-space-4); margin-top: var(--dl-space-4); }
 .st-flowcards { display: flex; flex-direction: column; gap: var(--dl-space-4); }
 .st-flowcards .dl-card-title { font-size: var(--dl-text-lead); }
+
+/* ===== banking: the wire board. The agents a bank wants on one side, the data
+   each one reads on the other, wired by site.js after layout. Selecting either
+   side dims everything the selection does not touch, so an amber wire is the
+   only thing left to read. Without JavaScript the wires never draw and the two
+   columns stand on their own as lists. ===== */
+.st-tally { font-family: var(--dl-font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+  font-size: clamp(1.5rem, 2.6vw, var(--dl-text-h3)); margin-top: 14px; }
+.st-tally-rest { color: var(--dl-grey-3); }
+
+.st-board { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1fr);
+  align-items: start; margin-top: var(--dl-space-7); }
+.st-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.st-col-label { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--dl-grey-3); padding-bottom: var(--dl-space-3);
+  border-bottom: var(--dl-hairline); margin: 0 0 var(--dl-space-2); }
+.st-board-col--right .st-col-label { text-align: right; }
+.st-node { display: flex; align-items: center; gap: var(--dl-space-3); width: 100%; text-align: left;
+  padding: 11px 12px; border: 1px solid transparent; background: none; font: inherit; color: inherit;
+  cursor: pointer; transition: background var(--dl-ease), border-color var(--dl-ease), opacity var(--dl-ease); }
+.st-node:hover { background: var(--dl-grey-1); }
+.st-node-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dl-grey-2); flex: none;
+  transition: background var(--dl-ease); }
+.st-node-name { font-size: var(--dl-text-small); line-height: 1.25; }
+.st-node .dl-badge { margin-left: auto; }
+.st-node.is-on { background: var(--dl-blue-wash); border-color: #D5DCFB; }
+.st-node.is-on .st-node-dot { background: var(--dl-blue); }
+.st-node--warn.is-on { background: #F8EFDD; border-color: #EBD9AE; }
+.st-node--warn.is-on .st-node-dot { background: var(--dl-warn); }
+.st-board-col--right .st-node { flex-direction: row-reverse; text-align: right; }
+.st-board-col--right .st-node .dl-badge { margin-left: 0; margin-right: auto; }
+.st-board.has-sel .st-node:not(.is-on) { opacity: 0.34; }
+.st-wire { fill: none; stroke: var(--dl-grey-2); stroke-width: 1; }
+.st-wire.is-on { stroke: var(--dl-blue); stroke-width: 1.5; }
+.st-wire.is-on.is-warn { stroke: var(--dl-warn); }
+.st-board.has-sel .st-wire:not(.is-on) { opacity: 0.35; }
+.st-hint { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); color: var(--dl-grey-3);
+  margin-top: var(--dl-space-5); }
+
+/* hero: copy beside the live scene. The graph is the product drawing itself,
+   so it gets the height a figure normally would not. */
+.st-bankhero { padding: var(--dl-space-8) 0 var(--dl-space-7); }
+.st-bankhero-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--dl-space-8); align-items: center; }
+.st-bankhero .st-intro-title { margin-top: 18px; }
+.st-bankgraph { min-height: 500px; }
+.st-bankgraph .dm-g3, .st-bankgraph .st-graph-hold { height: 500px; }
+.st-figcaption { font-family: var(--dl-font-mono); font-size: var(--dl-text-label);
+  color: var(--dl-grey-3); margin-top: var(--dl-space-4); text-align: center; }
+
+/* ===== use cases: a run, not a claim. Tabs on the left, the agent's own
+   sequence on the right, each step arriving after the one it depends on.
+   Panels are all in the markup; only .js hides the inactive ones. ===== */
+.st-uc-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.55;
+  margin-top: var(--dl-space-5); max-width: 620px; }
+.st-uc { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: var(--dl-space-7);
+  margin-top: var(--dl-space-7); }
+.st-uc-tabs { display: flex; flex-direction: column; gap: 2px; }
+.st-uc-tab { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 14px 16px;
+  border: 1px solid transparent; border-left: 2px solid var(--dl-grey-2); background: none; cursor: pointer;
+  transition: background var(--dl-ease), border-color var(--dl-ease); }
+.st-uc-tab:hover { background: var(--dl-grey-1); }
+.st-uc-tab-fn { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dl-grey-3); }
+.st-uc-tab-name { font-family: var(--dl-font-display); font-weight: 600; letter-spacing: -0.01em;
+  font-size: var(--dl-text-body); }
+.st-uc-tab.is-active { background: var(--dl-blue-wash); border-left-color: var(--dl-blue); }
+.st-uc-tab.is-active .st-uc-tab-fn { color: var(--dl-blue); }
+.st-uc-stage { border: var(--dl-hairline); background: var(--dl-paper); padding: var(--dl-space-6); }
+.st-uc-ask { font-family: var(--dl-font-mono); font-size: var(--dl-text-small); color: var(--dl-ink);
+  display: flex; gap: var(--dl-space-4); align-items: baseline; border-bottom: var(--dl-hairline);
+  padding-bottom: var(--dl-space-5); }
+.st-uc-ask span { font-size: var(--dl-text-label); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dl-blue); }
+.st-uc-steps { list-style: none; margin: var(--dl-space-5) 0 0; padding: 0 0 0 var(--dl-space-6);
+  position: relative; display: flex; flex-direction: column; gap: var(--dl-space-4); }
+.st-uc-steps::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px;
+  background: var(--dl-grey-2); }
+.st-uc-steps li { position: relative; display: flex; gap: var(--dl-space-4); align-items: baseline;
+  line-height: 1.55; }
+.st-uc-steps li::before { content: ""; position: absolute; left: calc(-1 * var(--dl-space-6) + 2px);
+  top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--dl-blue); }
+.st-uc-verb { font-family: var(--dl-font-display); font-weight: 600; font-size: var(--dl-text-small);
+  min-width: 88px; }
+.st-uc-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); }
+.st-uc-out { margin-top: var(--dl-space-5); border-top: var(--dl-hairline); padding-top: var(--dl-space-5);
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--dl-space-4) var(--dl-space-5); }
+.st-uc-outline { flex-basis: 100%; font-family: var(--dl-font-display); font-size: var(--dl-text-lead);
+  font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.st-uc-human { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); color: var(--dl-grey-3); }
+.js .st-uc-panel:not(.is-active) { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .st-uc-panel.is-active .st-uc-steps li,
+  .js .st-uc-panel.is-active .st-uc-out {
+    animation: st-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 110ms + 60ms);
+  }
+}
+
+/* ===== governance as the path one request takes ===== */
+.st-trail { list-style: none; margin: var(--dl-space-7) 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(6, 1fr); gap: var(--dl-space-4); }
+.st-trail li { position: relative; padding-top: var(--dl-space-6); }
+.st-trail li::before { content: ""; position: absolute; top: 5px; left: 0; right: calc(-1 * var(--dl-space-4));
+  height: 1px; background: #2A2A30; }
+.st-trail li:last-child::before { right: 0; }
+.st-trail-dot { position: absolute; top: 0; left: 0; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--dl-ink); border: 2px solid var(--dl-blue-bright); }
+.st-trail-k { display: block; font-family: var(--dl-font-display); font-weight: 600;
+  font-size: var(--dl-text-small); letter-spacing: -0.01em; color: var(--dl-on-ink); }
+.st-trail-v { display: block; margin-top: 6px; font-size: var(--dl-text-label); line-height: 1.6;
+  color: var(--dl-on-ink-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .js .st-trail > .is-visible .st-trail-dot { animation: st-trail-pulse 0.7s ease backwards;
+    animation-delay: calc(var(--i, 0) * 110ms); }
+}
+@keyframes st-trail-pulse {
+  from { box-shadow: 0 0 0 0 rgba(61, 95, 255, 0.55); }
+  to { box-shadow: 0 0 0 10px rgba(61, 95, 255, 0); }
+}
+
+/* the estate, as categories rather than logos */
+.st-estate { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: var(--dl-space-7);
+  background: var(--dl-grey-2); border: var(--dl-hairline); }
+.st-estate-cell { position: relative; background: var(--dl-paper);
+  padding: var(--dl-space-5) var(--dl-space-5) var(--dl-space-6);
+  display: flex; flex-direction: column; gap: 6px; transition: background var(--dl-ease); }
+.st-estate-cell::after { content: ""; position: absolute; top: 0; left: 0; width: 0; height: 2px;
+  background: var(--dl-blue); transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.js [data-reveal-group] > .st-estate-cell.is-visible::after { width: 100%; }
+.st-estate-mods { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--dl-space-4); }
+.st-estate-mods span { font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.06em;
+  color: var(--dl-grey-4); background: var(--dl-grey-1); border-radius: var(--dl-radius-pill);
+  padding: 3px 9px; }
+.st-estate-cell:hover { background: var(--dl-blue-wash); }
+.st-estate-k { font-family: var(--dl-font-display); font-weight: 600; letter-spacing: -0.01em; }
+.st-estate-v { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); color: var(--dl-grey-3);
+  line-height: 1.6; }
+
+/* the audit, as a clock: the promise being made is a duration */
+.st-timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--dl-space-6);
+  list-style: none; padding: 0; margin: var(--dl-space-8) 0 0; }
+.st-timeline li { position: relative; padding-top: var(--dl-space-6); }
+.st-timeline li::before { content: ""; position: absolute; top: 5px; left: 0; right: 0; height: 1px;
+  background: var(--dl-grey-2); }
+.st-timeline li:first-child::before { left: 0; }
+.st-timeline-at { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--dl-blue); }
+.st-timeline-dot { position: absolute; top: 0; left: 0; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--dl-paper); border: 2px solid var(--dl-blue); }
+.st-timeline-title { font-family: var(--dl-font-display); font-size: var(--dl-text-lead); font-weight: 600;
+  letter-spacing: -0.01em; margin: var(--dl-space-3) 0 0; }
+.st-timeline-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); line-height: 1.6;
+  margin-top: 8px; }
+
+/* architecture: the points a systems owner checks, beside the diagram */
+.st-arch-row { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: var(--dl-space-8); align-items: center; margin-top: var(--dl-space-7); }
+.st-arch-points { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column;
+  gap: var(--dl-space-5); }
+.st-arch-points li { border-left: 2px solid var(--dl-blue); padding-left: var(--dl-space-5);
+  color: var(--dl-grey-4); line-height: 1.6; }
+.st-arch-points b { color: var(--dl-ink); font-weight: 600; }
+.st-arch path { fill: none; }
+.st-arch-perim { fill: none; stroke: var(--dl-grey-3); stroke-width: 1; stroke-dasharray: 4 4; }
+.st-arch-node { fill: var(--dl-blue); }
+.st-arch .st-fig-axis { stroke: var(--dl-grey-3); }
+.st-arch .st-arch-out { stroke: var(--dl-blue); }
+
+/* the comparison table's own column */
+.st-table thead th.st-table-ushead { background: var(--dl-blue); color: #fff; border-color: var(--dl-blue); }
+.st-table-us { background: var(--dl-blue-wash); color: var(--dl-ink) !important;
+  border-left: 1px solid var(--dl-blue) !important; border-right: 1px solid var(--dl-blue) !important; }
+.st-table tbody tr:last-child .st-table-us { border-bottom: 1px solid var(--dl-blue) !important; }
+.st-table-us::before { content: "✓"; color: var(--dl-blue); margin-right: 8px; font-family: var(--dl-font-body); }
+.st-table tbody tr { transition: background var(--dl-ease); }
+.st-table tbody tr:hover { background: var(--dl-grey-1); }
+.st-table tbody tr:hover .st-table-us { background: #E4EAFD; }
+
+/* what starting costs them */
+.st-need { border-top: 2px solid var(--dl-ink); padding-top: var(--dl-space-4); }
+.st-need-k { font-family: var(--dl-font-display); font-size: var(--dl-text-h3); font-weight: 700;
+  letter-spacing: -0.02em; display: block; }
+.st-need-v { color: var(--dl-grey-4); font-size: var(--dl-text-small); line-height: 1.6;
+  margin-top: var(--dl-space-3); }
+
+/* governance, said in chips rather than paragraphs */
+.st-govchips { display: flex; flex-wrap: wrap; gap: var(--dl-space-3); list-style: none; padding: 0;
+  margin: var(--dl-space-6) 0 0; max-width: 720px; }
+.st-govchips .dl-badge { background: var(--dl-rail-surface); color: var(--dl-on-ink);
+  font-size: var(--dl-text-small); padding: 9px 16px; }
+
+@media (max-width: 1000px) {
+  .st-bankhero-in, .st-arch-row, .st-uc { grid-template-columns: 1fr; gap: var(--dl-space-7); }
+  .st-uc-tabs { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  .st-uc-tab { flex: 1 1 240px; border-left: 0; border-bottom: 2px solid var(--dl-grey-2); }
+  .st-uc-tab.is-active { border-left: 0; border-bottom-color: var(--dl-blue); }
+  .st-trail { grid-template-columns: repeat(2, 1fr); gap: var(--dl-space-5); }
+  .st-trail li::before { right: calc(-1 * var(--dl-space-5)); }
+  .st-estate { grid-template-columns: repeat(2, 1fr); }
+  .st-timeline { grid-template-columns: repeat(2, 1fr); gap: var(--dl-space-7); }
+}
+@media (max-width: 860px) {
+  .st-board { grid-template-columns: 1fr; gap: var(--dl-space-6); }
+  .st-wires { display: none; }
+  .st-board-col--right .st-col-label { text-align: left; }
+  .st-board-col--right .st-node { flex-direction: row; text-align: left; }
+  .st-board-col--right .st-node .dl-badge { margin-left: auto; margin-right: 0; }
+  .st-estate { grid-template-columns: 1fr; }
+  .st-timeline { grid-template-columns: 1fr; }
+}
+/* below this width the 3D scene never mounts, so the figure sizes itself and
+   the caption drops the half of itself that would no longer be true */
+@media (max-width: 720px) {
+  .st-bankgraph, .st-bankgraph .dm-g3 { min-height: 0; height: auto; }
+  .st-wideonly { display: none; }
+}
+}
 
 /* ===== the console shot — the demo itself, laid out at operator width
    and scaled into the column. demo.css ships with the site stylesheet,

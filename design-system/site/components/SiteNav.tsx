@@ -7,6 +7,7 @@ export interface SiteNavProps {
 
 const LINKS = [
   { slug: 'platform', label: 'Platform', href: './platform.html' },
+  { slug: 'banking', label: 'Banking', href: './banking.html' },
   { slug: 'demo', label: 'Demo', href: './demo/' },
   { slug: 'pricing', label: 'Pricing', href: './pricing.html' },
   { slug: 'company', label: 'Company', href: './company.html' },
