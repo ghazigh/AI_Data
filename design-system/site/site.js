@@ -87,7 +87,7 @@
     document.body.appendChild(rail)
     // it belongs to the page's sections, not to the hero it would otherwise
     // sit on top of, so it only appears once the hero is behind you
-    var hero = document.querySelector('.dl-hero')
+    var hero = document.querySelector('.dl-hero, .st-intro')
     if (hero && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
         rail.classList.toggle('is-ready', !entries[0].isIntersecting)

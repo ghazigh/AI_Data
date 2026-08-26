@@ -41,7 +41,7 @@ export function Company() {
         lead="Enterprises are deploying AI agents faster than their data can support them. Datalith exists to close that gap — to be the layer between the enterprise data estate and the agent workforce. We call the category the Agentic Data Center."
       />
 
-      <section className="st-section st-section--tight">
+      <section className="st-section st-section--tight" id="mission" data-rail="Mission">
         <div className="dl-wrap">
           <SectionLabel>The mission</SectionLabel>
           <h2 className="dl-h2">Make every enterprise&rsquo;s data ready for its agents.</h2>
@@ -60,7 +60,7 @@ export function Company() {
 
       {/* roadmap */}
       {/* the knowledge graph */}
-      <section id="graph" className="st-section st-section--rule">
+      <section id="graph" data-rail="The graph" className="st-section st-section--rule">
         <div className="dl-wrap">
           <SectionLabel>The knowledge graph</SectionLabel>
           <h2 className="dl-h2">One customer. One record. Across every system.</h2>
@@ -92,7 +92,7 @@ export function Company() {
         </div>
       </section>
 
-      <section className="st-section st-section--rule" id="roadmap">
+      <section className="st-section st-section--rule" id="roadmap" data-rail="Roadmap">
         <div className="dl-wrap">
           <SectionLabel>Roadmap</SectionLabel>
           <h2 className="dl-h2">Audit. Graph. Platform.</h2>
@@ -111,7 +111,7 @@ export function Company() {
       </section>
 
       {/* team */}
-      <section className="st-section" id="team">
+      <section className="st-section" id="team" data-rail="Team">
         <div className="dl-wrap">
           <SectionLabel>The team</SectionLabel>
           <h2 className="dl-h2">Built by people who lived the grounding pain.</h2>
@@ -139,7 +139,7 @@ export function Company() {
         />
       </div>
 
-      <div id="audit">
+      <div id="audit" data-rail="Audit">
         <CTABand
           headline="Join us early."
           lead="Design partners get the audit, the graph, and a direct line to the roadmap."

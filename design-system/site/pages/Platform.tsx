@@ -124,7 +124,7 @@ export function Platform() {
       </PageIntro>
 
       {/* command dashboard — the product, before the explanation */}
-      <section className="st-section st-section--tight" id="dashboard">
+      <section className="st-section st-section--tight" id="dashboard" data-rail="Console">
         <div className="dl-wrap">
           <SectionLabel>Command</SectionLabel>
           <h2 className="dl-h2">Built for the CDO&rsquo;s Monday meeting.</h2>
@@ -147,7 +147,7 @@ export function Platform() {
       {/* module deep-dives */}
       <section className="st-modules">
         {STAGES.map((m, i) => (
-          <article className={`st-module${i % 2 ? ' st-module--flip' : ''}`} id={m.id} key={m.id}>
+          <article className={`st-module${i % 2 ? ' st-module--flip' : ''}`} id={m.id} data-rail={m.name} key={m.id}>
             <div className="dl-wrap st-module-in" data-reveal>
               <div className="st-module-copy">
                 <span className="dl-featuregrid-label">{m.num} · {m.name}</span>
@@ -173,7 +173,7 @@ export function Platform() {
       </div>
 
       {/* security */}
-      <section className="dl-on-ink st-section" id="security">
+      <section className="dl-on-ink st-section" id="security" data-rail="Trust">
         <div className="dl-wrap">
           <SectionLabel>Trust</SectionLabel>
           <h2 className="dl-h2">Read-only in. Governed out. Audited always.</h2>
@@ -214,7 +214,7 @@ export function Platform() {
         />
       </div>
 
-      <div id="audit">
+      <div id="audit" data-rail="Audit">
         <CTABand
           headline="Start with the free audit."
           lead="25 connectors at launch, the Agent-Readiness Score, and your estate map — from read-only credentials to board-ready readout in 48 hours."

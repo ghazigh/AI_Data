@@ -95,14 +95,14 @@ export function Home() {
       </section>
 
       <StageSection
-        id="connect" num="01" name="Connect"
+        id="connect" rail="Connect" num="01" name="Connect"
         title="Plugs into every database you run."
         lead="Warehouses, OLTP databases, SaaS apps, object stores, streams — connected with scoped read-only credentials, in an afternoon."
         value="No migration and no engineering project. Nothing is ever written back to your systems."
         figure={<ConnectFigure />}
       />
       <StageSection
-        id="ready" num="02" name="Ready" flip
+        id="ready" rail="Ready" num="02" name="Ready" flip
         title="Scores how ready your data is for agents."
         lead="Every source and every business domain gets an Agent-Readiness Score out of 100 — coverage, definitions, governance, freshness — and Datalith keeps watching it after the first pass."
         value="Continuous monitoring, not a one-off audit. You see readiness move as your estate changes."
@@ -110,21 +110,21 @@ export function Home() {
         figure={<ReadyFigure />}
       />
       <StageSection
-        id="pipelines" num="03" name="Pipelines"
+        id="pipelines" rail="Pipelines" num="03" name="Pipelines"
         title="Runs pipelines that turn any data modality into agent-ready data."
         lead="One pipeline per modality: documents, images, tables, email, tickets, transcripts, streams. Each runs the best extraction stack for its format and lands the same output — typed records, resolved entities, citations back to the source."
         value="Built for your data as it is, not a generic template someone else's estate needed."
         figure={<PipelineFigure />}
       />
       <StageSection
-        id="graph" num="04" name="Graph" flip
+        id="graph" rail="Graph" num="04" name="Graph" flip
         title="Builds one map of your whole business."
         lead="Every system resolved into a single knowledge graph, with the topics, domains and pockets of expertise inside it detected and named — so each becomes a knowledge base in its own right."
         value="Knowledge bases any agentic AI can read, whatever framework you build on."
         figure={<GraphStageFigure />}
       />
       <StageSection
-        id="search" num="05" name="Search"
+        id="search" rail="Search" num="05" name="Search"
         title="A search engine for the data itself."
         lead="Ask whether the company holds anything on a subject and the agent searches your estate rather than your records — every table, document store and stream — and answers with the datasets that carry it: where each one lives, how large, how fresh, who owns it, and how ready it is."
         value="Then attach one as your reference and ask about its contents. Datalith builds the retrieval against that dataset on the fly, anchored to the graph, so the answer stays inside the data you chose."
@@ -132,7 +132,7 @@ export function Home() {
         figure={<SearchFigure />}
       />
       <StageSection
-        id="usecases" num="06" name="Use cases" flip
+        id="usecases" rail="Use cases" num="06" name="Use cases" flip
         title="Tells you which agents are worth building."
         lead="Datalith reads the graph and proposes the agentic applications your data actually supports — what each one would need, and what it would be worth."
         value="You find out what to build before you spend a quarter building it."
@@ -145,7 +145,7 @@ export function Home() {
         <TextLink href="./banking.html">or see what this looks like in a bank</TextLink>
       </div>
 
-      <section id="security" className="st-section st-section--rule">
+      <section id="security" data-rail="Security" className="st-section st-section--rule">
         <div className="dl-wrap">
           <SectionLabel>Security</SectionLabel>
           <h2 className="dl-h2">Enterprise-grade from the first connection.</h2>
@@ -254,7 +254,7 @@ export function Home() {
         </div>
       </section>
 
-      <section id="cost" className="st-section st-section--rule">
+      <section id="cost" data-rail="Pricing" className="st-section st-section--rule">
         <div className="dl-wrap">
           <SectionLabel>What it costs</SectionLabel>
           <h2 className="dl-h2">Start free. Pay when the graph goes live.</h2>
@@ -278,7 +278,7 @@ export function Home() {
 
       <div data-reveal><FAQ /></div>
 
-      <div id="audit">
+      <div id="audit" data-rail="Audit">
         <CTABand
           headline="See what your data is capable of."
           lead="Read-only credentials in. Board-ready Agent-Readiness Score out. 48 hours."

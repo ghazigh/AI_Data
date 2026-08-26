@@ -13,15 +13,17 @@ export interface StageSectionProps {
   note?: string
   /** Odd stages put the figure on the left so the six sections alternate. */
   flip?: boolean
+  /** Short label for the section rail; omitted keeps the stage off it. */
+  rail?: string
 }
 
 /**
  * One platform stage, full width. Copy on one side, its figure on the other,
  * alternating down the page so six consecutive sections don't read as a list.
  */
-export function StageSection({ id, num, name, title, lead, value, figure, flip, note }: StageSectionProps) {
+export function StageSection({ id, num, name, title, lead, value, figure, flip, note, rail }: StageSectionProps) {
   return (
-    <section id={id} className={`st-stage${flip ? ' st-stage--flip' : ''}`}>
+    <section id={id} data-rail={rail} className={`st-stage${flip ? ' st-stage--flip' : ''}`}>
       <div className="dl-wrap st-stage-in" data-reveal>
         <div className="st-stage-copy">
           <SectionLabel>{`Stage ${num} · ${name}`}</SectionLabel>

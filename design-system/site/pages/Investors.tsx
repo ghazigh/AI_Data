@@ -51,7 +51,7 @@ export function Investors() {
 
       <div data-reveal><StatBand /></div>
 
-      <section className="st-section" id="why-now">
+      <section className="st-section" id="why-now" data-rail="Why now">
         <div className="dl-wrap">
           <SectionLabel>Why now</SectionLabel>
           <h2 className="dl-h2">Three curves, crossing.</h2>
@@ -64,7 +64,7 @@ export function Investors() {
       </section>
 
       {/* market */}
-      <section className="st-section st-section--rule" id="market">
+      <section className="st-section st-section--rule" id="market" data-rail="Market">
         <div className="dl-wrap">
           <SectionLabel>Market</SectionLabel>
           <h2 className="dl-h2">A category being born, with comps attached.</h2>
@@ -89,7 +89,7 @@ export function Investors() {
       </section>
 
       {/* positioning */}
-      <section className="st-section" id="positioning">
+      <section className="st-section" id="positioning" data-rail="Position">
         <div className="dl-wrap">
           <SectionLabel>Competition</SectionLabel>
           <h2 className="dl-h2">Nobody serves the whole estate to agents.</h2>
@@ -114,7 +114,7 @@ export function Investors() {
       </section>
 
       {/* business model */}
-      <section className="st-section st-section--rule" id="model">
+      <section className="st-section st-section--rule" id="model" data-rail="Model">
         <div className="dl-wrap">
           <SectionLabel>Business model</SectionLabel>
           <h2 className="dl-h2">Free audit in. NRR ≥130% out.</h2>
@@ -142,7 +142,7 @@ export function Investors() {
       </section>
 
       {/* the ask */}
-      <section className="dl-on-ink st-section" id="ask">
+      <section className="dl-on-ink st-section" id="ask" data-rail="The ask">
         <div className="dl-wrap">
           <SectionLabel>The ask</SectionLabel>
           <h2 className="dl-h2">$4.0M seed · 18–20 months of runway.</h2>
@@ -170,7 +170,7 @@ export function Investors() {
         <FAQ label="Objection prep" title="The questions we hope you ask." items={OBJECTIONS} />
       </div>
 
-      <div id="audit">
+      <div id="audit" data-rail="Audit">
         <CTABand
           withFigure={false}
           headline="The deck is ready. So are we."

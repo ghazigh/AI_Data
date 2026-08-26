@@ -69,11 +69,11 @@ export function Pricing() {
         lead="Free to see your score. Paid when the graph goes live. Priced on usage — sources, entities, agent calls — so our growth is indexed to your agents actually working."
       />
 
-      <div data-reveal>
+      <div data-reveal id="plans" data-rail="Plans">
         <PricingTable label="Plans" title="" tiers={TIERS} />
       </div>
 
-      <section className="st-section st-section--rule" id="whats-included">
+      <section className="st-section st-section--rule" id="whats-included" data-rail="What's in">
         <div className="dl-wrap">
           <SectionLabel>What&rsquo;s included</SectionLabel>
           <h2 className="dl-h2">What each plan includes.</h2>
@@ -109,7 +109,7 @@ export function Pricing() {
         </div>
       </section>
 
-      <section className="st-section st-section--rule" id="meters">
+      <section className="st-section st-section--rule" id="meters" data-rail="Meters">
         <div className="dl-wrap">
           <SectionLabel>Usage meters</SectionLabel>
           <h2 className="dl-h2">Three meters. No seats.</h2>
@@ -130,15 +130,15 @@ export function Pricing() {
         </div>
       </section>
 
-      <div data-reveal>
+      <div data-reveal id="motion" data-rail="Motion">
         <Steps label="The motion" title="Land. Convert. Expand." steps={MOTION} />
       </div>
 
-      <div data-reveal>
+      <div data-reveal id="questions" data-rail="Questions">
         <FAQ label="Pricing questions" title="The fine print, out loud." items={PRICING_FAQ} />
       </div>
 
-      <div id="audit">
+      <div id="audit" data-rail="Audit">
         <CTABand
           headline="Your score is free."
           lead="Read-only credentials in. Board-ready Agent-Readiness Score out. 48 hours."
