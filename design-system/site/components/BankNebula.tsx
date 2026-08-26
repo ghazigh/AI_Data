@@ -1,9 +1,8 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei/web/Html'
-import { OrbitControls } from '@react-three/drei/core/OrbitControls'
 import {
-  BufferGeometry, CanvasTexture, Color, Float32BufferAttribute, Points, Group, Vector3,
+  BufferGeometry, CanvasTexture, Color, Float32BufferAttribute, Points, Group, Quaternion, Vector3,
 } from 'three'
 import { BANK_DOMAIN_NAMES, BANK_DOMAIN_ENTITIES, BANK_NODES, type BankDomain } from '../data/bank-graph'
 
@@ -122,7 +121,22 @@ function useGlowTexture() {
   }, [])
 }
 
-function Nebula() {
+/** What the pointer is doing, shared between the DOM handlers and the frame
+ *  loop. A plain mutable object rather than state: it changes every frame. */
+export interface Spin {
+  /** Where the drag wants the scene, and where it currently is. */
+  wantY: number; wantX: number; y: number; x: number
+  /** Camera distance, and where zoom wants it. */
+  dist: number; wantDist: number
+  dragging: boolean
+  /** Auto-rotation stays off for a moment after a drag, so the drag reads as control. */
+  idleAt: number
+  reduced: boolean
+}
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi)
+
+function Nebula({ spin }: { spin: Spin }) {
   const group = useRef<Group>(null)
   const cloud = useRef<Points>(null)
   const geo = useCloud(1400)
@@ -130,8 +144,24 @@ function Nebula() {
   const [active, setActive] = useState<BankDomain | null>(null)
   const labels = useRef<Record<string, HTMLSpanElement | null>>({})
   const probe = useMemo(() => new Vector3(), [])
+  const probeQuat = useMemo(() => new Quaternion(), [])
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera, clock }, dt) => {
+    /* Rotation is driven here rather than by a controls library: the drag is the
+       point of this figure, and it must not depend on another component's view
+       of which element owns the pointer. */
+    const idle = !spin.dragging && clock.elapsedTime > spin.idleAt
+    if (idle && !spin.reduced) spin.wantY += dt * 0.1
+    spin.y += (spin.wantY - spin.y) * 0.12
+    spin.x += (spin.wantX - spin.x) * 0.12
+    spin.dist += (spin.wantDist - spin.dist) * 0.12
+    if (group.current) {
+      group.current.rotation.y = spin.y
+      group.current.rotation.x = spin.x
+    }
+    camera.position.set(0, 1.5, spin.dist)
+    camera.lookAt(0, 0, 0)
+
     /* The clouds sit still and the camera goes around them, so two knowledge
        bases can land on top of each other in projection. Depth decides which
        one is legible: the far label recedes rather than fighting the near one. */
@@ -139,7 +169,10 @@ function Nebula() {
       const el = labels.current[d]
       if (!el) return
       const c = centroid(i, DOMAINS.length)
-      const near = probe.set(c[0], c[1], c[2]).distanceTo(camera.position)
+      // the clouds turn with the group now, so depth has to be measured there
+      const near = probe.set(c[0], c[1], c[2])
+        .applyQuaternion(group.current?.quaternion ?? probeQuat)
+        .distanceTo(camera.position)
       const t = Math.min(Math.max((near - 16) / 11, 0), 1)
       el.style.opacity = String(1 - t * 0.45)
       el.style.zIndex = String(100 - Math.round(near))
@@ -202,15 +235,53 @@ export function BankNebula() {
   const reduced = typeof matchMedia === 'function'
     && matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  const spin = useMemo<Spin>(() => ({
+    wantY: 0, wantX: 0, y: 0, x: 0, dist: 21, wantDist: 21, dragging: false, idleAt: 0, reduced,
+  }), [reduced])
+  const last = useRef({ x: 0, y: 0 })
+  const [held, setHeld] = useState(false)
+
+  const onDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    spin.dragging = true
+    last.current = { x: e.clientX, y: e.clientY }
+    setHeld(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const onMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!spin.dragging) return
+    spin.wantY += (e.clientX - last.current.x) * 0.007
+    spin.wantX = clamp(spin.wantX + (e.clientY - last.current.y) * 0.005, -0.65, 0.65)
+    last.current = { x: e.clientX, y: e.clientY }
+  }
+  const onUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!spin.dragging) return
+    spin.dragging = false
+    // a pause before it drifts again, so letting go does not feel like being overruled
+    spin.idleAt = performance.now() / 1000 + 2.5
+    setHeld(false)
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+  }
+  /* Zoom is two buttons rather than the wheel: a hero that swallows scroll to
+     zoom is a hero you cannot scroll past. */
+  const zoom = (by: number) => { spin.wantDist = clamp(spin.wantDist + by, 12, 30) }
+
   return (
-    <div className="st-neb" role="img" aria-label={SUMMARY}>
-      <Canvas
-        dpr={[1, 1.75]}
-        camera={{ position: [0, 1.5, 21], fov: 46 }}
-        gl={{ antialias: true, alpha: true }}
+    <div className="st-neb" role="img" aria-label={`${SUMMARY} Drag to rotate.`}>
+      <div
+        className={`st-neb-stage${held ? ' is-held' : ''}`}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
       >
-        <Nebula />
-      </Canvas>
+        <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 21], fov: 46 }} gl={{ antialias: true, alpha: true }}>
+          <Nebula spin={spin} />
+        </Canvas>
+      </div>
+      <div className="st-neb-zoom">
+        <button type="button" onClick={() => zoom(-3)} aria-label="Zoom in">+</button>
+        <button type="button" onClick={() => zoom(3)} aria-label="Zoom out">&minus;</button>
+      </div>
     </div>
   )
 }

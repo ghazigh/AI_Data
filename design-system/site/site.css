@@ -287,8 +287,14 @@
 .st-bankgraph { flex: 1; min-height: 440px; position: relative; display: flex; }
 .st-bankgraph > * { flex: 1; }
 .st-neb { position: absolute; inset: 0; }
-.st-neb canvas { display: block; touch-action: pan-y; cursor: grab; }
-.st-neb canvas:active { cursor: grabbing; }
+.st-neb-stage { position: absolute; inset: 0; cursor: grab; touch-action: pan-y; }
+.st-neb-stage.is-held { cursor: grabbing; }
+.st-neb canvas { display: block; }
+.st-neb-zoom { position: absolute; right: 0; bottom: 0; display: flex; gap: 4px; }
+.st-neb-zoom button { width: 30px; height: 30px; border: var(--dl-hairline); background: var(--dl-paper);
+  font-family: var(--dl-font-mono); font-size: 14px; line-height: 1; color: var(--dl-grey-4);
+  cursor: pointer; transition: color var(--dl-ease), border-color var(--dl-ease); }
+.st-neb-zoom button:hover { color: var(--dl-blue); border-color: var(--dl-blue); }
 .st-neb-label { display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
   /* the whole canvas has to stay grabbable: a label must never take the drag */
   pointer-events: none;
