@@ -898,9 +898,16 @@
 /* below this width the 3D scene never mounts, so the figure sizes itself and
    the caption drops the half of itself that would no longer be true */
 @media (max-width: 900px) {
-  .st-bankhero-scene { position: static; height: 300px; -webkit-mask-image: none; mask-image: none; }
+  /* the scene never mounts this narrow, so the figure comes back into the flow —
+     under the copy, where a figure belongs, rather than above it */
+  .st-bankhero { display: flex; flex-direction: column; }
+  .st-bankhero .st-hero-anim { order: 1; }
+  .st-bankhero-scene { order: 2; position: static; height: 280px;
+    -webkit-mask-image: none; mask-image: none; }
+  .st-bankhero-scene .dl-confluence { opacity: 1; padding: 0 var(--dl-space-5); }
+  .st-figcaption { order: 3; text-align: left; padding-top: var(--dl-space-5); }
   .st-bankhero .dl-hero-grid { min-height: 0; }
-  .st-figcaption { text-align: left; }
+  .st-neb-zoom { display: none; }
 }
 @media (max-width: 720px) { .st-wideonly { display: none; } }
 }

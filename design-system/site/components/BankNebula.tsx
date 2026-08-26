@@ -51,7 +51,7 @@ const centroid = (i: number, n: number): [number, number, number] => {
   const golden = Math.PI * (3 - Math.sqrt(5))
   const y = n <= 1 ? 0 : 1 - (i / (n - 1)) * 2
   const r = Math.sqrt(Math.max(0, 1 - y * y))
-  return [Math.cos(golden * i + 0.6) * r * 10.5, y * 2.7, Math.sin(golden * i + 0.6) * r * 10.5]
+  return [Math.cos(golden * i + 0.6) * r * 9.2, y * 2.7, Math.sin(golden * i + 0.6) * r * 9.2]
 }
 
 const PALETTE = {
@@ -92,7 +92,7 @@ function useCloud(pointsPerBase: number) {
     const far = rng('estate-field')
     for (let k = 0; k < pointsPerBase; k++) {
       const a = far() * Math.PI * 2
-      const rad = 12 + far() * 9
+      const rad = 10.5 + far() * 8
       pos.push(Math.cos(a) * rad, (far() - 0.5) * 7, Math.sin(a) * rad)
       col.push(PALETTE.dust.r, PALETTE.dust.g, PALETTE.dust.b)
     }
@@ -166,8 +166,9 @@ function Nebula({ spin }: { spin: Spin }) {
   const labels = useRef<Record<string, HTMLSpanElement | null>>({})
   const probe = useMemo(() => new Vector3(), [])
   const probeQuat = useMemo(() => new Quaternion(), [])
+  const probeZero = useMemo(() => new Vector3(), [])
 
-  useFrame(({ camera, clock }, dt) => {
+  useFrame(({ camera, clock, viewport }, dt) => {
     /* Rotation is driven here rather than by a controls library: the drag is the
        point of this figure, and it must not depend on another component's view
        of which element owns the pointer. */
@@ -180,6 +181,11 @@ function Nebula({ spin }: { spin: Spin }) {
       group.current.rotation.y = spin.y
       group.current.rotation.x = spin.x
       group.current.scale.setScalar(spin.dist)
+      /* The copy owns the left of the hero, so the estate sits to the right of
+         it and only its outskirts drift behind the type. Kept in world units off
+         the viewport, so the offset holds at any width; a narrow canvas — the
+         phone layout, where this is a figure of its own — centres instead. */
+      group.current.position.x = viewport.aspect > 1.4 ? viewport.width * 0.12 : 0
     }
 
 
@@ -193,6 +199,7 @@ function Nebula({ spin }: { spin: Spin }) {
       // the clouds turn with the group now, so depth has to be measured there
       const near = probe.set(c[0], c[1], c[2])
         .applyQuaternion(group.current?.quaternion ?? probeQuat)
+        .add(group.current?.position ?? probeZero)
         .distanceTo(camera.position)
       const t = Math.min(Math.max((near - 16) / 11, 0), 1)
       el.style.opacity = String(1 - t * 0.45)
