@@ -267,7 +267,7 @@ export function BankNebula() {
     && matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const spin = useMemo<Spin>(() => ({
-    wantY: 0, wantX: 0, y: 0, x: 0, dist: 1, wantDist: 1, dragging: false, idleAt: 0, reduced,
+    wantY: 0, wantX: 0, y: 0, x: 0, dist: 0.78, wantDist: 0.78, dragging: false, idleAt: 0, reduced,
   }), [reduced])
   const last = useRef({ x: 0, y: 0 })
   const [held, setHeld] = useState(false)
