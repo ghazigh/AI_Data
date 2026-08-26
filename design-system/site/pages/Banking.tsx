@@ -83,32 +83,32 @@ export function Banking() {
     <div className="dl-root">
       <SiteNav current="banking" />
 
-      {/* hero: the same component and margins as the home page, with the estate
-          drawn as a nebula where the confluence figure normally sits */}
-      <div className="st-hero-anim">
-        <Hero
-          headline={'AI agents your bank'}
-          accent="can run in production."
-          lead="Datalith connects every system read-only, scores what your agents can use, and builds the governed graph they read from."
-          primaryCta={{ label: 'Get the 48-hour audit', href: '#audit' }}
-          tertiaryCta={{ label: 'Explore the product', href: './demo/' }}
-          note="Read-only credentials · no migration · your perimeter"
-          figure={
-            <div className="st-bankfig">
-              <div className="st-graph-live st-bankgraph" data-graph-island="bank">
-                <ConfluenceFigure
-                  sources={['core banking', 'cards & payments', 'lending', 'crm & cases', 'documents', 'market data']}
-                  mergedLabel="ONE GRAPH" height={420}
-                />
-              </div>
-              <p className="st-figcaption">
-                <span className="st-wideonly">Live scene · drag to rotate · </span>
-                Illustrative estate · 5 knowledge bases · <span data-countup="4.97" data-decimals="2" data-suffix="M">4.97M</span> entities
-              </p>
-            </div>
-          }
-        />
-      </div>
+      {/* hero: the estate spans the whole section and runs behind the copy.
+          The Hero component still sets the margins, so they stay the home
+          page's; the scene is a layer under it rather than a column beside it. */}
+      <section className="st-bankhero">
+        <div className="st-bankhero-scene" data-graph-island="bank">
+          <ConfluenceFigure
+            sources={['core banking', 'cards & payments', 'lending', 'crm & cases', 'documents', 'market data']}
+            mergedLabel="ONE GRAPH" height={420}
+          />
+        </div>
+        <div className="st-hero-anim">
+          <Hero
+            headline={'AI agents your bank'}
+            accent="can run in production."
+            lead="Datalith connects every system read-only, scores what your agents can use, and builds the governed graph they read from."
+            primaryCta={{ label: 'Get the 48-hour audit', href: '#audit' }}
+            tertiaryCta={{ label: 'Explore the product', href: './demo/' }}
+            note="Read-only credentials · no migration · your perimeter"
+            figure={null}
+          />
+        </div>
+        <p className="st-figcaption">
+          <span className="st-wideonly">Live scene · drag to rotate · </span>
+          Illustrative estate · 5 knowledge bases · <span data-countup="4.97" data-decimals="2" data-suffix="M">4.97M</span> entities
+        </p>
+      </section>
 
       {/* what an agent actually does, before any claim about it */}
       <section className="st-section st-section--rule" id="use-cases" data-rail="Use cases">

@@ -35,10 +35,12 @@ test('every st-* class the site uses is styled in site.css', () => {
   const used = new Map<string, string>()
   for (const file of sources('site').filter(f => COVERED.test(f))) {
     const text = readFileSync(file, 'utf8')
-    for (const m of text.matchAll(/(?:className=["'`{]|class(?:Name)?\s*=\s*["'])([^"'`}]*)/g)) {
-      for (const cls of m[1].split(/[\s{}$`]+/)) {
-        if (cls.startsWith('st-') && !used.has(cls)) used.set(cls, file)
-      }
+    // every st- token anywhere in the file: classNames are written as plain
+    // strings, as template literals with an interpolated modifier, and as
+    // strings inside site.js — a narrower pattern misses one of those and the
+    // guard silently stops covering it
+    for (const m of text.matchAll(/['"`\s]((?:st-[a-z0-9-]+))/g)) {
+      if (!used.has(m[1])) used.set(m[1], file)
     }
   }
   expect(used.size).toBeGreaterThan(20)

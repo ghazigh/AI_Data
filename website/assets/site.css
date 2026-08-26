@@ -668,18 +668,33 @@
    above the fold, which is what lets a point cloud read as light rather than as
    grey dust; the static figure behind it uses the same on-ink variant, so a
    browser without WebGL keeps a figure that belongs on the same panel. ===== */
-.st-bankfig { display: flex; flex-direction: column; flex: 1; }
-.st-bankgraph { flex: 1; min-height: 440px; position: relative; display: flex; }
-.st-bankgraph > * { flex: 1; }
+/* ===== hero: the estate runs under the whole section, the copy sits on it.
+   The scene layer takes the pointer so it can be dragged anywhere, which means
+   the copy above it must not swallow the gesture — only its own controls do.
+   A mask thins the cloud behind the headline so the type keeps its contrast. ===== */
+.st-bankhero { position: relative; }
+/* The hero section paints an opaque --dl-canvas background of its own. Over a
+   scene layer that is the whole point of the section, that background is what
+   the visitor sees instead of the estate — so here the section is glass and the
+   page's own background shows through. */
+.st-bankhero .dl-hero { background: transparent; }
+.st-bankhero-scene { position: absolute; inset: 0; }
+.st-bankhero-scene .dl-confluence { height: 100% !important; padding: var(--dl-space-8); opacity: 0.6; }
+@supports (mask-image: linear-gradient(#000, #000)) or (-webkit-mask-image: linear-gradient(#000, #000)) {
+  .st-bankhero-scene {
+    -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0.55) 50%, #000 72%);
+    mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0.55) 50%, #000 72%);
+  }
+}
+.st-bankhero .st-hero-anim { position: relative; z-index: 1; pointer-events: none; }
+.st-bankhero .dl-btn, .st-bankhero a { pointer-events: auto; }
+.st-bankhero .dl-hero-grid { min-height: 520px; }
 .st-neb { position: absolute; inset: 0; }
 .st-neb-stage { position: absolute; inset: 0; cursor: grab; touch-action: pan-y; }
 .st-neb-stage.is-held { cursor: grabbing; }
 .st-neb canvas { display: block; }
-.st-neb-zoom { position: absolute; right: 0; bottom: 0; display: flex; gap: 4px; }
-.st-neb-zoom button { width: 30px; height: 30px; border: var(--dl-hairline); background: var(--dl-paper);
-  font-family: var(--dl-font-mono); font-size: 14px; line-height: 1; color: var(--dl-grey-4);
-  cursor: pointer; transition: color var(--dl-ease), border-color var(--dl-ease); }
-.st-neb-zoom button:hover { color: var(--dl-blue); border-color: var(--dl-blue); }
 .st-neb-label { display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
   /* the whole canvas has to stay grabbable: a label must never take the drag */
   pointer-events: none;
@@ -692,8 +707,15 @@
   color: var(--dl-grey-3); }
 .st-neb-label.is-on { background: var(--dl-blue-wash); border-color: var(--dl-blue);
   transform: scale(1.06); }
-.st-figcaption { font-family: var(--dl-font-mono); font-size: var(--dl-text-label);
-  color: var(--dl-grey-3); margin-top: var(--dl-space-4); text-align: center; }
+.st-neb-zoom { position: absolute; right: clamp(28px, 4.5vw, 88px); bottom: 46px; z-index: 3;
+  display: flex; gap: 4px; }
+.st-neb-zoom button { width: 30px; height: 30px; border: var(--dl-hairline); background: var(--dl-paper);
+  font-family: var(--dl-font-mono); font-size: 14px; line-height: 1; color: var(--dl-grey-4);
+  cursor: pointer; transition: color var(--dl-ease), border-color var(--dl-ease); }
+.st-neb-zoom button:hover { color: var(--dl-blue); border-color: var(--dl-blue); }
+.st-figcaption { position: relative; z-index: 1; pointer-events: none; font-family: var(--dl-font-mono);
+  font-size: var(--dl-text-label); color: var(--dl-grey-3); text-align: right;
+  padding: 0 clamp(28px, 4.5vw, 88px) var(--dl-space-6); margin: 0; }
 
 /* ===== section rail: where you are in the page, and a way to skip ahead ===== */
 .st-rail { position: fixed; right: clamp(14px, 2vw, 30px); top: 50%; transform: translateY(-50%);
@@ -875,10 +897,12 @@
 }
 /* below this width the 3D scene never mounts, so the figure sizes itself and
    the caption drops the half of itself that would no longer be true */
-@media (max-width: 720px) {
-  .st-bankgraph { min-height: 320px; }
-  .st-wideonly { display: none; }
+@media (max-width: 900px) {
+  .st-bankhero-scene { position: static; height: 300px; -webkit-mask-image: none; mask-image: none; }
+  .st-bankhero .dl-hero-grid { min-height: 0; }
+  .st-figcaption { text-align: left; }
 }
+@media (max-width: 720px) { .st-wideonly { display: none; } }
 }
 
 /* ===== the console shot — the demo itself, laid out at operator width

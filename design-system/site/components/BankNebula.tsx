@@ -51,7 +51,7 @@ const centroid = (i: number, n: number): [number, number, number] => {
   const golden = Math.PI * (3 - Math.sqrt(5))
   const y = n <= 1 ? 0 : 1 - (i / (n - 1)) * 2
   const r = Math.sqrt(Math.max(0, 1 - y * y))
-  return [Math.cos(golden * i + 0.6) * r * 8.8, y * 2.9, Math.sin(golden * i + 0.6) * r * 8.8]
+  return [Math.cos(golden * i + 0.6) * r * 10.5, y * 2.7, Math.sin(golden * i + 0.6) * r * 10.5]
 }
 
 const PALETTE = {
@@ -92,7 +92,7 @@ function useCloud(pointsPerBase: number) {
     const far = rng('estate-field')
     for (let k = 0; k < pointsPerBase; k++) {
       const a = far() * Math.PI * 2
-      const rad = 9.5 + far() * 7
+      const rad = 12 + far() * 9
       pos.push(Math.cos(a) * rad, (far() - 0.5) * 7, Math.sin(a) * rad)
       col.push(PALETTE.dust.r, PALETTE.dust.g, PALETTE.dust.b)
     }
@@ -102,6 +102,26 @@ function useCloud(pointsPerBase: number) {
     geo.setAttribute('color', new Float32BufferAttribute(col, 3))
     return geo
   }, [pointsPerBase])
+}
+
+/** A filled disc with a feathered edge, drawn once and shared by every point.
+ *  Without it gl.POINTS renders squares, which read as pixels rather than as
+ *  entities. */
+function useDiscTexture() {
+  return useMemo(() => {
+    const size = 64
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = size
+    const ctx = canvas.getContext('2d')!
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2)
+    g.addColorStop(0, 'rgba(255,255,255,1)')
+    g.addColorStop(0.78, 'rgba(255,255,255,1)')
+    g.addColorStop(0.96, 'rgba(255,255,255,0.45)')
+    g.addColorStop(1, 'rgba(255,255,255,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, size, size)
+    return new CanvasTexture(canvas)
+  }, [])
 }
 
 /** A soft radial sprite, drawn once and shared by every glow in the scene. */
@@ -141,6 +161,7 @@ function Nebula({ spin }: { spin: Spin }) {
   const cloud = useRef<Points>(null)
   const geo = useCloud(1400)
   const glow = useGlowTexture()
+  const disc = useDiscTexture()
   const [active, setActive] = useState<BankDomain | null>(null)
   const labels = useRef<Record<string, HTMLSpanElement | null>>({})
   const probe = useMemo(() => new Vector3(), [])
@@ -158,9 +179,9 @@ function Nebula({ spin }: { spin: Spin }) {
     if (group.current) {
       group.current.rotation.y = spin.y
       group.current.rotation.x = spin.x
+      group.current.scale.setScalar(spin.dist)
     }
-    camera.position.set(0, 1.5, spin.dist)
-    camera.lookAt(0, 0, 0)
+
 
     /* The clouds sit still and the camera goes around them, so two knowledge
        bases can land on top of each other in projection. Depth decides which
@@ -179,7 +200,7 @@ function Nebula({ spin }: { spin: Spin }) {
     })
     if (cloud.current) {
       const m = cloud.current.material as { opacity: number }
-      m.opacity += ((active ? 0.4 : 0.95) - m.opacity) * 0.08
+      m.opacity += ((active ? 0.34 : 0.8) - m.opacity) * 0.08
     }
   })
 
@@ -187,7 +208,10 @@ function Nebula({ spin }: { spin: Spin }) {
     <group ref={group}>
       <points ref={cloud} geometry={geo}>
         {/* normal blending, not additive: on paper, added light is no light */}
-        <pointsMaterial vertexColors size={0.085} sizeAttenuation transparent opacity={0.95} depthWrite={false} />
+        <pointsMaterial
+          map={disc} alphaTest={0.02} vertexColors size={0.16} sizeAttenuation
+          transparent opacity={0.8} depthWrite={false}
+        />
       </points>
 
       {/* the institution at the core */}
@@ -236,7 +260,7 @@ export function BankNebula() {
     && matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const spin = useMemo<Spin>(() => ({
-    wantY: 0, wantX: 0, y: 0, x: 0, dist: 21, wantDist: 21, dragging: false, idleAt: 0, reduced,
+    wantY: 0, wantX: 0, y: 0, x: 0, dist: 1, wantDist: 1, dragging: false, idleAt: 0, reduced,
   }), [reduced])
   const last = useRef({ x: 0, y: 0 })
   const [held, setHeld] = useState(false)
@@ -263,7 +287,7 @@ export function BankNebula() {
   }
   /* Zoom is two buttons rather than the wheel: a hero that swallows scroll to
      zoom is a hero you cannot scroll past. */
-  const zoom = (by: number) => { spin.wantDist = clamp(spin.wantDist + by, 12, 30) }
+  const zoom = (by: number) => { spin.wantDist = clamp(spin.wantDist + by, 0.6, 2.2) }
 
   return (
     <div className="st-neb" role="img" aria-label={`${SUMMARY} Drag to rotate.`}>
@@ -274,13 +298,13 @@ export function BankNebula() {
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
-        <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 21], fov: 46 }} gl={{ antialias: true, alpha: true }}>
+        <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 19], fov: 46 }} gl={{ antialias: true, alpha: true }}>
           <Nebula spin={spin} />
         </Canvas>
       </div>
       <div className="st-neb-zoom">
-        <button type="button" onClick={() => zoom(-3)} aria-label="Zoom in">+</button>
-        <button type="button" onClick={() => zoom(3)} aria-label="Zoom out">&minus;</button>
+        <button type="button" onClick={() => zoom(0.25)} aria-label="Zoom in">+</button>
+        <button type="button" onClick={() => zoom(-0.25)} aria-label="Zoom out">&minus;</button>
       </div>
     </div>
   )
