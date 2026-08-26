@@ -279,34 +279,64 @@
 .st-hint { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); color: var(--dl-grey-3);
   margin-top: var(--dl-space-5); }
 
-/* hero: copy beside the live scene. The graph is the product drawing itself,
-   so it gets the height a figure normally would not. */
-.st-bankhero { padding: var(--dl-space-8) 0 var(--dl-space-7); }
-.st-bankhero-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: var(--dl-space-8); align-items: center; }
-.st-bankhero .st-intro-title { margin-top: 18px; }
-.st-bankgraph { min-height: 500px; }
-.st-bankgraph .dm-g3, .st-bankgraph .st-graph-hold { height: 500px; }
+/* ===== hero figure: the estate as a nebula. The panel is the one ink surface
+   above the fold, which is what lets a point cloud read as light rather than as
+   grey dust; the static figure behind it uses the same on-ink variant, so a
+   browser without WebGL keeps a figure that belongs on the same panel. ===== */
+.st-bankfig { display: flex; flex-direction: column; flex: 1; }
+.st-bankgraph { flex: 1; min-height: 440px; position: relative; display: flex; }
+.st-bankgraph > * { flex: 1; }
+.st-neb { position: absolute; inset: 0; }
+.st-neb canvas { display: block; touch-action: pan-y; cursor: grab; }
+.st-neb canvas:active { cursor: grabbing; }
+.st-neb-label { display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
+  /* the whole canvas has to stay grabbable: a label must never take the drag */
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.82); border: var(--dl-hairline); border-radius: 2px;
+  padding: 5px 9px; backdrop-filter: blur(3px);
+  transition: border-color var(--dl-ease), background var(--dl-ease), transform var(--dl-ease); }
+.st-neb-label b { font-family: var(--dl-font-body); font-size: 11px; font-weight: 600;
+  letter-spacing: -0.005em; color: var(--dl-ink); }
+.st-neb-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em;
+  color: var(--dl-grey-3); }
+.st-neb-label.is-on { background: var(--dl-blue-wash); border-color: var(--dl-blue);
+  transform: scale(1.06); }
 .st-figcaption { font-family: var(--dl-font-mono); font-size: var(--dl-text-label);
   color: var(--dl-grey-3); margin-top: var(--dl-space-4); text-align: center; }
 
+/* ===== section rail: where you are in the page, and a way to skip ahead ===== */
+.st-rail { position: fixed; right: clamp(14px, 2vw, 30px); top: 50%; transform: translateY(-50%);
+  z-index: 8; display: none; flex-direction: column; gap: 14px; align-items: flex-end; }
+.js .st-rail { display: flex; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease; }
+.js .st-rail.is-ready { opacity: 1; pointer-events: auto; }
+.st-rail a { display: flex; align-items: center; gap: 10px; color: var(--dl-grey-3);
+  font-family: var(--dl-font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  text-decoration: none; }
+.st-rail-tick { display: block; width: 18px; height: 1px; background: var(--dl-grey-2);
+  transition: width var(--dl-ease), background var(--dl-ease); }
+.st-rail-name { opacity: 0; transform: translateX(6px); transition: opacity var(--dl-ease),
+  transform var(--dl-ease); }
+.st-rail a:hover .st-rail-name, .st-rail a.is-here .st-rail-name { opacity: 1; transform: none; }
+.st-rail a:hover .st-rail-tick, .st-rail a.is-here .st-rail-tick { width: 30px; background: var(--dl-blue); }
+.st-rail a.is-here { color: var(--dl-ink); }
+@media (max-width: 1180px) { .js .st-rail { display: none; } }
+
 /* ===== use cases: a run, not a claim. Tabs on the left, the agent's own
    sequence on the right, each step arriving after the one it depends on.
-   Panels are all in the markup; only .js hides the inactive ones. ===== */
-.st-uc-lead { color: var(--dl-grey-4); font-size: var(--dl-text-lead); line-height: 1.55;
-  margin-top: var(--dl-space-5); max-width: 620px; }
-.st-uc { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: var(--dl-space-7);
+   Panels are all in the markup; only .js narrows it to the active one. ===== */
+.st-uc { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: var(--dl-space-7);
   margin-top: var(--dl-space-7); }
 .st-uc-tabs { display: flex; flex-direction: column; gap: 2px; }
-.st-uc-tab { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 14px 16px;
+.st-uc-tab { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 15px 18px;
   border: 1px solid transparent; border-left: 2px solid var(--dl-grey-2); background: none; cursor: pointer;
-  transition: background var(--dl-ease), border-color var(--dl-ease); }
-.st-uc-tab:hover { background: var(--dl-grey-1); }
+  transition: background var(--dl-ease), border-color var(--dl-ease), transform var(--dl-ease); }
+.st-uc-tab:hover { background: var(--dl-grey-1); transform: translateX(2px); }
 .st-uc-tab-fn { font-family: var(--dl-font-mono); font-size: var(--dl-text-label); letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--dl-grey-3); }
 .st-uc-tab-name { font-family: var(--dl-font-display); font-weight: 600; letter-spacing: -0.01em;
   font-size: var(--dl-text-body); }
-.st-uc-tab.is-active { background: var(--dl-blue-wash); border-left-color: var(--dl-blue); }
+.st-uc-tab.is-active { background: var(--dl-blue-wash); border-left-color: var(--dl-blue); transform: none; }
 .st-uc-tab.is-active .st-uc-tab-fn { color: var(--dl-blue); }
 .st-uc-stage { border: var(--dl-hairline); background: var(--dl-paper); padding: var(--dl-space-6); }
 .st-uc-ask { font-family: var(--dl-font-mono); font-size: var(--dl-text-small); color: var(--dl-ink);
@@ -323,7 +353,7 @@
 .st-uc-steps li::before { content: ""; position: absolute; left: calc(-1 * var(--dl-space-6) + 2px);
   top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--dl-blue); }
 .st-uc-verb { font-family: var(--dl-font-display); font-weight: 600; font-size: var(--dl-text-small);
-  min-width: 88px; }
+  min-width: 92px; }
 .st-uc-body { color: var(--dl-grey-4); font-size: var(--dl-text-small); }
 .st-uc-out { margin-top: var(--dl-space-5); border-top: var(--dl-hairline); padding-top: var(--dl-space-5);
   display: flex; flex-wrap: wrap; align-items: center; gap: var(--dl-space-4) var(--dl-space-5); }
@@ -407,6 +437,7 @@
 .st-arch-perim { fill: none; stroke: var(--dl-grey-3); stroke-width: 1; stroke-dasharray: 4 4; }
 .st-arch-node { fill: var(--dl-blue); }
 .st-arch .st-fig-axis { stroke: var(--dl-grey-3); }
+.st-arch .st-arch-in { stroke-dasharray: 3 4; }
 .st-arch .st-arch-out { stroke: var(--dl-blue); }
 
 /* the comparison table's own column */
@@ -433,7 +464,7 @@
   font-size: var(--dl-text-small); padding: 9px 16px; }
 
 @media (max-width: 1000px) {
-  .st-bankhero-in, .st-arch-row, .st-uc { grid-template-columns: 1fr; gap: var(--dl-space-7); }
+  .st-arch-row, .st-uc { grid-template-columns: 1fr; gap: var(--dl-space-7); }
   .st-uc-tabs { flex-direction: row; flex-wrap: wrap; gap: 8px; }
   .st-uc-tab { flex: 1 1 240px; border-left: 0; border-bottom: 2px solid var(--dl-grey-2); }
   .st-uc-tab.is-active { border-left: 0; border-bottom-color: var(--dl-blue); }
@@ -454,7 +485,7 @@
 /* below this width the 3D scene never mounts, so the figure sizes itself and
    the caption drops the half of itself that would no longer be true */
 @media (max-width: 720px) {
-  .st-bankgraph, .st-bankgraph .dm-g3 { min-height: 0; height: auto; }
+  .st-bankgraph { min-height: 320px; }
   .st-wideonly { display: none; }
 }
 }

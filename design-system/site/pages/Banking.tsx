@@ -1,5 +1,5 @@
 import {
-  SectionLabel, Card, Button, FAQ, CTABand, ConfluenceFigure, TextLink,
+  Hero, SectionLabel, Card, FAQ, CTABand, ConfluenceFigure, TextLink,
 } from '../../src/index'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -51,9 +51,9 @@ const ESTATE = [
 // The trail above already walks access, entitlements, masking, lineage and
 // audit; these are the three questions it does not answer on its own.
 const SECURITY = [
-  { label: 'Deployment', title: 'Your region, or your VPC.', body: 'SaaS where you choose, or deployed entirely inside your own cloud account. Federated and prepared in place.' },
-  { label: 'Isolation', title: 'Your graph stays yours.', body: 'No tenant can reach another, and nothing you connect is ever used to train a shared model.' },
-  { label: 'Evidence', title: 'Ready for your review.', body: 'Security review pack, data-processing terms and the audit-export format, on request before you connect anything.' },
+  { label: 'Deployment', title: 'Your region, or your VPC.', body: 'SaaS where you choose, or entirely inside your own cloud account.' },
+  { label: 'Isolation', title: 'Your graph stays yours.', body: 'No tenant reaches another. Nothing here trains a shared model.' },
+  { label: 'Evidence', title: 'Ready for your review.', body: 'Review pack, processing terms and audit-export format, before you connect anything.' },
 ]
 
 const COMPARE = [
@@ -62,17 +62,14 @@ const COMPARE = [
   { k: 'Entitlements', cat: 'Described', rag: 'Rebuilt per app', mcp: 'Rebuilt per server', dl: 'Inherited from the source' },
   { k: 'Lineage', cat: 'At table level', rag: 'Chunk citations', mcp: 'None', dl: 'Fact to source record' },
   { k: 'Tells you what to build', cat: 'No', rag: 'No', mcp: 'No', dl: 'Yes — scored, with what blocks it' },
-  { k: 'Effort per new use case', cat: 'n/a', rag: 'A new stack', mcp: 'A new server', dl: 'A query against the graph' },
 ]
 
 const BANK_FAQ = [
-  { q: 'Do you need write access to our core systems?', a: 'No. Datalith connects with scoped, read-only credentials and never writes back to a system of record. Agents read prepared context from the graph; any action they propose stays inside your own workflow tools, under your own approvals.' },
-  { q: 'Can it run inside our own perimeter?', a: 'Yes. SaaS in the region you choose, or deployed entirely inside your own cloud account. Datalith federates and prepares in place — only what serving requires is ever materialised.' },
-  { q: 'How do agents respect who is allowed to see what?', a: 'Entitlements are read from the source systems at ingest and enforced at query time, so an agent sees only what the person or service behind it could already see. Customer, book and region restrictions travel with the data instead of being rebuilt.' },
-  { q: 'What happens to personal data?', a: 'It is detected and masked or tokenised at ingest, before anything is served. The graph serves references rather than raw identifiers unless your policy says otherwise, and every read is logged against the identity that asked.' },
-  { q: 'Most of our answers live in documents, not tables. Does that work?', a: 'That is the point. Policies, contracts, credit files, correspondence and transcripts each get the extraction their format needs and land as typed records with citations back to the source page, so a document-bound answer can still be checked.' },
-  { q: 'How does this survive an internal review?', a: 'Datalith is not a model — it is the data layer underneath one. What it gives a reviewer is the trail: which sources an answer drew on, how fresh they were, who was cleared to see them, and what was read, by which agent, on whose behalf, and when.' },
-  { q: 'What do you need from us to start?', a: 'Read-only credentials on three sources, roughly two hours of a data engineer’s time to issue them, and 45 minutes at the end for the readout. No migration, no software installed in your estate, no commitment.' },
+  { q: 'Do you need write access to our core systems?', a: 'No. Datalith connects with scoped, read-only credentials and never writes back to a system of record. Any action an agent proposes stays inside your own workflow tools, under your own approvals.' },
+  { q: 'Can it run inside our own perimeter?', a: 'Yes — SaaS in the region you choose, or deployed entirely inside your own cloud account. Datalith prepares data in place; only what serving requires is materialised.' },
+  { q: 'How do agents respect who can see what?', a: 'Entitlements are read from the source systems at ingest and enforced at query time, so an agent sees only what the person behind it could already see. Personal data is masked or tokenised before anything is served.' },
+  { q: 'Most of our answers live in documents. Does that work?', a: 'That is the point. Contracts, credit files, correspondence and transcripts each get the extraction their format needs, and land as typed records with citations back to the source page.' },
+  { q: 'What do you need from us to start?', a: 'Read-only credentials on three sources, about two hours of a data engineer to issue them, and 45 minutes for the readout. Nothing is installed, and there is no commitment.' },
 ]
 
 const NEEDS = [
@@ -86,53 +83,38 @@ export function Banking() {
     <div className="dl-root">
       <SiteNav current="banking" />
 
-      {/* hero: the estate as one graph, drawn by the product itself */}
-      <section className="st-bankhero">
-        <div className="dl-wrap st-bankhero-in">
-          <div className="st-hero-anim">
-            <div>
-              <SectionLabel>Banking</SectionLabel>
-              <h1 className="st-intro-title">
-                AI agents your bank can{' '}<br />
-                <em>put into production.</em>
-              </h1>
-              <p className="st-intro-lead">
-                Datalith connects every system read-only, scores how ready your data is, and builds
-                the governed knowledge graph your agents read from — without moving a single system
-                of record.
-              </p>
-              <div className="dl-hero-ctas">
-                <Button variant="blue" size="lg" href="#audit">Get the 48-hour audit</Button>
-                <Button variant="ghost" size="lg" href="./demo/">Explore the product</Button>
+      {/* hero: the same component and margins as the home page, with the estate
+          drawn as a nebula where the confluence figure normally sits */}
+      <div className="st-hero-anim">
+        <Hero
+          headline={'AI agents your bank'}
+          accent="can run in production."
+          lead="Datalith connects every system read-only, scores what your agents can use, and builds the governed graph they read from."
+          primaryCta={{ label: 'Get the 48-hour audit', href: '#audit' }}
+          tertiaryCta={{ label: 'Explore the product', href: './demo/' }}
+          note="Read-only credentials · no migration · your perimeter"
+          figure={
+            <div className="st-bankfig">
+              <div className="st-graph-live st-bankgraph" data-graph-island="bank">
+                <ConfluenceFigure
+                  sources={['core banking', 'cards & payments', 'lending', 'crm & cases', 'documents', 'market data']}
+                  mergedLabel="ONE GRAPH" height={420}
+                />
               </div>
+              <p className="st-figcaption">
+                <span className="st-wideonly">Live scene · drag to rotate · </span>
+                Illustrative estate · 5 knowledge bases · <span data-countup="4.97" data-decimals="2" data-suffix="M">4.97M</span> entities
+              </p>
             </div>
-          </div>
-          <div className="st-bankhero-fig">
-            <div className="st-graph-live st-bankgraph" data-graph-island="bank">
-              <ConfluenceFigure
-                sources={['core banking', 'cards & payments', 'lending', 'crm & cases', 'documents', 'market data']}
-                mergedLabel="ONE GRAPH" height={480}
-              />
-            </div>
-            <p className="st-figcaption">
-              {/* the scene only mounts where it fits — see site/graph-boot.ts */}
-              <span className="st-wideonly">Live scene · drag to rotate · </span>
-              Illustrative bank estate · 24 entities, 5 knowledge bases
-            </p>
-          </div>
-        </div>
-      </section>
-
+          }
+        />
+      </div>
 
       {/* what an agent actually does, before any claim about it */}
-      <section className="st-section st-section--rule" id="use-cases">
+      <section className="st-section st-section--rule" id="use-cases" data-rail="Use cases">
         <div className="dl-wrap">
           <SectionLabel>Use cases</SectionLabel>
           <h2 className="dl-h2">What these AI agents actually do.</h2>
-          <p className="st-uc-lead">
-            Five runs a bank recognises. Pick one to see what the agent reads, in order, and what it
-            hands back — with a person still deciding at the end.
-          </p>
           <AgentRuns />
           <p className="st-footnote">
             Modelled from published industry benchmarks and a typical bank estate — illustrative, not
@@ -141,7 +123,7 @@ export function Banking() {
         </div>
       </section>
       {/* the estate, in categories a bank recognises */}
-      <section className="st-section st-section--rule" id="estate">
+      <section className="st-section st-section--rule" id="estate" data-rail="Connectors">
         <div className="dl-wrap">
           <SectionLabel>Connectors</SectionLabel>
           <h2 className="dl-h2">The systems we connect to.</h2>
@@ -157,19 +139,19 @@ export function Banking() {
             ))}
           </div>
           <p className="st-footnote">
-            150+ connectors, agentless and incremental. Read-only by default, and nothing is written
-            back to a system of record.
+            <span data-countup="150" data-suffix="+">150+</span> connectors, agentless and incremental.
+            Read-only by default; nothing is written back.
           </p>
         </div>
       </section>
 
       {/* the board */}
-      <section className="st-section st-section--rule" id="agents">
+      <section className="st-section st-section--rule" id="agents" data-rail="Readiness">
         <div className="dl-wrap">
           <SectionLabel>Readiness</SectionLabel>
           <h2 className="dl-h2">Which agents your data can run today.</h2>
           <p className="st-tally">
-            <span data-countup={SHIPS}>{SHIPS}</span> of {AGENTS.length} ship now.{' '}
+            {SHIPS} of {AGENTS.length} ship now.{' '}
             <span className="st-tally-rest">{HOLDING} domains hold the other {WAITING}.</span>
           </p>
 
@@ -195,7 +177,7 @@ export function Banking() {
                 )
               })}
             </div>
-            <div className="st-board-gap" />
+            <div />
             <div className="st-board-col st-board-col--right" data-domains>
               <p className="st-col-label">Your data</p>
               {DOMAINS.map(d => (
@@ -221,7 +203,7 @@ export function Banking() {
       </section>
 
       {/* what actually lands, and when */}
-      <section className="st-section st-section--rule" id="audit-what">
+      <section className="st-section st-section--rule" id="audit-what" data-rail="The audit">
         <div className="dl-wrap">
           <SectionLabel>The audit</SectionLabel>
           <h2 className="dl-h2">What you get in 48 hours.</h2>
@@ -234,16 +216,16 @@ export function Banking() {
       </section>
 
       {/* the architecture question */}
-      <section className="st-section st-section--rule" id="architecture">
+      <section className="st-section st-section--rule" id="architecture" data-rail="Architecture">
         <div className="dl-wrap">
           <SectionLabel>Architecture</SectionLabel>
           <h2 className="dl-h2">How Datalith fits your architecture.</h2>
           <div className="st-arch-row">
             <ul className="st-arch-points" data-reveal-group>
-              <li><b>No migration.</b> Systems of record stay where they are and keep serving the bank.</li>
-              <li><b>Read-only, agentless.</b> Scoped credentials you issue; nothing installed in your estate.</li>
-              <li><b>Your perimeter.</b> SaaS in your region, or deployed entirely inside your own cloud account.</li>
-              <li><b>Any framework.</b> Agents read the graph under their own identity, whatever you build them on.</li>
+              <li><b>No migration.</b> Systems of record stay exactly where they are.</li>
+              <li><b>Read-only, agentless.</b> Nothing installed in your estate.</li>
+              <li><b>Your perimeter.</b> Your region, or inside your own cloud account.</li>
+              <li><b>Any framework.</b> Agents read under their own identity.</li>
             </ul>
             <BankArchFigure />
           </div>
@@ -251,7 +233,7 @@ export function Banking() {
       </section>
 
       {/* the review */}
-      <section className="dl-on-ink st-section" id="governance">
+      <section className="dl-on-ink st-section" id="governance" data-rail="Security">
         <div className="dl-wrap">
           <SectionLabel>Security</SectionLabel>
           <h2 className="dl-h2">How every agent request is governed.</h2>
@@ -270,7 +252,7 @@ export function Banking() {
       </section>
 
       {/* the comparison every IS director asks for */}
-      <section className="st-section st-section--rule" id="compare">
+      <section className="st-section st-section--rule" id="compare" data-rail="Comparison">
         <div className="dl-wrap">
           <SectionLabel>Comparison</SectionLabel>
           <h2 className="dl-h2">How this compares to what you have.</h2>
@@ -310,7 +292,7 @@ export function Banking() {
       </div>
 
       {/* what starting actually costs them */}
-      <section className="st-section st-section--rule" id="start">
+      <section className="st-section st-section--rule" id="start" data-rail="Start">
         <div className="dl-wrap">
           <SectionLabel>Getting started</SectionLabel>
           <h2 className="dl-h2">What we need from you.</h2>

@@ -65,10 +65,10 @@ export function BankArchFigure() {
 }
 
 const STEPS = [
-  { at: 'hour 0', title: 'Read-only credentials', body: 'Three sources, scoped and revocable. No migration, no agent installed.' },
-  { at: 'hour 4', title: 'Estate mapped', body: 'What you hold, where it lives, how fresh it is, who owns it.' },
-  { at: 'hour 24', title: 'Scored per domain', body: 'Coverage, definitions, governance and freshness, 0–100, with red flags.' },
-  { at: 'hour 48', title: 'Readout', body: 'Board-ready score, the red-flag list, and the agents your data supports.' },
+  { at: 'hour 0', title: 'Read-only credentials', body: 'Three sources, scoped and revocable.' },
+  { at: 'hour 4', title: 'Estate mapped', body: 'What you hold, where it lives, how fresh it is.' },
+  { at: 'hour 24', title: 'Scored per domain', body: 'Coverage, definitions, governance, freshness — 0–100.' },
+  { at: 'hour 48', title: 'Readout', body: 'Your score, the red flags, and the agents your data supports.' },
 ]
 
 /** The audit as a clock, because the promise being made is a duration. */

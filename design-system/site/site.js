@@ -67,6 +67,45 @@
     void meter
   }
 
+  /* section rail: reads which section is in view and marks it, and gives the
+     page a way to skip ahead. Rendered by site.js rather than in the markup —
+     it is navigation over the page, useless without scroll. */
+  var railSections = document.querySelectorAll('[data-rail]')
+  if (railSections.length > 2) {
+    var rail = document.createElement('nav')
+    rail.className = 'st-rail'
+    rail.setAttribute('aria-label', 'Sections')
+    var links = []
+    Array.prototype.forEach.call(railSections, function (sec) {
+      var a = document.createElement('a')
+      a.href = '#' + sec.id
+      a.innerHTML = '<span class="st-rail-name">' + sec.getAttribute('data-rail') +
+        '</span><span class="st-rail-tick"></span>'
+      rail.appendChild(a)
+      links.push(a)
+    })
+    document.body.appendChild(rail)
+    // it belongs to the page's sections, not to the hero it would otherwise
+    // sit on top of, so it only appears once the hero is behind you
+    var hero = document.querySelector('.dl-hero')
+    if (hero && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        rail.classList.toggle('is-ready', !entries[0].isIntersecting)
+      }, { threshold: 0.15 }).observe(hero)
+    } else {
+      rail.classList.add('is-ready')
+    }
+    var railIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return
+        links.forEach(function (l) {
+          l.classList.toggle('is-here', l.getAttribute('href') === '#' + e.target.id)
+        })
+      })
+    }, { rootMargin: '-45% 0px -45% 0px' })
+    Array.prototype.forEach.call(railSections, function (sec) { railIO.observe(sec) })
+  }
+
   /* banking use cases: tabs over runs that are all present in the markup, so
      the section is complete with JavaScript off — this only narrows it to one
      at a time and replays the step animation on each switch. */
@@ -231,6 +270,32 @@
       if (e.key === 'Escape' && sel) { sel = null; paint() }
     })
 
+    /* Until a visitor touches it, the board walks its own selections, so the
+       relationship it encodes is visible without anyone discovering the click. */
+    var demo = null
+    function stopDemo() {
+      if (demo) { clearInterval(demo); demo = null }
+    }
+    function startDemo() {
+      if (reduced || demo) return
+      var order = [{ agent: '5', dom: null }, { agent: null, dom: 'lend' },
+                   { agent: '7', dom: null }, { agent: null, dom: 'comp' }]
+      var i = 0
+      demo = setInterval(function () {
+        sel = order[i % order.length]
+        i++
+        paint()
+      }, 2600)
+    }
+    ;['pointerdown', 'keydown', 'pointerenter'].forEach(function (ev) {
+      board.addEventListener(ev, function () {
+        if (!demo) return
+        stopDemo()
+        sel = null
+        paint()
+      }, { once: true })
+    })
+
     if ('ResizeObserver' in window) new ResizeObserver(drawWires).observe(board)
     else window.addEventListener('resize', drawWires)
     if ('IntersectionObserver' in window) {
@@ -239,6 +304,7 @@
         boardIO.disconnect()
         boardSeen = true
         drawWires()
+        setTimeout(startDemo, 900)
       }, { threshold: 0.12 })
       boardIO.observe(board)
     } else { boardSeen = true }
