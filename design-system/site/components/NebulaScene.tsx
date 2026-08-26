@@ -4,23 +4,29 @@ import { Html } from '@react-three/drei/web/Html'
 import {
   BufferGeometry, CanvasTexture, Color, Float32BufferAttribute, Points, Group, Quaternion, Vector3,
 } from 'three'
-import { BANK_DOMAIN_NAMES, BANK_DOMAIN_ENTITIES, BANK_NODES, type BankDomain } from '../data/bank-graph'
-
 /**
- * The bank's estate as a nebula: five knowledge bases as luminous clouds of the
- * entities they hold, drifting around the institution at the core.
+ * An estate as a nebula: each knowledge base a luminous cloud of the entities it
+ * holds, drifting around the company at the core.
  *
  * The demo's GraphScene draws named, clickable nodes because an operator works
  * with them one at a time. A landing page is not that: at a glance the useful
- * fact is scale and shape — millions of entities, gathered into five bases —
- * so this draws density instead of geometry, and stays ambient.
+ * facts are scale and shape — millions of entities, gathered into a handful of
+ * bases — so this draws density instead of geometry, and stays ambient.
+ *
+ * The clusters are passed in, so the same scene serves the home page's estate
+ * and the banking page's without either owning the other's data.
  */
 
-const DOMAINS = Object.keys(BANK_DOMAIN_NAMES) as BankDomain[]
+export interface NebulaCluster {
+  key: string
+  name: string
+  /** Display count, e.g. "4.2M" — drives how dense that cloud is. */
+  entities: string
+}
 
 /** Entity counts as numbers, for cloud density. */
-const countOf = (d: BankDomain): number => {
-  const m = /^([\d.]+)([KM])?$/.exec(BANK_DOMAIN_ENTITIES[d])
+const countOf = (text: string): number => {
+  const m = /^([\d.]+)([KM])?$/.exec(text)
   if (!m) return 0
   return Number(m[1]) * (m[2] === 'M' ? 1e6 : m[2] === 'K' ? 1e3 : 1)
 }
@@ -67,18 +73,19 @@ const gauss = (r: () => number): number => {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r())
 }
 
-function useCloud(pointsPerBase: number) {
+function useCloud(clusters: NebulaCluster[], pointsPerBase: number) {
   return useMemo(() => {
     const pos: number[] = []
     const col: number[] = []
-    const biggest = Math.max(...DOMAINS.map(countOf))
+    const biggest = Math.max(...clusters.map(c => countOf(c.entities)))
 
-    DOMAINS.forEach((d, i) => {
-      const c = centroid(i, DOMAINS.length)
-      const r = rng(d)
+    clusters.forEach((cluster, i) => {
+      const c = centroid(i, clusters.length)
+      const r = rng(cluster.key)
+      const size = countOf(cluster.entities)
       // density follows the entity count, rooted so the small bases stay visible
-      const n = Math.round(pointsPerBase * (0.42 + 0.58 * Math.sqrt(countOf(d) / biggest)))
-      const spread = 1.05 + 0.55 * Math.sqrt(countOf(d) / biggest)
+      const n = Math.round(pointsPerBase * (0.42 + 0.58 * Math.sqrt(size / biggest)))
+      const spread = 1.05 + 0.55 * Math.sqrt(size / biggest)
       for (let k = 0; k < n; k++) {
         pos.push(c[0] + gauss(r) * spread, c[1] + gauss(r) * spread * 0.62, c[2] + gauss(r) * spread)
         const t = r()
@@ -101,7 +108,7 @@ function useCloud(pointsPerBase: number) {
     geo.setAttribute('position', new Float32BufferAttribute(pos, 3))
     geo.setAttribute('color', new Float32BufferAttribute(col, 3))
     return geo
-  }, [pointsPerBase])
+  }, [clusters, pointsPerBase])
 }
 
 /** A filled disc with a feathered edge, drawn once and shared by every point.
@@ -156,13 +163,13 @@ export interface Spin {
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi)
 
-function Nebula({ spin }: { spin: Spin }) {
+function Nebula({ spin, clusters, offset }: { spin: Spin; clusters: NebulaCluster[]; offset: boolean }) {
   const group = useRef<Group>(null)
   const cloud = useRef<Points>(null)
-  const geo = useCloud(1400)
+  const geo = useCloud(clusters, 1400)
   const glow = useGlowTexture()
   const disc = useDiscTexture()
-  const [active, setActive] = useState<BankDomain | null>(null)
+  const [active, setActive] = useState<string | null>(null)
   const labels = useRef<Record<string, HTMLSpanElement | null>>({})
   const probe = useMemo(() => new Vector3(), [])
   const probeQuat = useMemo(() => new Quaternion(), [])
@@ -185,17 +192,17 @@ function Nebula({ spin }: { spin: Spin }) {
          it and only its outskirts drift behind the type. Kept in world units off
          the viewport, so the offset holds at any width; a narrow canvas — the
          phone layout, where this is a figure of its own — centres instead. */
-      group.current.position.x = viewport.aspect > 1.4 ? viewport.width * 0.12 : 0
+      group.current.position.x = offset && viewport.aspect > 1.4 ? viewport.width * 0.12 : 0
     }
 
 
     /* The clouds sit still and the camera goes around them, so two knowledge
        bases can land on top of each other in projection. Depth decides which
        one is legible: the far label recedes rather than fighting the near one. */
-    DOMAINS.forEach((d, i) => {
-      const el = labels.current[d]
+    clusters.forEach((cluster, i) => {
+      const el = labels.current[cluster.key]
       if (!el) return
-      const c = centroid(i, DOMAINS.length)
+      const c = centroid(i, clusters.length)
       // the clouds turn with the group now, so depth has to be measured there
       const near = probe.set(c[0], c[1], c[2])
         .applyQuaternion(group.current?.quaternion ?? probeQuat)
@@ -226,29 +233,29 @@ function Nebula({ spin }: { spin: Spin }) {
         <spriteMaterial map={glow} transparent opacity={0.5} depthWrite={false} />
       </sprite>
 
-      {DOMAINS.map((d, i) => {
-        const c = centroid(i, DOMAINS.length)
-        const on = active === d
+      {clusters.map((cluster, i) => {
+        const c = centroid(i, clusters.length)
+        const on = active === cluster.key
         const away = Math.hypot(c[0], c[2]) || 1
         const label: [number, number, number] = [
           (c[0] / away) * 1.5, 1.45 + (i % 2 === 0 ? 0.5 : -0.5), (c[2] / away) * 1.5,
         ]
         return (
-          <group key={d} position={c}>
+          <group key={cluster.key} position={c}>
             <sprite
               scale={on ? [3.4, 3.4, 1] : [2.6, 2.6, 1]}
-              onPointerOver={e => { e.stopPropagation(); setActive(d) }}
-              onPointerOut={() => setActive(a => (a === d ? null : a))}
+              onPointerOver={e => { e.stopPropagation(); setActive(cluster.key) }}
+              onPointerOut={() => setActive(a => (a === cluster.key ? null : a))}
             >
               <spriteMaterial map={glow} transparent opacity={on ? 0.55 : 0.22} depthWrite={false} />
             </sprite>
             <Html center position={label} zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
               <span
-                ref={el => { labels.current[d] = el }}
+                ref={el => { labels.current[cluster.key] = el }}
                 className={`st-neb-label${on ? ' is-on' : ''}`}
               >
-                <b>{BANK_DOMAIN_NAMES[d]}</b>
-                <span>{BANK_DOMAIN_ENTITIES[d]}</span>
+                <b>{cluster.name}</b>
+                <span>{cluster.entities}</span>
               </span>
             </Html>
           </group>
@@ -258,11 +265,13 @@ function Nebula({ spin }: { spin: Spin }) {
   )
 }
 
-const SUMMARY =
-  `Illustrative bank estate: ${BANK_NODES.length} entity types across ` +
-  `${DOMAINS.length} knowledge bases, drawn as a point cloud.`
+export interface NebulaSceneProps {
+  clusters: NebulaCluster[]
+  /** Sit the cloud right of centre, for the hero where copy owns the left. */
+  offset?: boolean
+}
 
-export function BankNebula() {
+export function NebulaScene({ clusters, offset = false }: NebulaSceneProps) {
   const reduced = typeof matchMedia === 'function'
     && matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -297,7 +306,12 @@ export function BankNebula() {
   const zoom = (by: number) => { spin.wantDist = clamp(spin.wantDist + by, 0.6, 2.2) }
 
   return (
-    <div className="st-neb" role="img" aria-label={`${SUMMARY} Drag to rotate.`}>
+    <div
+      className="st-neb"
+      role="img"
+      aria-label={`Illustrative estate as a point cloud: ${clusters.length} knowledge bases` +
+        ` — ${clusters.map(c => `${c.name}, ${c.entities} entities`).join('; ')}. Drag to rotate.`}
+    >
       <div
         className={`st-neb-stage${held ? ' is-held' : ''}`}
         onPointerDown={onDown}
@@ -306,7 +320,7 @@ export function BankNebula() {
         onPointerCancel={onUp}
       >
         <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 19], fov: 46 }} gl={{ antialias: true, alpha: true }}>
-          <Nebula spin={spin} />
+          <Nebula spin={spin} clusters={clusters} offset={offset} />
         </Canvas>
       </div>
       <div className="st-neb-zoom">

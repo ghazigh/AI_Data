@@ -707,12 +707,13 @@
   color: var(--dl-grey-3); }
 .st-neb-label.is-on { background: var(--dl-blue-wash); border-color: var(--dl-blue);
   transform: scale(1.06); }
-.st-neb-zoom { position: absolute; right: clamp(28px, 4.5vw, 88px); bottom: 46px; z-index: 3;
+.st-neb-zoom { position: absolute; right: 8px; bottom: 8px; z-index: 3;
   display: flex; gap: 4px; }
 .st-neb-zoom button { width: 30px; height: 30px; border: var(--dl-hairline); background: var(--dl-paper);
   font-family: var(--dl-font-mono); font-size: 14px; line-height: 1; color: var(--dl-grey-4);
   cursor: pointer; transition: color var(--dl-ease), border-color var(--dl-ease); }
 .st-neb-zoom button:hover { color: var(--dl-blue); border-color: var(--dl-blue); }
+.st-bankhero .st-neb-zoom { right: clamp(28px, 4.5vw, 88px); bottom: 46px; }
 .st-figcaption { position: relative; z-index: 1; pointer-events: none; font-family: var(--dl-font-mono);
   font-size: var(--dl-text-label); color: var(--dl-grey-3); text-align: right;
   padding: 0 clamp(28px, 4.5vw, 88px) var(--dl-space-6); margin: 0; }
@@ -1077,24 +1078,12 @@
    over rather than imported: pulling the whole console stylesheet onto the
    marketing site to style one canvas would ship several hundred rules the site
    never uses. Kept in step with the .dm-g3 block in demo/demo.css. */
-.st-graph-live { position: relative; }
+.st-graph-live { position: relative; min-height: 420px; }
 /* Holds the figure's height while the scene's chunk downloads, so the section
    below it never jumps up and then back down. */
 .st-graph-hold { height: 420px; }
-.st-graph-live .dm-g3 { position: relative; height: 420px; background: transparent; }
-.st-graph-live .dm-g3 canvas { display: block; touch-action: none; }
-.st-graph-live .dm-g3-label {
-  display: flex; align-items: baseline; gap: 8px; padding: 4px 9px;
-  border: 1px solid rgba(16, 16, 19, 0.12); border-radius: 6px;
-  background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(6px);
-  color: var(--dl-ink); white-space: nowrap; user-select: none; cursor: default;
-  box-shadow: 0 1px 2px rgba(16, 16, 19, 0.04), 0 8px 20px -14px rgba(16, 16, 19, 0.3);
-  transition: transform var(--dl-ease), border-color var(--dl-ease), background var(--dl-ease);
-}
-.st-graph-live .dm-g3-label:hover { transform: scale(1.12); border-color: rgba(16, 16, 19, 0.28); background: rgba(255, 255, 255, 0.92); }
-.st-graph-live .dm-g3-label b { font-family: var(--dl-font-body); font-size: 11px; font-weight: 600; letter-spacing: -0.005em; }
-.st-graph-live .dm-g3-label span { font-family: var(--dl-font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--dl-grey-3); }
-.st-graph-live .dm-g3-label.is-dim { opacity: 0.34; }
+/* The scene that mounts here is NebulaScene; the demo's own graph markup
+   (.dm-g3*) is no longer used on the marketing site. */
 
 /* --- shared figure ink (static defaults: what reduced motion / no-JS shows) --- */
 /* stage 01 — provider tiles, accented by data modality */
