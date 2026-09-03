@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Datalith — launch</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/launch.css" />
+    <style>
+      html, body { width: 1920px; height: 1080px; }
+      #root { width: 1920px; height: 1080px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="90" data-width="1920" data-height="1080" data-fps="30">
+
+      <!-- shared background, never timed -->
+      <div id="bg" data-layout-ignore>
+        <div class="grid"></div>
+        <div class="glow glow-a"></div>
+        <div class="glow glow-b"></div>
+        <div class="vignette"></div>
+      </div>
+
+      <!-- S0 cold open -->
+      <section id="s0" class="clip scene" data-start="0" data-duration="7.5" data-track-index="1">
+        <div class="sc">
+          <div id="s0-cloud" data-layout-allow-overflow data-layout-allow-overlap></div>
+          <p id="s0-read" class="meta" style="left:120px; top:84px; font-size:22px">38 systems</p>
+          <div class="pad" style="display:grid; place-items:center">
+            <div style="position:relative; text-align:center; width:1400px; height:240px">
+              <h1 id="s0-h1" class="h-hero" data-layout-allow-overlap style="position:absolute; inset:0; display:grid; place-items:center"><span class="line">Your data is everywhere.</span></h1>
+              <h1 id="s0-h2" class="h-hero" data-layout-allow-overlap style="position:absolute; inset:0; display:grid; place-items:center; color:#fff"><span class="line">Your agents can’t reach it.</span></h1>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- S1 the numbers -->
+      <section id="s1" class="clip scene" data-start="7.5" data-duration="7.1" data-track-index="1">
+        <div class="sc">
+          <p id="s1-ghost" class="ghost" style="left:-40px; top:300px" data-layout-allow-overflow>READINESS</p>
+          <p id="s1-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Why agent projects stall</p>
+          <div id="s1-rule" class="rule" style="left:120px; top:150px; width:1680px"></div>
+          <div id="s1-stat1" class="stat giant" style="left:112px; top:250px">
+            <p class="v">&gt;<span id="s1-n1">0</span><small>%</small></p>
+            <p class="l">of agentic AI projects will be <b>canceled by 2027</b> — data readiness is the number one cause.</p>
+          </div>
+          <div id="s1-stat2" class="stat giant" style="left:112px; top:250px">
+            <p class="v"><span id="s1-n2">60–75</span><small>%</small></p>
+            <p class="l">of every agent project’s effort goes to <b>preparing the data</b>, not building the agent.</p>
+          </div>
+          <p id="s1-src" class="meta" style="right:120px; top:96px"><b>Gartner</b> · DataHub state of context, 2026</p>
+        </div>
+      </section>
+
+      <!-- S2 the mark -->
+      <section id="s2" class="clip scene" data-start="14" data-duration="7.1" data-track-index="1">
+        <div class="sc">
+          <div id="s2-bloom" data-layout-ignore style="position:absolute; left:50%; top:50%; width:1500px; height:1500px; margin:-750px 0 0 -750px; border-radius:50%; background:radial-gradient(circle, rgba(61,95,255,0.30) 0%, rgba(61,95,255,0.08) 35%, rgba(61,95,255,0) 62%)"></div>
+          <div id="s2-lock" style="position:absolute; inset:0">
+            <div id="s2-logo" class="logo" style="left:50%; top:50%; transform:translate(-50%,-50%); margin-top:-60px">
+              <svg width="420" height="300" viewBox="0 0 28 20" aria-hidden="true">
+                <g class="streams">
+                  <path d="M0 3 C8 3, 10 10, 16 10" />
+                  <path d="M0 10 L16 10" />
+                  <path d="M0 17 C8 17, 10 10, 16 10" />
+                </g>
+                <path class="merge" d="M16 10 L28 10" />
+              </svg>
+              <div id="s2-word" class="wordmark"><span>d</span><span>a</span><span>t</span><span>a</span><span>l</span><span>i</span><span>t</span><span>h</span></div>
+            </div>
+            <div id="s2-tag" class="tagline" style="left:50%; top:50%; transform:translate(-50%,0); margin-top:150px">
+              <span><em>01</em>Every source.</span><span><em>02</em>One graph.</span><span><em>03</em>Agent-ready.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- S3 see everything -->
+      <section id="s3" class="clip scene" data-start="20.5" data-duration="8.6" data-track-index="1">
+        <div class="sc">
+          <p id="s3-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Promise <b>one</b></p>
+          <h2 id="s3-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:620px"><span class="line">First,</span><span class="line">see everything.</span></h2>
+          <p id="s3-lead" class="lead" style="position:absolute; left:120px; top:400px; max-width:560px">Every system, one score, one place to look — <b>read-only</b>, live, and honest about what is missing.</p>
+          <div id="s3-plate" class="plate" style="left:780px; top:120px; width:1300px; height:731px; transform-origin:40% 50%">
+            <img src="assets/plates/overview.png" alt="" />
+          </div>
+          <div id="s3-c1" class="callout ok" style="left:735px; top:255px"><i></i>34 sources live</div>
+          <div id="s3-c2" class="callout" style="left:735px; top:420px"><i></i>Readiness 71 · ▲6 this quarter</div>
+          <div id="s3-c3" class="callout warn" style="left:735px; top:600px"><i></i>4 items need attention</div>
+        </div>
+      </section>
+
+      <!-- S4 connect -->
+      <section id="s4" class="clip scene" data-start="28.5" data-duration="8.1" data-track-index="1">
+        <div class="sc">
+          <p id="s4-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>01</b> · Connect</p>
+          <h2 id="s4-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:700px"><span class="line">Connect every</span><span class="line">system. Read-only.</span></h2>
+          <p id="s4-lead" class="lead" style="position:absolute; left:120px; top:400px; max-width:640px">150+ connectors. No migration, no engineering project — credentials in, estate mapped.</p>
+          <div id="s4-grid" style="position:absolute; left:120px; top:560px; width:720px; height:300px; display:flex; flex-wrap:wrap; align-content:flex-start; gap:10px" data-layout-allow-overflow></div>
+          <p id="s4-mods" class="meta" style="left:120px; top:940px; display:flex; gap:24px; font-size:18px"><span>tables</span><span>documents</span><span>tickets</span><span>email</span><span>transcripts</span><span>images</span><span>streams</span></p>
+          <div id="s4-frame" class="frame" style="left:900px; top:110px; width:1200px; height:675px; transform-origin:30% 50%"></div>
+          <div id="s4-c1" class="callout ok" style="left:850px; top:700px"><i></i>Amazon Redshift is live · 1,460,000 records</div>
+        </div>
+      </section>
+
+      <!-- S5 score -->
+      <section id="s5" class="clip scene" data-start="36" data-duration="8.6" data-track-index="1">
+        <div class="sc">
+          <p id="s5-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>02</b> · Ready</p>
+          <h2 id="s5-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:1200px"><span class="line">Score it. Then fix</span><span class="line">what holds it back.</span></h2>
+          <div id="s5-ring" class="ring" style="left:130px; top:420px; width:360px; height:360px">
+            <svg width="360" height="360" viewBox="0 0 360 360" aria-hidden="true">
+              <path class="track" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" />
+              <path class="fill" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" />
+              <line class="tick" x1="309.6" y1="118.9" x2="322.9" y2="112.2" />
+            </svg>
+            <div class="body"><div><p class="v"><span id="s5-score">0</span><span>/100</span></p><p class="cap">Agent-readiness</p><p class="delta">▲ 6 this quarter</p></div></div>
+          </div>
+          <div id="s5-bars" class="bars" style="left:600px; top:400px; width:560px"></div>
+          <p id="s5-flags-k" class="eyebrow" style="position:absolute; left:1260px; top:400px"><i></i>Red flags · each with a fix</p>
+          <div id="s5-flags" class="rows" style="left:1260px; top:440px; width:540px"></div>
+        </div>
+      </section>
+
+      <!-- S6 pipelines -->
+      <section id="s6" class="clip scene" data-start="44" data-duration="8.6" data-track-index="1">
+        <div class="sc">
+          <p id="s6-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>03</b> · Pipelines</p>
+          <h2 id="s6-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:640px"><span class="line">Fix it with pipelines</span><span class="line">sized to your estate.</span></h2>
+          <div id="s6-bullets" class="bullets" style="left:120px; top:420px; width:620px">
+            <p><i>01</i><span>Structuring for every modality</span></p>
+            <p><i>02</i><span>Graph builds and extensions</span></p>
+            <p><i>03</i><span>A remediation for every red flag</span></p>
+            <p><i>04</i><span>Watch every run live <small>· records, stage, readiness</small></span></p>
+          </div>
+          <div id="s6-frame" class="frame" style="left:800px; top:110px; width:1300px; height:731px; transform-origin:30% 50%"></div>
+          <div id="s6-c1" class="callout ok" style="left:750px; top:730px"><i></i>+7 readiness on this domain when it completes</div>
+        </div>
+      </section>
+
+      <!-- S7 graph -->
+      <section id="s7" class="clip scene" data-start="52" data-duration="8.6" data-track-index="1">
+        <div class="sc">
+          <div id="s7-frame" class="frame" style="left:560px; top:60px; width:1480px; height:833px; transform-origin:50% 50%"></div>
+          <p id="s7-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>04</b> · Graph</p>
+          <h2 id="s7-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:460px"><span class="line">One map of the</span><span class="line">whole business.</span></h2>
+          <div id="s7-n1" class="stat" style="left:120px; top:470px"><p class="v"><span>0.0M</span></p><p class="l">entities resolved</p></div>
+          <div id="s7-n2" class="stat" style="left:120px; top:650px"><p class="v"><span>0.0M</span></p><p class="l">relationships mapped</p></div>
+          <div id="s7-n3" class="stat" style="left:120px; top:830px"><p class="v"><span>0</span></p><p class="l">knowledge bases, served to any agent</p></div>
+        </div>
+      </section>
+
+      <!-- S8 search -->
+      <section id="s8" class="clip scene" data-start="60" data-duration="7.6" data-track-index="1">
+        <div class="sc">
+          <p id="s8-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>05</b> · Search</p>
+          <h2 id="s8-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:620px"><span class="line">Ask what</span><span class="line">data you have.</span></h2>
+          <p id="s8-lead" class="lead" style="position:absolute; left:120px; top:400px; max-width:560px">A business question in. The datasets that carry it out — where each lives, how fresh, how ready. <b>Never a guess.</b></p>
+          <div id="s8-frame" class="frame" style="left:800px; top:110px; width:1300px; height:731px; transform-origin:30% 50%"></div>
+          <div id="s8-c1" class="callout" style="left:750px; top:730px"><i></i>Searched 34 sources · 50.5M records · 4 matches</div>
+        </div>
+      </section>
+
+      <!-- S9 use cases -->
+      <section id="s9" class="clip scene" data-start="67" data-duration="9.1" data-track-index="1">
+        <div class="sc">
+          <p id="s9-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Stage <b>06</b> · Use cases</p>
+          <h2 id="s9-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:1300px"><span class="line">Know which agents to build — before you build them.</span></h2>
+          <div id="s9-map" class="ucmap" style="left:120px; top:330px">
+            <svg id="s9-svg" width="1120" height="600" viewBox="0 0 1120 600" data-w="1120" data-h="600" aria-hidden="true"></svg>
+          </div>
+          <div id="s9-legend" class="legend" style="left:1330px; top:340px; width:470px">
+            <p class="ready"><i></i>Ready to build<b>7</b></p>
+            <p class="review"><i></i>In review<b>2</b></p>
+            <p class="blocked"><i></i>Blocked by a domain under 70<b>5</b></p>
+          </div>
+          <div id="s9-hero" class="stat accent" style="left:1330px; top:560px"><p class="v">$<span>0.0</span><small>M / yr</small></p><p class="l">projected from what is <b>buildable today</b></p></div>
+          <p id="s9-blocked" class="lead" style="position:absolute; left:1330px; top:800px; max-width:470px; font-size:26px">$2.6M more waits on three domains under 70 — a readiness fix, not a research project.</p>
+        </div>
+      </section>
+
+      <!-- S10 governance -->
+      <section id="s10" class="clip scene" data-start="75.5" data-duration="6.6" data-track-index="1">
+        <div class="sc">
+          <p id="s10-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:96px"><i></i>Control · Governance</p>
+          <h2 id="s10-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:150px; max-width:1500px"><span class="line">Every call scoped. Every read logged. Every denial explained.</span></h2>
+          <div id="s10-log" class="audit" style="left:120px; top:400px"></div>
+          <div id="s10-tiles" class="tiles" style="left:1300px; top:400px; width:500px">
+            <div class="tile" id="s10-t1"><p class="k">Agents registered</p><p class="v">6</p><p class="s">Each scoped to named knowledge bases</p></div>
+            <div class="tile" id="s10-t2"><p class="k">Agent calls · 30 days</p><p class="v">0K</p><p class="s">100% logged to audit</p></div>
+            <div class="tile" id="s10-t3"><p class="k">Denials</p><p class="v">0</p><p class="s">Each cites the policy that blocked it</p></div>
+          </div>
+          <p id="s10-note" class="meta" style="left:120px; top:930px"><b>Column-, row- and chunk-level policy</b> · enforced on every read</p>
+        </div>
+      </section>
+
+      <!-- S11 close -->
+      <section id="s11" class="clip scene" data-start="81.5" data-duration="8.5" data-track-index="1">
+        <div class="sc">
+          <div class="pad" style="display:grid; place-items:center">
+            <div style="position:relative; width:1680px; height:420px; text-align:center">
+              <h1 id="s11-l1" class="h-hero" data-layout-allow-overlap style="position:absolute; left:0; right:0; top:60px; font-size:86px"><span class="line">First we show you what you have.</span></h1>
+              <h1 id="s11-l2" class="h-hero" data-layout-allow-overlap style="position:absolute; left:0; right:0; top:190px; font-size:86px; color:#7A8FFF"><span class="line">Then we turn it into an agent workforce.</span></h1>
+            </div>
+          </div>
+          <div id="s11-lock" style="position:absolute; inset:0">
+            <div id="s11-logo" class="logo" style="left:50%; top:50%; transform:translate(-50%,-50%); margin-top:-170px">
+              <svg width="196" height="140" viewBox="0 0 28 20" aria-hidden="true">
+                <g class="streams"><path d="M0 3 C8 3, 10 10, 16 10" /><path d="M0 10 L16 10" /><path d="M0 17 C8 17, 10 10, 16 10" /></g>
+                <path class="merge" d="M16 10 L28 10" />
+              </svg>
+              <div class="wordmark" style="font-size:120px"><span>datalith</span></div>
+            </div>
+            <div id="s11-cta" class="cta" style="left:50%; top:50%; transform:translate(-50%,-50%); margin-top:70px; width:1120px">
+              <span class="btn">Start your free audit →</span>
+              <p class="txt"><b>A 48-hour Agent-Readiness Audit.</b>Read-only credentials in, a board-ready score out.</p>
+            </div>
+            <p id="s11-site" class="site" style="left:50%; top:50%; transform:translate(-50%,0); margin-top:170px"><b>datalith.ai</b> · hello@datalith.ai</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- root-level footage layers, geometry copied from their frames at setup -->
+      <video id="v-connect" src="assets/footage/connect.mp4" data-start="29.2" data-duration="7.9" data-media-start="1.2" data-track-index="2" data-frame="s4-frame" data-enter="29.2" data-exit="36" muted playsinline></video>
+      <video id="v-pipeline" src="assets/footage/pipeline.mp4" data-start="44.6" data-duration="8" data-media-start="1.4" data-track-index="2" data-frame="s6-frame" data-enter="44.6" data-exit="52" data-exit-mode="zoom" data-push="1.03" data-push-dur="7" muted playsinline></video>
+      <video id="v-graph" src="assets/footage/graph.mp4" data-start="52.3" data-duration="8.3" data-media-start="2" data-track-index="2" data-frame="s7-frame" data-enter="52.3" data-exit="60" data-rx="6" data-push="1.05" data-push-dur="7.5" muted playsinline></video>
+      <video id="v-search" src="assets/footage/search.mp4" data-start="60.5" data-duration="7.1" data-media-start="0.9" data-track-index="2" data-frame="s8-frame" data-enter="60.5" data-exit="67" muted playsinline></video>
+    </div>
+    <script src="assets/launch.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = window.__buildLaunch();
+    </script>
+  </body>
+</html>
