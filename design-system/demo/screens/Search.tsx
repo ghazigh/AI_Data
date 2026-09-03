@@ -7,6 +7,8 @@ import {
   type Discovery, type Grounded,
 } from '../data/discovery'
 import { useDemoState } from '../state'
+import { Icon } from '../components/Icon'
+import { VendorMark } from '../components/VendorMark'
 import type { Source } from '../data/types'
 
 /**
@@ -83,7 +85,11 @@ export function Search() {
 
   return (
     <div className="dm-askview">
-      <PageHead eyebrow="Stage 05 — Search" title="Ask what data you have" />
+      <PageHead
+        eyebrow="Stage 05 — Search"
+        title="Ask what data you have"
+        lead="A business question in, the datasets that carry it out — where each lives, how big, how fresh, how ready. Never a guess."
+      />
 
       <Panel
         eyebrow="Live"
@@ -93,6 +99,7 @@ export function Search() {
         <ol className="dm-thread">
           {thread.length === 0 && (
             <li className="dm-thread-empty">
+              <span className="dm-thread-mark" aria-hidden="true"><Icon name="sparkles" size={18} /></span>
               <p>
                 Ask whether this company holds data on something. What comes back is the datasets
                 that carry it — where each one lives, how big, how fresh, how ready — not a row out
@@ -126,6 +133,7 @@ export function Search() {
                   <ul className="dm-hits">
                     {turn.result.hits.map(hit => (
                       <li key={hit.source.id}>
+                        <VendorMark name={hit.source.vendor} />
                         <div>
                           <p className="dm-hit-n">{hit.source.name}</p>
                           <p className="dm-hit-m">
@@ -182,7 +190,7 @@ export function Search() {
             placeholder={reference ? `Ask about ${reference.name}…` : 'Ask what data you have…'}
             aria-label={reference ? `Ask about ${reference.name}` : 'Ask what data you have'}
           />
-          <button type="submit" className="dm-btn is-ink">Ask</button>
+          <button type="submit" className="dm-btn is-ink">Ask <Icon name="arrow-right" size={14} /></button>
         </form>
       </Panel>
 

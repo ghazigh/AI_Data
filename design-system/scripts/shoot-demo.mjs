@@ -43,6 +43,8 @@ const base = `http://127.0.0.1:${server.address().port}`
 // SwiftShader gives headless chromium a real (software) WebGL context, so the
 // 3D graph renders here instead of falling back to its SVG twin.
 const browser = await chromium.launch({
+  // CHROMIUM_PATH points at a preinstalled binary when playwright has no download of its own.
+  executablePath: process.env.CHROMIUM_PATH || undefined,
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
 })
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 })

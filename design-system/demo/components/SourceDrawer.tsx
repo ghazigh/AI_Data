@@ -1,5 +1,6 @@
 import { Drawer } from './Drawer'
 import { StatusPill, sourceStatusPill } from './StatusPill'
+import { VendorMark } from './VendorMark'
 import { domainByKey } from '../data/tenant'
 import type { Source } from '../data/types'
 
@@ -11,6 +12,10 @@ export function SourceDrawer({ source, onClose }: { source: Source | null; onClo
   const offsets = [6, -4, 2, -9, 3]
   return (
     <Drawer open title={source.name} onClose={onClose}>
+      <div className="dm-drawer-lead">
+        <VendorMark name={source.vendor} size="lg" />
+        <p>{source.vendor} · {source.category}</p>
+      </div>
       <dl className="dm-deflist">
         <div><dt>Vendor</dt><dd>{source.vendor}</dd></div>
         <div><dt>Category</dt><dd>{source.category}</dd></div>

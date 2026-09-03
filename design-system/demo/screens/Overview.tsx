@@ -3,12 +3,14 @@ import { StageStrip } from '../components/StageStrip'
 import { Panel } from '../components/Panel'
 import { StatusPill, useCaseStatusPill } from '../components/StatusPill'
 import { ActivityList } from '../components/ActivityList'
+import { AttentionFeed } from '../components/AttentionFeed'
 import { DomainBars } from '../components/charts/DomainBars'
 import { TelemetryHeader, estateKpis } from '../components/TelemetryHeader'
+import { Icon } from '../components/Icon'
 import { DOMAINS, TENANT } from '../data/tenant'
 import { weightForDomain } from '../data/sources'
 import { ACTIVITY } from '../data/activity'
-import { topUseCases } from '../data/useCases'
+import { topUseCases, USE_CASES } from '../data/useCases'
 import { lastExecutionFor } from '../data/executions'
 import { useDemoState } from '../state'
 
@@ -27,8 +29,7 @@ const headlineDomains = () =>
 export function Overview() {
   // Pipeline state feeds the telemetry header's fourth KPI. Both counts are
   // derived, never stored: `runs` is empty on the server and on the client's
-  // first render, so the header hydrates to identical markup and only starts
-  // moving once the operator actually runs something.
+  // first render, so the header hydrates to identical markup.
   const { runs, allEntriesWithCreated } = useDemoState()
   const entries = allEntriesWithCreated()
   const running = entries.filter(e => lastExecutionFor(e.id, runs).status === 'running').length
@@ -39,18 +40,30 @@ export function Overview() {
       <PageHead
         eyebrow={`${TENANT.name} · ${TENANT.scope}`}
         title="Estate overview"
-        actions={<a className="dm-btn is-ink" href="connect/" data-demo-link>Connect a source</a>}
+        lead="Every system this company runs, scored for how ready its data is for agents — and what to do next."
+        actions={
+          <a className="dm-btn is-ink" href="connect/" data-demo-link>
+            <Icon name="plug" size={15} /> Connect a source
+          </a>
+        }
       />
 
       <StageStrip prefix="" />
 
       <TelemetryHeader kpis={estateKpis(running, failed, entries.length)} />
 
-      {/* Two columns that actually finish together: the domain panel alone left a
-          hole beside the activity stream, so the use-case panel stacks under it
-          rather than running full width below both. */}
       <div className="dm-grid2">
         <div className="dm-col">
+          {/* The screen's recommendation layer: what needs a person, and the
+              route to the screen that fixes it. Derived, never hand-listed. */}
+          <Panel
+            eyebrow="Recommended next moves"
+            title="Needs attention"
+            action={<a className="dm-panel-link" href="ready/" data-demo-link>All red flags</a>}
+          >
+            <AttentionFeed prefix="" limit={4} />
+          </Panel>
+
           <Panel
             eyebrow="Stage 02 — Ready"
             title="Readiness by business domain"
@@ -58,11 +71,13 @@ export function Overview() {
           >
             <DomainBars domains={headlineDomains()} />
           </Panel>
+        </div>
 
+        <div className="dm-col">
           <Panel
             eyebrow="Stage 06 — Use cases"
             title="What the graph already supports"
-            action={<a className="dm-panel-link" href="use-cases/" data-demo-link>All 14 opportunities</a>}
+            action={<a className="dm-panel-link" href="use-cases/" data-demo-link>All {USE_CASES.length} opportunities</a>}
           >
             <ul className="dm-uclist">
               {topUseCases(3).map(u => (
@@ -77,21 +92,18 @@ export function Overview() {
               ))}
             </ul>
           </Panel>
+
+          <Panel
+            eyebrow="Live"
+            title="Estate activity"
+            // The full 12-entry stream lives on Governance, under the same
+            // title, so "Full stream" leads somewhere that shows it.
+            action={<a className="dm-panel-link" href="governance/" data-demo-link>Full stream</a>}
+          >
+            <ActivityList entries={ACTIVITY.slice(0, 7)} />
+          </Panel>
         </div>
-
-        <Panel
-          eyebrow="Live"
-          title="Estate activity"
-          // 7 entries balances the two stacked panels beside it; 12 would tower
-          // over them. The full 12-entry stream lives on Governance, under the
-          // same "Estate activity" title, so "Full stream" is an honest
-          // promise: it leads somewhere that actually shows the full stream.
-          action={<a className="dm-panel-link" href="governance/" data-demo-link>Full stream</a>}
-        >
-          <ActivityList entries={ACTIVITY.slice(0, 7)} />
-        </Panel>
       </div>
-
     </>
   )
 }

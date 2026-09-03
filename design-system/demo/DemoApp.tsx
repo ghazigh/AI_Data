@@ -1,5 +1,6 @@
 import { AppShell } from './components/AppShell'
 import { DemoStateProvider } from './state'
+import { ToastProvider } from './components/Toast'
 import { NavigateContext } from './navigation'
 import { ROUTES, ALL_ROUTES, routeForSlug } from './routes'
 
@@ -24,11 +25,13 @@ export function DemoApp({ slug, prefix, onNavigate }: DemoAppProps) {
   const navigate = onNavigate ?? NOOP_NAVIGATE
   return (
     <DemoStateProvider>
-      <NavigateContext.Provider value={navigate}>
-        <AppShell current={route.slug} prefix={prefix}>
-          <Component />
-        </AppShell>
-      </NavigateContext.Provider>
+      <ToastProvider>
+        <NavigateContext.Provider value={navigate}>
+          <AppShell current={route.slug} prefix={prefix}>
+            <Component />
+          </AppShell>
+        </NavigateContext.Provider>
+      </ToastProvider>
     </DemoStateProvider>
   )
 }

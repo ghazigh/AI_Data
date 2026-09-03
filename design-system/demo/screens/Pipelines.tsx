@@ -6,6 +6,8 @@ import type { SectionKind } from '../data/pipelineCatalogue'
 import { lastExecutionFor, type ExecutionStatus } from '../data/executions'
 import { useDemoState } from '../state'
 import { prefixForSlug, useNavigate } from '../navigation'
+import { useToast } from '../components/Toast'
+import { Icon } from '../components/Icon'
 
 // This screen is always served at /demo/pipelines/ — one level deep — so its
 // own workspace links need one '../' back to /demo/ before descending into
@@ -65,6 +67,7 @@ export function Pipelines() {
   const [search, setSearch] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
   const navigate = useNavigate()
+  const toast = useToast()
 
   const entries = allEntriesWithCreated()
 
@@ -90,9 +93,10 @@ export function Pipelines() {
       <PageHead
         eyebrow="Stage 03 — Pipelines"
         title="Pipelines"
+        lead="Structuring for every modality, graph builds, and the remediations the scan asked for — sized to this estate, with thirteen runs of history on every row."
         actions={
           <button type="button" className="dm-btn is-ink" onClick={() => setDialogOpen(true)}>
-            Create pipeline
+            <Icon name="workflow" size={15} /> Create pipeline
           </button>
         }
       />
@@ -148,6 +152,7 @@ export function Pipelines() {
         onCreate={draft => {
           const id = createPipeline(draft)
           setDialogOpen(false)
+          toast({ title: `${draft.name} created`, detail: 'Configure its components, then run it from the workspace header.' })
           // Through the router, not a local swap: this pushes state, updates
           // the title, and tells AppShell which slug is current, so the rail
           // and the breadcrumb name the new pipeline rather than continuing to

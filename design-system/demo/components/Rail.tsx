@@ -1,5 +1,7 @@
 import { ROUTES, hrefFor } from '../routes'
 import { TENANT } from '../data/tenant'
+import { Icon, ROUTE_ICON } from './Icon'
+import { monogram } from './VendorMark'
 
 export interface RailProps { current: string; prefix: string }
 
@@ -13,7 +15,9 @@ const MARK = (
 )
 
 function RailLink({ route, current, prefix }: { route: typeof ROUTES[number]; current: string; prefix: string }) {
-  const on = route.slug === current
+  // A workspace under /pipelines/ keeps the Pipelines link lit — the operator
+  // is still inside that screen's territory.
+  const on = route.slug === current || (route.slug !== '' && current.startsWith(`${route.slug}/`))
   return (
     <li>
       <a
@@ -22,8 +26,9 @@ function RailLink({ route, current, prefix }: { route: typeof ROUTES[number]; cu
         aria-current={on ? 'page' : undefined}
         data-demo-link
       >
-        <span className="dm-rail-ix" aria-hidden="true">{route.stage ?? '◇'}</span>
-        <span>{route.title}</span>
+        <span className="dm-rail-ic"><Icon name={ROUTE_ICON[route.slug] ?? 'layers'} size={15} /></span>
+        <span className="dm-rail-lbl">{route.title}</span>
+        {route.stage && <span className="dm-rail-ix" aria-hidden="true">{route.stage}</span>}
       </a>
     </li>
   )
@@ -36,10 +41,24 @@ export function Rail({ current, prefix }: RailProps) {
 
   return (
     <aside className="dm-rail">
-      <a className="dm-rail-logo" href={hrefFor('', prefix)} data-demo-link>
-        {MARK}<span>datalith</span>
-      </a>
-      <span className="dm-demo-tag">Demo · sample data</span>
+      <div className="dm-rail-top">
+        <a className="dm-rail-logo" href={hrefFor('', prefix)} data-demo-link>
+          {MARK}<span>datalith</span>
+        </a>
+        <span className="dm-demo-tag">Demo · sample data</span>
+      </div>
+
+      {/* The workspace this console is signed into. Static in the demo — there is
+          one tenant — but shaped like the switcher a real console carries, so a
+          prospect reads it as their own company's seat. */}
+      <div className="dm-tenant">
+        <span className="dm-tenant-mark" aria-hidden="true">{monogram(TENANT.name)}</span>
+        <span className="dm-tenant-body">
+          <span className="dm-tenant-name">{TENANT.name}</span>
+          <span className="dm-tenant-env"><i aria-hidden="true" />Production · {TENANT.scope}</span>
+        </span>
+        <span className="dm-tenant-chev"><Icon name="chevrons-updown" size={14} /></span>
+      </div>
 
       <nav aria-label="Demo screens">
         <ul className="dm-rail-group">
@@ -56,9 +75,17 @@ export function Rail({ current, prefix }: RailProps) {
       </nav>
 
       <div className="dm-rail-foot">
-        <a className="dm-rail-cta" href={`${prefix}../index.html#audit`}>Start your free audit</a>
-        <p className="dm-rail-who">{TENANT.viewer.name}</p>
-        <p className="dm-rail-role">{TENANT.viewer.role}</p>
+        <a className="dm-rail-cta" href={`${prefix}../index.html#audit`}>
+          <span className="dm-rail-cta-k">Your own estate</span>
+          <span className="dm-rail-cta-t">Start your free audit <Icon name="arrow-up-right" size={13} /></span>
+        </a>
+        <div className="dm-rail-user">
+          <span className="dm-avatar" aria-hidden="true">{monogram(TENANT.viewer.name)}</span>
+          <span>
+            <p className="dm-rail-who">{TENANT.viewer.name}</p>
+            <p className="dm-rail-role">{TENANT.viewer.role}</p>
+          </span>
+        </div>
       </div>
     </aside>
   )

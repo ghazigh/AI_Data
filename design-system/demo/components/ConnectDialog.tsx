@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Drawer } from './Drawer'
 import { CATALOGUE, type CatalogueEntry } from '../data/sources'
+import { VendorMark } from './VendorMark'
 
 export interface ConnectDialogProps {
   open: boolean
@@ -36,9 +37,12 @@ export function ConnectDialog({ open, onClose, onConnect, connectedIds }: Connec
               return (
                 <li key={c.id}>
                   <button type="button" disabled={isConnected} onClick={() => setPicked(c)}>
-                    <span className="dm-cat-name">{c.name}</span>
-                    <span className="dm-cat-meta">
-                      {c.category} · {c.modalities.join(', ')}{isConnected ? ' · Already connected' : ''}
+                    <VendorMark name={c.vendor} />
+                    <span>
+                      <span className="dm-cat-name">{c.name}</span>
+                      <span className="dm-cat-meta">
+                        {c.vendor} · {c.category} · {c.modalities.join(', ')}{isConnected ? ' · Already connected' : ''}
+                      </span>
                     </span>
                   </button>
                 </li>

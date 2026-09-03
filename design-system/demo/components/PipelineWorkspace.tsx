@@ -11,6 +11,8 @@ import { ExecutionsTable } from './ExecutionsTable'
 import { RunMonitor } from './RunMonitor'
 import { TriggersTab } from './TriggersTab'
 import { SettingsTab } from './SettingsTab'
+import { useToast } from './Toast'
+import { Icon } from './Icon'
 
 const TABS: WorkspaceTab[] = [
   { id: 'pipeline', label: 'Pipeline' },
@@ -40,6 +42,7 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
   // returns null for an id nothing knows about, same as before.
   const { runs, startRun, cancelRun, advanceRuns, configFor, setConfig, settingsFor, allEntriesWithCreated } = useDemoState()
   const entry = allEntriesWithCreated().find(e => e.id === entryId)
+  const toast = useToast()
   const [active, setActive] = useState<string>(TABS[0].id)
   // Null on first paint — no component's panel may be open before the operator
   // opens one, or the server's markup and the client's first render disagree.
@@ -132,9 +135,12 @@ export function PipelineWorkspace({ entryId }: { entryId: string }) {
                 className="dm-btn is-ink"
                 disabled={!projection.runnable}
                 aria-describedby={projection.runnable ? undefined : RUN_BLOCKED_ID}
-                onClick={() => startRun(entry, runConfig)}
+                onClick={() => {
+                  startRun(entry, runConfig)
+                  toast({ title: `${entry.name} started`, detail: `${projection.stages.length} stages · projected ${projection.records.toLocaleString('en-US')} records`, tone: 'info' })
+                }}
               >
-                Run pipeline
+                <Icon name="play" size={14} /> Run pipeline
               </button>
               {!projection.runnable && (
                 <p className="dm-run-blocked" id={RUN_BLOCKED_ID}>{NO_SOURCES_REASON}</p>

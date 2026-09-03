@@ -1,7 +1,7 @@
 {
   "name": "@datalith/ui",
   "version": "0.1.0",
-  "description": "Datalith Confluence design system — every source, one graph, agent-ready.",
+  "description": "Datalith Confluence design system \u2014 every source, one graph, agent-ready.",
   "license": "UNLICENSED",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -30,7 +30,8 @@
     "shoot:demo": "node scripts/shoot-demo.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "serve": "node scripts/serve.mjs"
+    "serve": "node scripts/serve.mjs",
+    "shoot:states": "node scripts/shoot-states.mjs"
   },
   "peerDependencies": {
     "react": "^18 || ^19",

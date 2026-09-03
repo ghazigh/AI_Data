@@ -7,6 +7,7 @@ import { EntityDetail } from '../components/EntityDetail'
 import { IdentityPanel } from '../components/IdentityPanel'
 import { GRAPH_NODES, GRAPH_EDGES, KNOWLEDGE_BASES, IDENTITY_MATCH, nodesForDomain } from '../data/graph'
 import type { DomainKey } from '../data/types'
+import { Meter } from '../components/telemetry/Meter'
 
 export function Graph() {
   const [domain, setDomain] = useState<DomainKey | null>(null)
@@ -19,7 +20,11 @@ export function Graph() {
 
   return (
     <>
-      <PageHead eyebrow="Stage 04 — Graph" title="One map of the whole business" />
+      <PageHead
+        eyebrow="Stage 04 — Graph"
+        title="One map of the whole business"
+        lead="The Enterprise Knowledge Graph: identities resolved across systems, lineage kept, and each domain named as a knowledge base any agent can read under governance."
+      />
 
       <div className="dm-graph-layout">
         <Panel title="Knowledge bases">
@@ -40,6 +45,7 @@ export function Graph() {
                         the Ready screen name it — it is the same 0–100 score. */}
                     <span className="dm-kb-score"><em>readiness</em>{kb.score}</span>
                   </span>
+                  <Meter value={kb.score} target={70} tone={kb.score < 70 ? 'under' : 'default'} />
                   <span className="dm-kb-meta">served to {kb.servedTo} agents</span>
                 </button>
               </li>

@@ -29,12 +29,23 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 |---|---|
 | `docs/` | Market research, competitive landscape, product strategy, GTM plan and pitch narrative, plus the design specs and implementation plans. **Local only — gitignored, not in the repo.** |
 | [`website/`](website/) | **The production website** — 5 pages (home, platform, pricing, company, investors) + 404 + the `/demo/` product demo, SEO/OG/sitemap, animations. Published to GitHub Pages at <https://ghazigh.github.io/AI_Data/> |
-| [`website/demo/`](website/demo/) | The clickable product demo — seven screens over a sample estate. Open `website/demo/index.html` directly |
+| [`website/demo/`](website/demo/) | The clickable product demo — eight screens over a sample estate, with a presenter's guided tour, a ⌘K command palette, notifications and live pipeline runs. Serve `website/` over http (`npm run serve` in `design-system/`) — the client bundle is an ES module |
 | [`design-system/site/`](design-system/site/) | Website source (React pages + site.css/site.js) — rebuild with `npm run build:site` |
-| [`design-system/demo/`](design-system/demo/) | Demo source (React screens, static estate data, hydration guard) — rebuild with `npm run build:demo` |
+| [`design-system/demo/`](design-system/demo/) | Demo source (React screens, static estate data, hydration guard) — rebuild with `npm run build:demo`. Screenshots: `npm run shoot:demo` and `npm run shoot:states` (set `CHROMIUM_PATH` to a preinstalled Chromium if Playwright has no download of its own) |
 | [`landing/index.html`](landing/index.html) | Legacy single-file landing page — fully self-contained, open directly in a browser |
 | [`deck/Datalith-Pitch-Deck.pptx`](deck/Datalith-Pitch-Deck.pptx) | 13-slide seed pitch deck (PowerPoint) |
 | [`deck/generate-deck.js`](deck/generate-deck.js) | Deck generator (`node generate-deck.js`, requires `pptxgenjs`) — edit & regenerate |
+
+## The demo console
+
+`/demo/` is what a prospect sees in a meeting, so it is built to be presented, not just browsed:
+
+- **Guided tour** — a docked presenter's guide with one step per screen: the claim the screen makes, the talking points, and the one interaction worth showing. Previous/Next drive the same router the rail uses, so the rail, breadcrumb and guide never disagree.
+- **Command palette** (`⌘K`) — search sources, domains, entities, use cases and agents, or jump straight to a screen; arrow keys and Enter navigate.
+- **Needs attention** on the Overview — derived, never hand-listed: the failed pipeline, the high-severity red flags, sources awaiting credentials and the use cases a low domain score is holding back, each routed to the screen that fixes it.
+- **Opportunity map** on Use cases — impact against effort, one point per agent application, colour-coded by build status.
+- **Notifications, toasts and live runs** — a bell over the activity stream, confirmations for every operator action, and pipeline runs that visibly progress in their workspace.
+- Every number is derived from one static estate (`design-system/demo/data/`), nothing reads a clock or a random source, and the integrity tests hold every screen to the same figures.
 
 ## The product (one platform, five stages)
 
