@@ -77,10 +77,10 @@ h1, h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.035em
 
 /* stat lockups */
 .stat { position: absolute; will-change: transform, opacity; }
-.stat .v { display: flex; align-items: baseline; font-family: var(--display); font-weight: 800; font-size: 128px; letter-spacing: -0.05em; line-height: 0.9; color: #fff; font-variant-numeric: tabular-nums; }
+.stat .v { display: flex; align-items: baseline; font-family: var(--display); font-weight: 800; font-size: 112px; letter-spacing: -0.05em; line-height: 0.9; color: #fff; }
 .stat .v span, .stat .v small { display: block; line-height: 0.9; }
 .stat .v small { font-size: 0.42em; font-weight: 600; color: var(--muted); letter-spacing: -0.02em; margin-left: 6px; }
-.stat .l { margin-top: 56px; font-size: 26px; line-height: 1.3; color: var(--muted); max-width: 520px; }
+.stat .l { margin-top: 66px; font-size: 26px; line-height: 1.3; color: var(--muted); max-width: 520px; }
 .stat .l b { color: var(--on-ink); font-weight: 500; }
 .stat.giant .v { font-size: 300px; letter-spacing: -0.06em; }
 .stat.giant .l { margin-top: 70px; font-size: 34px; max-width: 640px; }
@@ -117,8 +117,8 @@ h1, h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.035em
 .ring .fill { fill: none; stroke: var(--blue); stroke-width: 22; stroke-linecap: round; filter: drop-shadow(0 0 18px rgba(61,95,255,0.6)); }
 .ring .tick { stroke: rgba(255,255,255,0.5); stroke-width: 4; stroke-linecap: round; }
 .ring .body { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
-.ring .v { font-family: var(--display); font-weight: 800; font-size: 150px; letter-spacing: -0.06em; line-height: 0.9; color: #fff; font-variant-numeric: tabular-nums; }
-.ring .v span { font-size: 40px; font-weight: 500; color: var(--muted); letter-spacing: -0.02em; }
+.ring .v { font-family: var(--display); font-weight: 800; font-size: 150px; letter-spacing: -0.06em; line-height: 0.9; color: #fff; }
+.ring .v .of { font-size: 40px; font-weight: 500; color: var(--muted); letter-spacing: -0.02em; }
 .ring .cap { margin-top: 10px; font-family: var(--mono); font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 .ring .delta { margin-top: 10px; font-size: 24px; font-weight: 600; color: var(--ok); }
 
@@ -168,7 +168,7 @@ h1, h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.035em
 /* close */
 .cta { position: absolute; display: flex; align-items: center; gap: 28px; padding: 26px 34px 26px 30px; border-radius: 22px; background: var(--paper); color: var(--ink); box-shadow: 0 30px 80px -30px rgba(0,0,0,0.9), 0 0 0 6px rgba(61,95,255,0.16); will-change: transform, opacity; }
 .cta .btn { display: inline-flex; align-items: center; gap: 12px; height: 76px; padding: 0 30px; border-radius: 16px; background: var(--ink); color: #fff; font-size: 30px; font-weight: 700; white-space: nowrap; }
-.cta .txt { font-size: 24px; line-height: 1.3; color: #4A4A55; max-width: 520px; }
+.cta .txt { font-size: 24px; line-height: 1.3; color: #4A4A55; max-width: 640px; }
 .cta .txt b { display: block; font-family: var(--display); font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
 .site { position: absolute; font-family: var(--mono); font-size: 26px; letter-spacing: 0.1em; color: var(--muted); }
 .site b { color: #fff; font-weight: 500; }
