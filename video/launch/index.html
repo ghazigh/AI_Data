@@ -12,42 +12,49 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="66" data-width="1920" data-height="1080" data-fps="30">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="55" data-width="1920" data-height="1080" data-fps="30">
 
-      <!-- shared SVG symbols and the per-camera motion-blur filters -->
+      <!-- shared SVG symbols, vendor marks and the per-camera motion-blur filters -->
       <svg width="0" height="0" aria-hidden="true" style="position:absolute">
         <defs>
           <linearGradient id="pulse-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFC800" stop-opacity="0" /><stop offset="0.5" stop-color="#FFB300" /><stop offset="1" stop-color="#3D5FFF" /></linearGradient>
-          <linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.55" /><stop offset="1" stop-color="#ffffff" stop-opacity="0.04" /></linearGradient>
           <linearGradient id="mark-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A8FFF" /><stop offset="0.6" stop-color="#3D5FFF" /><stop offset="1" stop-color="#FFB300" /></linearGradient>
           <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" /></symbol>
-          <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" /><path d="M10 8.5v7l5.5-3.5z" fill="currentColor" /></symbol>
-          <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6" fill="currentColor" /><circle cx="18" cy="8" r="2.6" fill="currentColor" /><circle cx="12" cy="18" r="2.6" fill="currentColor" /><path d="M8 7l7.5 1M7.2 8l3.8 8M16.8 10l-3.8 6" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
           <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="currentColor" /></symbol>
           <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" stroke="currentColor" stroke-width="2" fill="none" /><path d="M8.5 12l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" /></symbol>
           <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
-          <symbol id="i-spin" viewBox="0 0 40 40"><path d="M20 5a15 15 0 1 1-10.6 4.4" stroke="#3D5FFF" stroke-width="4" fill="none" stroke-linecap="round" /></symbol>
           <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
           <symbol id="i-right" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
-          <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" /></symbol>
           <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" stroke-width="2" fill="none" /><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="currentColor" stroke-width="2" fill="none" /></symbol>
           <symbol id="i-rows" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" /></symbol>
           <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /><path d="M3 13l9 5 9-5M3 17l9 5 9-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /></symbol>
-          <symbol id="i-knot" viewBox="0 0 24 24"><path d="M12 3a4.5 4.5 0 0 1 3.9 6.75A4.5 4.5 0 0 1 12 21a4.5 4.5 0 0 1-3.9-6.75A4.5 4.5 0 0 1 12 3z" stroke="currentColor" stroke-width="1.8" fill="none" /><path d="M4.2 7.5a4.5 4.5 0 0 1 7.8 0 4.5 4.5 0 0 1 7.8 0M4.2 16.5a4.5 4.5 0 0 0 7.8 0 4.5 4.5 0 0 0 7.8 0" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
-          <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round" /><path d="M3 7l9 5 9-5M12 12v10" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
+          <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6" fill="currentColor" /><circle cx="18" cy="8" r="2.6" fill="currentColor" /><circle cx="12" cy="18" r="2.6" fill="currentColor" /><path d="M8 7l7.5 1M7.2 8l3.8 8M16.8 10l-3.8 6" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
+          <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /><path d="M14 2v5h5M9 12h7M9 16h7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-box" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /><path d="M3 7l9 5 9-5M12 12v10" stroke="currentColor" stroke-width="2" fill="none" /></symbol>
+          <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" /><path d="M12 7v10M9.5 9.5h3.5a1.75 1.75 0 0 1 0 3.5h-2a1.75 1.75 0 0 0 0 3.5h3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" /></symbol>
           <symbol id="i-mark" viewBox="0 0 28 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M0 3 C8 3, 10 10, 16 10" /><path d="M0 10 L16 10" /><path d="M0 17 C8 17, 10 10, 16 10" /></g><path d="M16 10 L28 10" fill="none" stroke="#3D5FFF" stroke-width="3.4" stroke-linecap="round" /></symbol>
           <symbol id="i-arrow" viewBox="0 0 32 40"><path d="M4 2 L4 31 L11 24 L16.5 37 L21.5 35 L16 22 L26 22 Z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round" /></symbol>
-          <symbol id="i-arrow-c" viewBox="0 0 32 40"><path d="M4 2 L4 31 L11 24 L16.5 37 L21.5 35 L16 22 L26 22 Z" fill="#FF6A3D" stroke="#fff" stroke-width="2" stroke-linejoin="round" /></symbol>
-          <symbol id="i-hand" viewBox="0 0 48 48"><path d="M14 26v-9a3 3 0 0 1 6 0v-4a3 3 0 0 1 6 0v3a3 3 0 0 1 6 0v3a3 3 0 0 1 6 0v10a12 12 0 0 1-24 0v-3l-3-4a3 3 0 0 1 3-4z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round" /></symbol>
-          <filter id="mb-open" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-open" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-p1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-p1" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-r1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-r1" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-p2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-p2" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <symbol id="lg-confluence" viewBox="0 0 24 24"><path d="M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z" fill="currentColor" /></symbol>
+<symbol id="lg-databricks" viewBox="0 0 24 24"><path d="M.95 14.184L12 20.403l9.919-5.55v2.21L12 22.662l-10.484-5.96-.565.308v.77L12 24l11.05-6.218v-4.317l-.515-.309L12 19.118l-9.867-5.653v-2.21L12 16.805l11.05-6.218V6.32l-.515-.308L12 11.974 2.647 6.681 12 1.388l7.76 4.368.668-.411v-.566L12 0 .95 6.27v.72L12 13.207l9.919-5.55v2.26L12 15.52 1.516 9.56l-.565.308Z" fill="currentColor" /></symbol>
+<symbol id="lg-dropbox" viewBox="0 0 24 24"><path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z" fill="currentColor" /></symbol>
+<symbol id="lg-googlecloud" viewBox="0 0 24 24"><path d="M12.19 2.38a9.344 9.344 0 0 0-9.234 6.893c.053-.02-.055.013 0 0-3.875 2.551-3.922 8.11-.247 10.941l.006-.007-.007.03a6.717 6.717 0 0 0 4.077 1.356h5.173l.03.03h5.192c6.687.053 9.376-8.605 3.835-12.35a9.365 9.365 0 0 0-2.821-4.552l-.043.043.006-.05A9.344 9.344 0 0 0 12.19 2.38zm-.358 4.146c1.244-.04 2.518.368 3.486 1.15a5.186 5.186 0 0 1 1.862 4.078v.518c3.53-.07 3.53 5.262 0 5.193h-5.193l-.008.009v-.04H6.785a2.59 2.59 0 0 1-1.067-.23h.001a2.597 2.597 0 1 1 3.437-3.437l3.013-3.012A6.747 6.747 0 0 0 8.11 8.24c.018-.01.04-.026.054-.023a5.186 5.186 0 0 1 3.67-1.69z" fill="currentColor" /></symbol>
+<symbol id="lg-googledrive" viewBox="0 0 24 24"><path d="M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z" fill="currentColor" /></symbol>
+<symbol id="lg-hubspot" viewBox="0 0 24 24"><path d="M18.164 7.93V5.084a2.198 2.198 0 001.267-1.978v-.067A2.2 2.2 0 0017.238.845h-.067a2.2 2.2 0 00-2.193 2.193v.067a2.196 2.196 0 001.252 1.973l.013.006v2.852a6.22 6.22 0 00-2.969 1.31l.012-.01-7.828-6.095A2.497 2.497 0 104.3 4.656l-.012.006 7.697 5.991a6.176 6.176 0 00-1.038 3.446c0 1.343.425 2.588 1.147 3.607l-.013-.02-2.342 2.343a1.968 1.968 0 00-.58-.095h-.002a2.033 2.033 0 102.033 2.033 1.978 1.978 0 00-.1-.595l.005.014 2.317-2.317a6.247 6.247 0 104.782-11.134l-.036-.005zm-.964 9.378a3.206 3.206 0 113.215-3.207v.002a3.206 3.206 0 01-3.207 3.207z" fill="currentColor" /></symbol>
+<symbol id="lg-jira" viewBox="0 0 24 24"><path d="M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005zm5.723-5.756H5.736a5.215 5.215 0 0 0 5.215 5.214h2.129v2.058a5.218 5.218 0 0 0 5.215 5.214V6.758a1.001 1.001 0 0 0-1.001-1.001zM23.013 0H11.455a5.215 5.215 0 0 0 5.215 5.215h2.129v2.057A5.215 5.215 0 0 0 24 12.483V1.005A1.001 1.001 0 0 0 23.013 0Z" fill="currentColor" /></symbol>
+<symbol id="lg-mongodb" viewBox="0 0 24 24"><path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z" fill="currentColor" /></symbol>
+<symbol id="lg-notion" viewBox="0 0 24 24"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z" fill="currentColor" /></symbol>
+<symbol id="lg-postgresql" viewBox="0 0 24 24"><path d="M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698zM2.371 11.8765c-.7435-2.4358-1.1779-4.8851-1.2123-5.5719-.1086-2.1714.4171-3.6829 1.5623-4.4927 1.8367-1.2986 4.8398-.5408 6.108-.13-.0032.0032-.0066.0061-.0098.0094-2.0238 2.044-1.9758 5.536-1.9708 5.7495-.0002.0823.0066.1989.0162.3593.0348.5873.0996 1.6804-.0735 2.9184-.1609 1.1504.1937 2.2764.9728 3.0892.0806.0841.1648.1631.2518.2374-.3468.3714-1.1004 1.1926-1.9025 2.1576-.5677.6825-.9597.5517-1.0886.5087-.3919-.1307-.813-.5871-1.2381-1.3223-.4796-.839-.9635-2.0317-1.4155-3.5126zm6.0072 5.0871c-.1711-.0428-.3271-.1132-.4322-.1772.0889-.0394.2374-.0902.4833-.1409 1.2833-.2641 1.4815-.4506 1.9143-1.0002.0992-.126.2116-.2687.3673-.4426a.3549.3549 0 0 0 .0737-.1298c.1708-.1513.2724-.1099.4369-.0417.156.0646.3078.26.3695.4752.0291.1016.0619.2945-.0452.4444-.9043 1.2658-2.2216 1.2494-3.1676 1.0128zm2.094-3.988-.0525.141c-.133.3566-.2567.6881-.3334 1.003-.6674-.0021-1.3168-.2872-1.8105-.8024-.6279-.6551-.9131-1.5664-.7825-2.5004.1828-1.3079.1153-2.4468.079-3.0586-.005-.0857-.0095-.1607-.0122-.2199.2957-.2621 1.6659-.9962 2.6429-.7724.4459.1022.7176.4057.8305.928.5846 2.7038.0774 3.8307-.3302 4.7363-.084.1866-.1633.3629-.2311.5454zm7.3637 4.5725c-.0169.1768-.0358.376-.0618.5959l-.146.4383a.3547.3547 0 0 0-.0182.1077c-.0059.4747-.054.6489-.115.8693-.0634.2292-.1353.4891-.1794 1.0575-.11 1.4143-.8782 2.2267-2.4172 2.5565-1.5155.3251-1.7843-.4968-2.0212-1.2217a6.5824 6.5824 0 0 0-.0769-.2266c-.2154-.5858-.1911-1.4119-.1574-2.5551.0165-.5612-.0249-1.9013-.3302-2.6462.0044-.2932.0106-.5909.019-.8918a.3529.3529 0 0 0-.0153-.1126 1.4927 1.4927 0 0 0-.0439-.208c-.1226-.4283-.4213-.7866-.7797-.9351-.1424-.059-.4038-.1672-.7178-.0869.067-.276.1831-.5875.309-.9249l.0529-.142c.0595-.16.134-.3257.213-.5012.4265-.9476 1.0106-2.2453.3766-5.1772-.2374-1.0981-1.0304-1.6343-2.2324-1.5098-.7207.0746-1.3799.3654-1.7088.5321a5.6716 5.6716 0 0 0-.1958.1041c.0918-1.1064.4386-3.1741 1.7357-4.4823a4.0306 4.0306 0 0 1 .3033-.276.3532.3532 0 0 0 .1447-.0644c.7524-.5706 1.6945-.8506 2.802-.8325.4091.0067.8017.0339 1.1742.081 1.939.3544 3.2439 1.4468 4.0359 2.3827.8143.9623 1.2552 1.9315 1.4312 2.4543-1.3232-.1346-2.2234.1268-2.6797.779-.9926 1.4189.543 4.1729 1.2811 5.4964.1353.2426.2522.4522.2889.5413.2403.5825.5515.9713.7787 1.2552.0696.087.1372.1714.1885.245-.4008.1155-1.1208.3825-1.0552 1.717-.0123.1563-.0423.4469-.0834.8148-.0461.2077-.0702.4603-.0994.7662zm.8905-1.6211c-.0405-.8316.2691-.9185.5967-1.0105a2.8566 2.8566 0 0 0 .135-.0406 1.202 1.202 0 0 0 .1342.103c.5703.3765 1.5823.4213 3.0068.1344-.2016.1769-.5189.3994-.9533.6011-.4098.1903-1.0957.333-1.7473.3636-.7197.0336-1.0859-.0807-1.1721-.151zm.5695-9.2712c-.0059.3508-.0542.6692-.1054 1.0017-.055.3576-.112.7274-.1264 1.1762-.0142.4368.0404.8909.0932 1.3301.1066.887.216 1.8003-.2075 2.7014a3.5272 3.5272 0 0 1-.1876-.3856c-.0527-.1276-.1669-.3326-.3251-.6162-.6156-1.1041-2.0574-3.6896-1.3193-4.7446.3795-.5427 1.3408-.5661 2.1781-.463zm.2284 7.0137a12.3762 12.3762 0 0 0-.0853-.1074l-.0355-.0444c.7262-1.1995.5842-2.3862.4578-3.4385-.0519-.4318-.1009-.8396-.0885-1.2226.0129-.4061.0666-.7543.1185-1.0911.0639-.415.1288-.8443.1109-1.3505.0134-.0531.0188-.1158.0118-.1902-.0457-.4855-.5999-1.938-1.7294-3.253-.6076-.7073-1.4896-1.4972-2.6889-2.0395.5251-.1066 1.2328-.2035 2.0244-.1859 2.0515.0456 3.6746.8135 4.8242 2.2824a.908.908 0 0 1 .0667.1002c.7231 1.3556-.2762 6.2751-2.9867 10.5405zm-8.8166-6.1162c-.025.1794-.3089.4225-.6211.4225a.5821.5821 0 0 1-.0809-.0056c-.1873-.026-.3765-.144-.5059-.3156-.0458-.0605-.1203-.178-.1055-.2844.0055-.0401.0261-.0985.0925-.1488.1182-.0894.3518-.1226.6096-.0867.3163.0441.6426.1938.6113.4186zm7.9305-.4114c.0111.0792-.049.201-.1531.3102-.0683.0717-.212.1961-.4079.2232a.5456.5456 0 0 1-.075.0052c-.2935 0-.5414-.2344-.5607-.3717-.024-.1765.2641-.3106.5611-.352.297-.0414.6111.0088.6356.1851z" fill="currentColor" /></symbol>
+<symbol id="lg-sap" viewBox="0 0 24 24"><path d="M0 6.064v11.872h12.13L24 6.064zm3.264 2.208h.005c.863.001 1.915.245 2.676.633l-.82 1.43c-.835-.404-1.255-.442-1.73-.467-.708-.038-1.064.215-1.069.488-.007.332.669.633 1.305.838.964.306 2.19.715 2.377 1.9L7.77 8.437h2.046l2.064 5.576-.007-5.575h2.37c2.257 0 3.318.764 3.318 2.519 0 1.575-1.09 2.514-2.936 2.514h-.763l-.01 2.094-3.588-.003-.25-.908c-.37.122-.787.189-1.23.189-.456 0-.885-.071-1.263-.2l-.358.919-2 .006.09-.462c-.029.025-.057.05-.087.074-.535.43-1.208.629-2.037.644l-.213.002a5.075 5.075 0 0 1-2.581-.675l.73-1.448c.79.467 1.286.572 1.956.558.347-.007.598-.07.761-.239a.557.557 0 0 0 .156-.369c.007-.376-.53-.553-1.185-.756-.531-.164-1.135-.389-1.606-.735-.559-.41-.825-.924-.812-1.65a1.99 1.99 0 0 1 .566-1.377c.519-.537 1.357-.863 2.363-.863zm10.597 1.67v1.904h.521c.694 0 1.247-.23 1.248-.964 0-.709-.554-.94-1.248-.94zm-5.087.767l-.748 2.362c.223.085.481.133.757.133.268 0 .52-.047.742-.126l-.736-2.37z" fill="currentColor" /></symbol>
+<symbol id="lg-snowflake" viewBox="0 0 24 24"><path d="M24 3.459c0 .646-.418 1.18-1.141 1.18-.723 0-1.142-.534-1.142-1.18 0-.647.419-1.18 1.142-1.18.723 0 1.141.533 1.141 1.18zm-.228 0c0-.533-.38-.951-.913-.951s-.913.38-.913.95c0 .533.38.952.913.952.57 0 .913-.419.913-.951zm-1.37-.533h.495c.266 0 .456.152.456.38 0 .153-.076.229-.19.305l.19.266v.038h-.266l-.19-.266h-.229v.266h-.266zm.495.228h-.229v.267h.229c.114 0 .152-.038.152-.114.038-.077-.038-.153-.152-.153zM7.602 12.4c.038-.151.076-.304.076-.456 0-.114-.038-.228-.038-.342-.114-.343-.304-.647-.646-.838l-4.87-2.777c-.685-.38-1.56-.152-1.94.533-.381.685-.153 1.56.532 1.94l2.701 1.56-2.701 1.56c-.685.38-.913 1.256-.533 1.94.38.685 1.256.914 1.94.533l4.832-2.777c.343-.267.571-.533.647-.876zm1.332 2.626c-.266-.038-.57.038-.837.19l-4.832 2.777c-.685.38-.913 1.256-.532 1.94.38.686 1.255.914 1.94.533l2.701-1.56v3.12c0 .8.647 1.408 1.446 1.408.799 0 1.407-.647 1.407-1.408v-5.592c0-.761-.57-1.37-1.293-1.408zm4.946-6.088c.266.038.57-.038.837-.19l4.832-2.777c.685-.38.913-1.256.532-1.94-.38-.686-1.255-.914-1.94-.533l-2.701 1.56V1.975c0-.799-.647-1.408-1.446-1.408-.799 0-1.446.609-1.446 1.408V7.53c0 .76.609 1.37 1.332 1.407zM3.265 5.97l4.832 2.777c.266.152.533.19.837.19.723-.038 1.331-.684 1.331-1.407V1.975c0-.799-.646-1.408-1.407-1.408-.799 0-1.446.647-1.446 1.408v3.12l-2.701-1.56c-.685-.38-1.56-.152-1.94.533-.419.646-.19 1.521.494 1.902zm9.093 6.011a.412.412 0 00-.114-.266l-.57-.571a.346.346 0 00-.267-.114.412.412 0 00-.266.114l-.571.57a.411.411 0 00-.114.267c0 .076.038.19.114.267l.57.57a.345.345 0 00.267.114c.076 0 .19-.038.266-.114l.571-.57a.412.412 0 00.114-.267zm1.598.533L11.94 14.53c-.039.038-.153.114-.229.114h-.608a.411.411 0 01-.267-.114L8.82 12.514a.408.408 0 01-.076-.229v-.608c0-.076.038-.19.114-.267l2.016-2.016a.41.41 0 01.267-.114h.608a.41.41 0 01.267.114l2.016 2.016a.347.347 0 01.114.267v.608c-.076.077-.114.19-.19.229zm5.593 5.44l-4.832-2.777c-.266-.152-.57-.19-.837-.152-.723.038-1.332.684-1.332 1.408v5.554c0 .8.647 1.408 1.408 1.408.799 0 1.446-.647 1.446-1.408v-3.12l2.7 1.56c.686.38 1.561.152 1.941-.533.419-.646.19-1.521-.494-1.94zm2.549-7.533l-2.701 1.56 2.7 1.56c.686.38.914 1.256.533 1.94-.38.685-1.255.913-1.94.533l-4.832-2.778a1.644 1.644 0 01-.647-.798c-.037-.153-.076-.305-.076-.457 0-.114.039-.228.039-.342.114-.343.342-.647.646-.837l4.832-2.778c.685-.38 1.56-.152 1.94.533.457.609.19 1.484-.494 1.864" fill="currentColor" /></symbol>
+<symbol id="lg-stripe" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z" fill="currentColor" /></symbol>
+<symbol id="lg-zendesk" viewBox="0 0 24 24"><path d="M12.914 2.904V16.29L24 2.905H12.914zM0 2.906C0 5.966 2.483 8.45 5.543 8.45s5.542-2.484 5.543-5.544H0zm11.086 4.807L0 21.096h11.086V7.713zm7.37 7.84c-3.063 0-5.542 2.48-5.542 5.543H24c0-3.06-2.48-5.543-5.543-5.543z" fill="currentColor" /></symbol>
+          <filter id="mb-estate" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-estate" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-dash" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-dash" in="SourceGraphic" stdDeviation="0 0" /></filter>
           <filter id="mb-graph" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-graph" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-edit" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-edit" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-client" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-client" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-stats" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-stats" in="SourceGraphic" stdDeviation="0 0" /></filter>
-          <filter id="mb-words" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-words" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-pipes" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-pipes" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-uses" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-uses" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-end" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-end" in="SourceGraphic" stdDeviation="0 0" /></filter>
         </defs>
       </svg>
 
@@ -61,348 +68,133 @@
       <div id="field" data-layout-ignore><div class="fb fb1"></div><div class="fb fb2"></div><div class="circle" id="field-circle"></div></div>
       <div id="darkplate" data-layout-ignore><div class="dots"></div><div class="bloom"></div></div>
 
-      <!-- B1–B3 · estate builder → drop → exploded view -->
-      <section id="sc-open" class="clip scene" data-start="0" data-duration="3.3" data-track-index="1">
-        <div class="cam" id="cam-open" style="filter:url(#mb-open)">
-          <div class="p3d">
-            <div id="builder" class="card" style="left:410px; top:150px; width:1100px; height:780px; transform-style:preserve-3d" data-layout-allow-overflow>
-              <div id="b-chip" class="chip abs" style="left:40px; top:36px"><i>MM</i>Meridian Mutual</div>
-              <h2 id="b-h" class="display h-mid abs" style="left:40px; top:120px">Build your estate</h2>
-              <div id="b-dash" class="dash" style="left:40px; top:230px; width:1020px; height:330px"><span class="tag" style="left:14px; top:14px">Sources</span></div>
-              <div id="b-slot-a" class="slot sel" style="left:80px; top:290px; width:460px; height:230px"></div>
-              <div id="b-slot-b" class="slot" style="left:580px; top:290px; width:440px; height:230px"></div>
-              <div id="b-tile" class="tile" style="left:80px; top:290px; width:460px; height:230px; opacity:0"><span class="tag" style="left:16px; top:16px; background:rgba(0,0,0,0.6)">Claims · 1.4M rows</span></div>
-              <p id="b-copy" class="body abs" style="left:40px; top:600px; width:820px">Connect every system read-only. Datalith maps the estate, scores each domain and tells you <b>what your agents can safely use.</b></p>
-              <div id="b-send" class="pill abs" style="left:880px; top:600px; padding:14px 30px"><svg width="22" height="22"><use href="#i-bolt" fill="#fff" /></svg>Score</div>
-              <div id="b-t" class="circ abs" style="left:880px; top:690px; width:64px; height:64px; font-family:var(--mono); font-size:26px">T</div>
-              <div id="b-tile2" class="tile blue abs" style="left:1140px; top:100px; width:260px; height:160px; opacity:0"></div>
-            </div>
-            <div id="drag" class="abs" style="left:1380px; top:420px" data-layout-allow-overflow>
-              <div id="drag-pill" class="pill white" style="left:0; top:0; padding:12px 24px 12px 12px"><span class="sq"><svg width="20" height="20"><use href="#i-db" fill="none" stroke="#fff" /></svg></span>Snowflake</div>
-              <svg id="cur-hand" class="cursor hand abs" style="left:120px; top:40px"><use href="#i-hand" /></svg>
-            </div>
+      <!-- 1 + 2 · data everywhere → one platform -->
+      <section id="sc-estate" class="clip scene" data-start="0" data-duration="11.6" data-track-index="1">
+        <div class="cam" id="cam-estate" style="filter:url(#mb-estate)">
+          <div id="estate" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
+            <svg id="e-conn" class="conn2" width="1920" height="1080" viewBox="0 0 1920 1080" style="overflow:visible" data-layout-allow-overflow></svg>
+            <div id="logos" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow></div>
+            <div id="hub" class="hub" style="left:850px; top:430px; width:220px; height:220px"><svg width="110" height="79" viewBox="0 0 28 20"><use href="#i-mark" style="color:#fff" /></svg></div>
+            <div id="hubring" class="hubring" style="left:826px; top:406px; width:268px; height:268px"></div>
+            <div id="hub-lbl" class="pill abs" style="left:0; top:0"><span class="sq" style="background:#2F7A1F"><svg width="18" height="18"><use href="#i-check" style="color:#fff" /></svg></span>Read-only · 18 sources connected</div>
           </div>
+          <div class="center" style="top:470px"><div id="t-every" class="display h-big" data-layout-allow-overlap>Your data is everywhere.</div></div>
+          <div class="center" style="top:470px"><div id="t-one" class="display h-big" data-layout-allow-overlap>One platform. Nothing moves.</div></div>
         </div>
       </section>
 
-      <!-- B4 · full-bleed field, "Hi," -->
-      <section id="sc-hi" class="clip scene" data-start="3.2" data-duration="1.3" data-track-index="1">
-        <div class="cam" id="cam-hi">
-          <div class="center" style="top:330px"><div id="hi-line" class="display white h-giant" data-layout-allow-overlap><svg id="hi-star" width="150" height="150" style="vertical-align:-0.05em; margin-right:30px"><use href="#i-star" style="color:#fff" /></svg><span id="hi-1">Hi,</span></div></div>
-          <div class="center" style="top:640px"><div id="hi-2" class="display white h-big" data-layout-allow-overlap>what should your agents know?</div></div>
-        </div>
-      </section>
-
-      <!-- B5 · prompt one -->
-      <section id="sc-p1" class="clip scene" data-start="4.4" data-duration="2.3" data-track-index="1">
-        <div class="cam" id="cam-p1" style="filter:url(#mb-p1)">
-          <div class="center" style="top:250px"><div id="p1-h" class="display h-big" data-layout-allow-overlap><svg width="76" height="76" style="vertical-align:-0.08em; margin-right:18px"><use href="#i-star" style="color:#F49A9A" /></svg>Hi, what should your agents know?</div></div>
-          <div id="p1-box" class="prompt" style="left:360px; top:520px">
-            <span class="plus">+</span>
-            <span class="txt" id="p1-txt">Connect our estate and score it for agent-readiness</span>
-            <span class="model">Claude Opus 4.8 <span style="opacity:0.5">⌄</span></span>
-            <span class="go" id="p1-go"><svg><use href="#i-up" /></svg></span>
-          </div>
-          <svg id="cur-1" class="cursor big abs" style="left:1700px; top:900px"><use href="#i-arrow" /></svg>
-        </div>
-      </section>
-
-      <!-- B6–B7 · generated readiness report → stacked deck of domains -->
-      <section id="sc-r1" class="clip scene" data-start="6.4" data-duration="4.1" data-track-index="1">
-        <div class="cam" id="cam-r1" style="filter:url(#mb-r1)">
-          <div class="p3d">
-            <div id="deck" class="abs" style="left:0; top:0; width:1920px; height:1080px; transform-style:preserve-3d">
-              <div id="dk-5" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">5</div><p class="display h-mid abs" style="left:110px; top:40px">Finance</p><p class="label abs" style="left:110px; top:110px">Readiness 58 · 4 flags</p></div>
-              <div id="dk-4" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">4</div><p class="display h-mid abs" style="left:110px; top:40px">Brokers</p><p class="label abs" style="left:110px; top:110px">Readiness 64 · 3 flags</p></div>
-              <div id="dk-3" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">3</div><p class="display h-mid abs" style="left:110px; top:40px">Customers</p><p class="label abs" style="left:110px; top:110px">Readiness 71 · 2 flags</p></div>
-              <div id="dk-2" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">2</div><p class="display h-mid abs" style="left:110px; top:40px">Policy</p><p class="label abs" style="left:110px; top:110px">Readiness 74 · 1 flag</p></div>
-              <div id="dk-1" class="card dk" style="left:560px; top:120px; width:800px; height:1000px; box-shadow: var(--sh-card), 0 0 0 6px rgba(255,179,0,0.18)">
-                <div class="badge black num" id="dk-1-badge" style="left:34px; top:34px">1</div>
-                <p class="display h-mid abs" style="left:110px; top:40px">Claims</p>
-                <p class="label abs" style="left:110px; top:110px">Meridian Mutual · scored just now</p>
-                <div class="abs" style="left:60px; top:200px"><div class="score"><span class="n" id="r1-n">0</span><span class="of">/100</span></div><p class="label" style="margin-top:6px; font-size:22px">Agent-readiness</p></div>
-                <div class="abs" id="r1-rows" style="left:60px; top:470px; width:680px">
-                  <div class="drow"><b>Completeness</b><span class="bar"><i style="width:82%"></i></span><span class="v">82</span></div>
-                  <div class="drow"><b>Freshness</b><span class="bar"><i style="width:64%"></i></span><span class="v">64</span></div>
-                  <div class="drow"><b>Consistency</b><span class="bar"><i style="width:74%"></i></span><span class="v">74</span></div>
-                  <div class="drow"><b>Semantic coverage</b><span class="bar"><i style="width:58%"></i></span><span class="v">58</span></div>
-                  <div class="drow"><b>Governance</b><span class="bar"><i style="width:79%"></i></span><span class="v">79</span></div>
-                </div>
-                <div class="abs" style="left:60px; top:840px"><span class="btn">Fix the 3 flags <svg width="22" height="22"><use href="#i-right" style="color:#fff" /></svg></span></div>
-                <p class="label abs" style="left:60px; top:930px">Datalith · read-only · nothing moved</p>
+      <!-- 3 · the dashboard: quality and agent-readiness -->
+      <section id="sc-dash" class="clip scene" data-start="11.3" data-duration="8.3" data-track-index="1">
+        <div class="cam" id="cam-dash" style="filter:url(#mb-dash)">
+          <div id="t-dash" class="display h-big abs" style="left:210px; top:44px" data-layout-allow-overlap>Every source, scored.</div>
+          <div id="dash" class="card" style="left:210px; top:180px; width:1500px; height:820px">
+            <div class="hdr"><span class="chip" style="position:relative; box-shadow:none; padding-left:0"><i style="background:#DDEFEA; color:#0B4F4A">MM</i>Meridian Mutual · estate</span><span class="label" style="margin-left:auto">Updated just now</span></div>
+            <div class="abs" id="d-ring" style="left:50px; top:130px; width:360px; height:360px">
+              <svg class="ringsvg" width="360" height="360" viewBox="0 0 360 360"><path class="track" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" /><path class="fill" id="d-fill" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" /></svg>
+              <div class="abs" style="left:0; top:118px; width:360px; text-align:center"><div style="font-size:112px; font-weight:500; letter-spacing:-0.05em; line-height:1"><span id="d-score" data-layout-allow-overlap>0</span></div><div class="label" style="font-size:20px; margin-top:8px">Agent-readiness / 100</div></div>
+            </div>
+            <div class="kpi" style="left:70px; top:540px"><div class="v" id="d-src">0</div><div class="k">Sources connected</div></div>
+            <div class="kpi" style="left:300px; top:540px"><div class="v" id="d-rec">0.0M</div><div class="k">Records mapped</div></div>
+            <div class="kpi" style="left:70px; top:660px"><div class="v">8</div><div class="k">Domains</div></div>
+            <div class="kpi" style="left:300px; top:660px"><div class="v" id="d-flags">0</div><div class="k">Fixes proposed</div></div>
+            <div class="abs" id="d-quality" style="left:470px; top:130px; width:640px; height:330px" data-layout-allow-overflow>
+              <div class="qtile" style="left:0; top:0"><div class="k">Completeness</div><div class="v">82</div><div class="b"><i style="width:82%"></i></div></div>
+              <div class="qtile" style="left:330px; top:0"><div class="k">Freshness</div><div class="v">64</div><div class="b"><i style="width:64%"></i></div></div>
+              <div class="qtile" style="left:0; top:176px"><div class="k">Consistency</div><div class="v">74</div><div class="b"><i style="width:74%"></i></div></div>
+              <div class="qtile" style="left:330px; top:176px"><div class="k">Semantic coverage</div><div class="v">58</div><div class="b"><i style="width:58%"></i></div></div>
+            </div>
+            <div class="abs" id="d-domains" style="left:1150px; top:130px; width:310px" data-layout-allow-overflow>
+              <p class="label" style="margin-bottom:8px">Readiness by domain</p>
+              <div class="drow" style="height:58px; font-size:22px"><b>Claims</b><span class="bar"><i style="width:82%"></i></span><span class="v">82</span></div>
+              <div class="drow" style="height:58px; font-size:22px"><b>Policy</b><span class="bar"><i style="width:74%"></i></span><span class="v">74</span></div>
+              <div class="drow" style="height:58px; font-size:22px"><b>Customers</b><span class="bar"><i style="width:71%"></i></span><span class="v">71</span></div>
+              <div class="drow" style="height:58px; font-size:22px"><b>Finance</b><span class="bar"><i style="width:68%"></i></span><span class="v">68</span></div>
+              <div class="drow" style="height:58px; font-size:22px"><b>Brokers</b><span class="bar"><i style="width:64%"></i></span><span class="v">64</span></div>
+              <div class="drow" style="height:58px; font-size:22px; border-bottom:0"><b>Support</b><span class="bar"><i style="width:58%; background:#E0A83E"></i></span><span class="v">58</span></div>
+            </div>
+            <div class="abs" id="d-note" style="left:470px; top:520px; width:990px; height:220px; border-radius:22px; background:#F6F6F8; padding:26px 30px" data-layout-allow-overflow>
+              <p class="label">What holds readiness back</p>
+              <div style="display:flex; gap:14px; margin-top:16px; flex-wrap:wrap">
+                <span class="step" style="background:#FFF1D6; color:#9A5B00">Unmasked PII · Salesforce</span><span class="step" style="background:#FFF1D6; color:#9A5B00">Duplicate policyholders · Guidewire</span><span class="step" style="background:#FFF1D6; color:#9A5B00">Treaty PDFs unchunked · SharePoint</span><span class="step" style="background:#FFF1D6; color:#9A5B00">Stale invoices · SAP</span>
               </div>
+              <p class="body" style="margin-top:22px; font-size:21px">Each flag comes with a pipeline that fixes it. <b>Nothing is moved or copied.</b></p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- B8 · brand card -->
-      <section id="sc-brand" class="clip scene" data-start="10.4" data-duration="2.1" data-track-index="1">
-        <div class="cam" id="cam-brand">
-          <div class="abs" style="left:0; top:0; width:1920px; height:1080px; background: linear-gradient(120deg, rgba(255,179,0,0.55) 0%, rgba(255,200,0,0.15) 40%, rgba(61,95,255,0.18) 100%)"></div>
-          <div class="center" style="top:360px" data-layout-allow-overflow>
-            <div style="position:relative; width:1180px; height:360px" data-layout-allow-overflow>
-              <div id="brand-word" class="serif abs" style="left:0; top:0; font-size:330px; clip-path: inset(0 100% 0 0)">datalith</div>
-              <svg id="brand-mark" class="abs" width="300" height="214" style="left:1000px; top:80px; transform-origin:0 50%" viewBox="0 0 28 20"><use href="#i-mark" style="color:#111" /></svg>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- B9 · prompt two, typed live -->
-      <section id="sc-p2" class="clip scene" data-start="12.4" data-duration="2.4" data-track-index="1">
-        <div class="cam" id="cam-p2" style="filter:url(#mb-p2)">
-          <div id="p2-box" class="prompt" style="left:360px; top:465px">
-            <span class="plus">+</span>
-            <span class="txt"><span id="p2-txt"></span><span class="caret" id="p2-caret"></span></span>
-            <span class="model">Claude Opus 4.8 <span style="opacity:0.5">⌄</span></span>
-            <span class="go" id="p2-go"><svg><use href="#i-up" /></svg></span>
-          </div>
-        </div>
-      </section>
-
-      <!-- B10–B16 · the agent graph board: one camera, one long move -->
-      <section id="sc-graph" class="clip scene" data-start="14.6" data-duration="21.3" data-track-index="1">
+      <!-- 4 + 5 · the knowledge graph forms; a question; a light checks the graph; the answer -->
+      <section id="sc-graph" class="clip scene" data-start="19.1" data-duration="15.6" data-track-index="1">
         <div class="cam" id="cam-graph" style="filter:url(#mb-graph)">
-          <div class="p3d">
-            <div id="gboard" class="abs" style="left:0; top:0; width:1920px; height:1080px; transform-origin: 610px 615px" data-layout-allow-overflow>
-              <svg class="conn abs" id="g-conn" style="left:-1200px; top:0" width="5200" height="2800" viewBox="-1200 0 5200 2800" data-layout-allow-overflow>
-                <path class="base" id="c-av" d="M-940 615 L-700 615" />
-                <path class="base" id="c-b1" d="M-580 615 C-200 615, 200 400, 610 400" />
-                <path class="base" id="c-b2" d="M-580 615 C 300 615, 800 400, 1810 400" />
-                <path class="base" id="c-b3" d="M-580 615 C 900 615, 1800 400, 3010 400" />
-                <path class="base" id="c-11" d="M610 830 L700 960" /><path class="pulse" id="p-11" d="M610 830 L700 960" />
-                <path class="base" id="c-12" d="M700 1290 L790 1520" /><path class="base" id="c-13" d="M790 1850 L880 2080" />
-                <path class="base" id="c-21" d="M1810 830 L1900 960" /><path class="base" id="c-22" d="M1900 1290 L1990 1520" /><path class="base" id="c-23" d="M1990 1850 L2080 2080" />
-                <path class="base" id="c-31" d="M3010 830 L3100 960" /><path class="base" id="c-32" d="M3100 1290 L3190 1520" /><path class="base" id="c-33" d="M3190 1850 L3280 2080" />
-                <circle class="dot" cx="-940" cy="615" r="8" /><circle class="dot" cx="-580" cy="615" r="8" />
-                <circle class="dot" cx="610" cy="400" r="8" /><circle class="dot" cx="1810" cy="400" r="8" /><circle class="dot" cx="3010" cy="400" r="8" />
-                <circle class="dot" cx="610" cy="830" r="8" /><circle class="dot" cx="700" cy="960" r="8" /><circle class="dot" cx="700" cy="1290" r="8" /><circle class="dot" cx="790" cy="1520" r="8" /><circle class="dot" cx="790" cy="1850" r="8" /><circle class="dot" cx="880" cy="2080" r="8" />
-              </svg>
-              <div id="g-avatar" class="avatar" style="left:-1080px; top:475px; width:280px; height:280px"><svg width="120" height="86" viewBox="0 0 28 20"><use href="#i-mark" style="color:#fff" /></svg></div>
-              <div id="g-ring" class="ring" style="left:-1104px; top:451px; width:328px; height:328px"></div>
-              <div id="g-sq" class="sqicon" style="left:-700px; top:555px; width:120px; height:120px"><svg width="56" height="56"><use href="#i-graph" style="color:#3D5FFF" /></svg></div>
-
-              <!-- branch 1 · Claims triage (the one we travel) -->
-              <div id="t1" class="card" style="left:300px; top:400px; width:620px; height:430px">
-                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
-                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
-                <div class="abs" id="t1-checks" style="left:28px; top:190px">
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Scope: Claims + Policy</div>
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Personal data masked</div>
-                  <div class="check pending" id="t1-c3"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg><span class="spin"><svg><use href="#i-spin" /></svg></span></i>Audit logging on</div>
-                </div>
-              </div>
-              <div id="kb1" class="card" style="left:390px; top:960px; width:620px; height:330px">
-                <div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 1</div>
-                <p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Claims</p>
-                <p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">1.4M claims · 12 fields masked · entities resolved to Policy</p>
-                <p class="label abs" style="left:28px; top:272px">Synced 2 min ago</p>
-                <div class="pill abs" style="left:480px; top:256px; padding:10px 22px; font-size:20px">Edit</div>
-              </div>
-              <div id="kb2" class="card" style="left:480px; top:1520px; width:620px; height:330px">
-                <div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 2</div>
-                <p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Policy</p>
-                <p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">96K policies · coverage terms chunked · linked to Claims</p>
-                <p class="label abs" style="left:28px; top:272px">Synced 1 min ago</p>
-                <div class="pill abs" style="left:480px; top:256px; padding:10px 22px; font-size:20px">Edit</div>
-              </div>
-              <div id="ag1" class="card" style="left:570px; top:2080px; width:620px; height:300px">
-                <div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div>
-                <p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">claims-triage-01</p>
-                <p class="label abs" style="left:28px; top:180px">Reads only what the scope allows</p>
-                <div class="chip abs" style="left:28px; top:224px; background:#EEF7DC"><i style="background:#3A8F2E; width:14px; height:14px"></i>Live</div>
-              </div>
-              <!-- the envelope morph, built around kb1 -->
-              <div id="env" class="abs" style="left:390px; top:960px; width:620px; height:330px; opacity:0" data-layout-allow-overflow>
-                <div id="env-letter" class="card" style="left:40px; top:-60px; width:540px; height:430px; padding:40px 34px">
-                  <p class="label">claims-triage-01 · answer</p>
-                  <p class="display abs" style="left:34px; top:80px; font-size:40px; line-height:1.05">Claim CL-77310 is<br>covered. Fraud signal low.</p>
-                  <p class="body abs" style="left:34px; top:210px; width:470px; font-size:20px">Coverage confirmed against policy PL-88421. Prior claims: 1. Recommended route: <b>fast-track</b>.</p>
-                  <p class="mono abs" style="left:34px; top:340px; font-size:18px; color:#8A8A8E">national_id ●●●●●●●● · masked</p>
-                </div>
-                <div id="env-body" class="abs" style="left:0; top:110px; width:620px; height:280px; border-radius:24px; background:rgba(255,255,255,0.86); box-shadow:var(--sh-card)"></div>
-                <svg id="env-flap" class="abs" style="left:0; top:110px" width="620" height="150" viewBox="0 0 620 150"><path d="M0 0 L310 140 L620 0" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="2" /></svg>
-                <div id="env-badge" class="badge red num" style="left:-26px; top:-26px; width:56px; height:56px">1</div>
-              </div>
-
-              <!-- branch 2 · Broker insights -->
-              <div id="t2" class="card" style="left:1500px; top:400px; width:620px; height:430px">
-                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
-                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
-                <div class="abs" style="left:28px; top:190px">
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Weekly broker digest</div>
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Personalised recommendations</div>
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Segmented by book size</div>
-                </div>
-              </div>
-              <div id="kb3" class="card" style="left:1590px; top:960px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 3</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Brokers</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">2,400 brokers · commissions · book performance</p><p class="label abs" style="left:28px; top:272px">Synced 4 min ago</p></div>
-              <div id="kb4" class="card" style="left:1680px; top:1520px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 4</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Customers</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">310K customers · tenure · renewals</p><p class="label abs" style="left:28px; top:272px">Synced 3 min ago</p></div>
-              <div id="ag2" class="card" style="left:1770px; top:2080px; width:620px; height:300px"><div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div><p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">broker-insights-01</p><p class="label abs" style="left:28px; top:180px">Scheduled · Mondays 07:00</p></div>
-
-              <!-- branch 3 · Fraud signals -->
-              <div id="t3" class="card" style="left:2700px; top:400px; width:620px; height:430px">
-                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
-                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
-                <div class="abs" style="left:28px; top:190px">
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Claim filed</div>
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Cross-check policy + history</div>
-                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Flag → human review</div>
-                </div>
-              </div>
-              <div id="kb5" class="card" style="left:2790px; top:960px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 5</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Claims history</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">9 years · 4.1M events · resolved entities</p><p class="label abs" style="left:28px; top:272px">Synced 2 min ago</p></div>
-              <div id="kb6" class="card" style="left:2880px; top:1520px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 6</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Finance</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">Payments · reserves · reinsurance recoveries</p><p class="label abs" style="left:28px; top:272px">Synced 6 min ago</p></div>
-              <div id="g-plus" class="circ" style="left:3190px; top:1920px; width:70px; height:70px; background:#fff; color:#111; box-shadow:var(--sh-card)"><svg width="30" height="30"><use href="#i-plus" /></svg></div>
-              <div id="ag3" class="card" style="left:2970px; top:2080px; width:620px; height:300px"><div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div><p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">fraud-signal-01</p><p class="label abs" style="left:28px; top:180px">Event-driven · every claim</p></div>
-
-              <div id="lbl-1" class="pill frost abs" style="left:300px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Claims triage</div>
-              <div id="lbl-2" class="pill frost abs" style="left:1500px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Broker insights</div>
-              <div id="lbl-3" class="pill frost abs" style="left:2700px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Fraud signals</div>
+          <div id="graph" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
+            <svg id="g-edges" class="edges" width="1920" height="1080" viewBox="0 0 1920 1080" style="overflow:visible" data-layout-allow-overflow></svg>
+            <div id="g-nodes" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow></div>
+            <div id="g-light" class="light" style="left:0; top:0"></div>
+            <div id="cl-1" class="cluster" style="left:380px; top:150px">Finance</div>
+            <div id="cl-2" class="cluster" style="left:1330px; top:150px">Customers</div>
+            <div id="cl-3" class="cluster" style="left:690px; top:1000px">Operations</div>
+          </div>
+          <div id="t-graph" class="display h-big abs" style="left:120px; top:44px" data-layout-allow-overlap>It becomes one knowledge graph.</div>
+          <div id="ask-box" class="prompt" style="left:360px; top:40px; width:1200px; height:130px">
+            <span class="plus">+</span>
+            <span class="txt"><span id="ask-txt"></span><span class="caret" id="ask-caret"></span></span>
+            <span class="go" id="ask-go"><svg><use href="#i-up" /></svg></span>
+          </div>
+          <div id="answer" class="card" style="left:1180px; top:330px; width:620px; height:520px; padding:30px 34px">
+            <p class="label">Answer · searched 18 sources · 0.4 s</p>
+            <p class="display" style="font-size:44px; margin-top:8px">Yes. Three datasets.</p>
+            <div style="margin-top:18px">
+              <div class="ans-row"><svg><use href="#lg-sap" style="color:#0FAAFF" /></svg><div><div class="t">Invoices · SAP</div><div class="s">1.2M rows · updated 2 h ago</div></div><span class="r">84 ready</span></div>
+              <div class="ans-row"><svg><use href="#lg-snowflake" style="color:#29B5E8" /></svg><div><div class="t">Billing · Snowflake</div><div class="s">840K rows · updated 1 d ago</div></div><span class="r">77 ready</span></div>
+              <div class="ans-row" style="border-bottom:0"><svg><use href="#lg-postgresql" style="color:#4169E1" /></svg><div><div class="t">AP ledger · PostgreSQL</div><div class="s">2.1M rows · updated 6 h ago</div></div><span class="r">71 ready</span></div>
             </div>
+            <p class="body" style="margin-top:14px; font-size:19px">Linked to <b>Suppliers</b>, <b>Payments</b> and <b>Contracts</b> in the graph. Never a guess.</p>
           </div>
+          <svg id="cur-ask" class="cursor big abs" style="left:1700px; top:300px"><use href="#i-arrow" /></svg>
         </div>
       </section>
 
-      <!-- B17 · "Governed" title beat on the field -->
-      <section id="sc-gov" class="clip scene" data-start="35.8" data-duration="2.1" data-track-index="1">
-        <div class="cam" id="cam-gov">
-          <div id="gov-guides" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
-            <div class="guide" style="left:0; right:0; top:420px; height:1.5px"></div><div class="guide" style="left:0; right:0; top:660px; height:1.5px"></div>
-            <div class="guide" style="top:0; bottom:0; left:640px; width:1.5px"></div><div class="guide" style="top:0; bottom:0; left:1280px; width:1.5px"></div>
-            <div class="handle" style="left:631px; top:411px"></div><div class="handle" style="left:1271px; top:411px"></div><div class="handle" style="left:631px; top:651px"></div><div class="handle" style="left:1271px; top:651px"></div>
+      <!-- 6 · agentification pipelines per dataset, applied and monitored -->
+      <section id="sc-pipes" class="clip scene" data-start="34.4" data-duration="8.7" data-track-index="1">
+        <div class="cam" id="cam-pipes" style="filter:url(#mb-pipes)">
+          <div id="t-pipes" class="display h-big abs" style="left:160px; top:44px" data-layout-allow-overlap>A pipeline for every dataset.</div>
+          <div id="pp-1" class="card" style="left:160px; top:190px; width:1600px; height:240px; padding:28px 34px">
+            <div style="display:flex; align-items:center; gap:18px"><svg width="44" height="44"><use href="#lg-sap" style="color:#0FAAFF" /></svg><div><div style="font-size:32px; font-weight:500; letter-spacing:-0.02em">Invoices · SAP</div><div class="label">1.2M rows · readiness <b id="pp1-r" style="color:#111">64</b></div></div><span id="pp1-live" class="chip" style="position:relative; margin-left:14px; background:#EEF7DC; color:#2F7A1F; box-shadow:none; opacity:0"><i style="background:#2F7A1F; width:12px; height:12px"></i>Running</span><span id="pp1-apply" class="pill" style="position:relative; margin-left:auto; font-size:22px; padding:12px 24px">Apply pipeline</span></div>
+            <div class="steps" id="pp1-steps" style="margin-top:28px"><span class="step">Extract</span><i class="ar"></i><span class="step">Structure</span><i class="ar"></i><span class="step">Deduplicate</span><i class="ar"></i><span class="step">Mask PII</span><i class="ar"></i><span class="step">Embed</span><span class="label" id="pp1-count" style="margin-left:auto; font-size:20px; opacity:0">0 records</span></div>
+            <div class="prog" id="pp1-prog" style="left:34px; right:34px; bottom:24px"><i></i></div>
           </div>
-          <div class="center" style="top:455px"><div id="gov-pill" class="pill frost" style="font-size:96px; padding:28px 70px; gap:28px; border-radius:999px"><svg width="90" height="90"><use href="#i-star" style="color:#fff" /></svg>Governed</div></div>
-        </div>
-      </section>
-
-      <!-- B18–B19 · collaborative policy editing → rendered answer -->
-      <section id="sc-edit" class="clip scene" data-start="37.8" data-duration="6.1" data-track-index="1">
-        <div class="cam" id="cam-edit" style="filter:url(#mb-edit)">
-          <pre id="yaml" class="code" style="left:140px; top:60px; opacity:0.35" data-layout-ignore><span class="k">agent</span>: claims-triage-01
-<span class="k">scope</span>:
-  - <span class="s">claims.*</span>
-  - <span class="s">policy.*</span>
-<span class="k">mask</span>: [<span class="s">national_id</span>, <span class="s">date_of_birth</span>]
-<span class="k">audit</span>: <span class="s">every_read</span>   <span class="c"># column, row and chunk level</span>
-<span class="k">deny_reason</span>: <span class="s">required</span>
-<span class="k">model</span>: <span class="s">claude-opus-4-8</span>
-<span class="k">owner</span>: <span class="s">amira.h@meridianmutual.com</span></pre>
-          <div id="thumb" class="tile" style="left:1420px; top:110px; width:360px; height:220px; box-shadow:var(--sh-card)"><span class="tag" style="left:16px; top:16px; background:rgba(0,0,0,0.55)">Meridian · claims</span></div>
-          <div id="sel-wrap" class="abs" style="left:260px; top:430px" data-layout-allow-overflow>
-            <div id="sel-text" class="mono" style="font-size:66px; padding:20px 26px; white-space:nowrap; color:#111">scope: claims.* policy.* · <span id="sw" style="position:relative; display:inline-block; overflow:hidden; vertical-align:bottom; width:6ch"><span id="sw-old" style="display:inline-block">mask</span><span id="sw-new" style="position:absolute; left:0; top:0; display:inline-block; color:#3D5FFF">redact</span></span> national_id</div>
-            <div id="sel" class="selbox" style="left:0; top:0; right:0; bottom:0"><i class="hd" style="left:-12px; top:-12px"></i><i class="hd" style="right:-12px; bottom:-12px"></i></div>
+          <div id="pp-2" class="card" style="left:160px; top:460px; width:1600px; height:200px; padding:28px 34px">
+            <div style="display:flex; align-items:center; gap:18px"><span class="mono-tile" style="display:inline-grid; place-items:center; width:44px; height:44px; border-radius:12px; background:#036C70; color:#fff; font-weight:700; font-size:15px">SP</span><div><div style="font-size:32px; font-weight:500; letter-spacing:-0.02em">Treaty documents · SharePoint</div><div class="label">22,470 PDFs · readiness <b style="color:#111">51</b></div></div><span class="pill" style="position:relative; margin-left:auto; font-size:22px; padding:12px 24px">Apply pipeline</span></div>
+            <div class="steps" style="margin-top:24px"><span class="step">OCR</span><i class="ar"></i><span class="step">Chunk</span><i class="ar"></i><span class="step">Extract clauses</span><i class="ar"></i><span class="step">Link to policies</span><i class="ar"></i><span class="step">Embed</span></div>
           </div>
-          <div id="tb" class="toolbar" style="left:260px; top:600px"><i>col</i><i class="on">row</i><i>chunk</i><i>log</i></div>
-          <svg id="cur-amira" class="cursor abs" style="left:1500px; top:800px" data-layout-allow-overflow><use href="#i-arrow-c" /><foreignObject x="26" y="30" width="120" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="name" style="position:static; display:inline-block">Amira</div></foreignObject></svg>
-          <div id="render1" class="abs" style="left:300px; top:1300px; width:1100px" data-layout-allow-overflow>
-            <p class="display" style="font-size:72px; line-height:1.02">Claim CL-77310</p>
-            <p class="body" style="font-size:34px; margin-top:34px; width:1060px">Hi Amira,<br>Here is the triage for claim CL-77310. Coverage is <b>confirmed</b> against policy PL-88421. Fraud signal is <b>low</b>. One prior claim in 2024. Recommended route: <b>fast-track</b>.</p>
-            <p class="mono" style="font-size:26px; margin-top:34px; color:#8A8A8E">national_id ●●●●●●●● · redacted by policy · read logged 14:22:07</p>
+          <div id="pp-3" class="card" style="left:160px; top:690px; width:1600px; height:200px; padding:28px 34px">
+            <div style="display:flex; align-items:center; gap:18px"><svg width="44" height="44"><use href="#lg-zendesk" style="color:#03363D" /></svg><div><div style="font-size:32px; font-weight:500; letter-spacing:-0.02em">Support tickets · Zendesk</div><div class="label">3.9M tickets · readiness <b style="color:#111">58</b></div></div><span class="pill" style="position:relative; margin-left:auto; font-size:22px; padding:12px 24px">Apply pipeline</span></div>
+            <div class="steps" style="margin-top:24px"><span class="step">Clean</span><i class="ar"></i><span class="step">Resolve customers</span><i class="ar"></i><span class="step">Classify</span><i class="ar"></i><span class="step">Mask PII</span><i class="ar"></i><span class="step">Embed</span></div>
           </div>
+          <svg id="cur-pipes" class="cursor big abs" style="left:1750px; top:980px"><use href="#i-arrow" /></svg>
         </div>
       </section>
 
-      <!-- B20–B21 · desktop client → phone morph · Every Agent → Any Model -->
-      <section id="sc-client" class="clip scene" data-start="43.8" data-duration="7.1" data-track-index="1">
-        <div class="cam" id="cam-client" style="filter:url(#mb-client)">
-          <pre id="code2" class="code" style="left:60px; top:-40px; font-size:26px; opacity:0.22" data-layout-ignore>POST /v1/agents/claims-triage-01/query
-{ "claim": "CL-77310", "scope": ["claims.*", "policy.*"] }
-→ 200 · 412 ms · 3 knowledge bases · masked: 2 fields
-{ "coverage": "confirmed", "fraud_signal": "low", "route": "fast-track" }
-audit: read logged · policy PL-88421 · chunk 14/22</pre>
-          <div class="p3d">
-            <div id="win" class="win" style="left:260px; top:140px; width:1400px; height:800px">
-              <div class="lights"><i></i><i></i><i></i></div>
-              <div class="island"></div>
-              <div id="win-desk" class="abs" style="left:0; top:0; width:1400px; height:800px">
-                <div class="rail"><div class="pill white" style="font-size:20px"><span class="sq" style="width:28px; height:28px; border-radius:8px"><svg width="16" height="16"><use href="#i-bolt" style="color:#fff" /></svg></span>Agents</div><p class="label" style="margin:26px 0 0 18px">claims-triage-01</p><p class="label" style="margin:14px 0 0 18px">broker-insights-01</p><p class="label" style="margin:14px 0 0 18px">fraud-signal-01</p></div>
-                <div class="main">
-                  <div class="hrow"><span style="color:#111">Hi, Amira! Your triage for CL-77310</span><span>15 min ago</span></div>
-                  <div style="display:flex; gap:34px; margin-top:30px">
-                    <div class="illus" style="width:420px; height:300px; flex:none"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div>
-                    <div><p class="display" style="font-size:38px; line-height:1.05">Covered. Fraud signal low. Fast-track.</p><p class="body" style="margin-top:18px; font-size:21px; width:560px">Confirmed against policy PL-88421. One prior claim. Every field the agent read is logged, and two fields were redacted by policy.</p><span class="btn" style="margin-top:22px; font-size:20px; padding:12px 20px">Open claim</span></div>
-                  </div>
-                </div>
-              </div>
-              <div id="win-mob" class="abs" style="left:0; top:0; width:440px; height:900px; opacity:0; padding:90px 30px 0">
-                <div class="pill white" style="position:relative; font-size:18px; padding:10px 16px"><span class="sq" style="width:26px; height:26px; border-radius:8px"><svg width="14" height="14"><use href="#i-bolt" style="color:#fff" /></svg></span>claims-triage-01</div>
-                <div class="illus" style="width:380px; height:250px; margin-top:22px"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div>
-                <p class="display" style="font-size:32px; line-height:1.05; margin-top:24px">Covered. Fraud signal low.</p>
-                <p class="body" style="font-size:18px; margin-top:12px">Confirmed against PL-88421. Two fields redacted by policy. Read logged.</p>
-                <div id="mob-dark" class="abs" style="left:0; top:0; width:440px; height:900px; background:#151517; opacity:0; padding:90px 30px 0; color:#fff"><div class="pill" style="position:relative; font-size:18px; padding:10px 16px; background:#2A2A2E"><span class="sq" style="width:26px; height:26px; border-radius:8px"><svg width="14" height="14"><use href="#i-bolt" style="color:#fff" /></svg></span>claims-triage-01</div><div class="illus" style="width:380px; height:250px; margin-top:22px"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div><p class="display" style="font-size:32px; line-height:1.05; margin-top:24px; color:#fff">Covered. Fraud signal low.</p><p class="body" style="font-size:18px; margin-top:12px; color:#A0A0A8">Confirmed against PL-88421. Two fields redacted by policy. Read logged.</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cam" id="cam-words" style="filter:url(#mb-words)" data-layout-allow-overflow>
-          <div id="w-every" class="display h-giant abs" style="left:60px; top:300px" data-layout-allow-overlap>Every</div>
-          <div id="w-agent" class="display h-giant abs" style="left:1200px; top:560px" data-layout-allow-overlap>Agent</div>
-          <div id="w-any" class="display h-giant white abs" style="left:150px; top:300px" data-layout-allow-overlap>Any</div>
-          <div id="w-model" class="display h-giant white abs" style="left:1180px; top:560px" data-layout-allow-overlap>Model</div>
+      <!-- 7 · proposed use cases -->
+      <section id="sc-uses" class="clip scene" data-start="42.9" data-duration="7.1" data-track-index="1">
+        <div class="cam" id="cam-uses" style="filter:url(#mb-uses)">
+          <div id="t-uses" class="display h-big abs" style="left:120px; top:44px" data-layout-allow-overlap>Know what to build first.</div>
+          <div id="uc-1" class="card uc" style="left:120px; top:260px"><span class="badge black"><svg><use href="#i-coin" style="color:#fff" /></svg></span><div class="t">Invoice reconciliation agent</div><div class="val">$1.4M<small>/ yr</small></div><span class="st ok">Ready to build</span></div>
+          <div id="uc-2" class="card uc" style="left:700px; top:260px"><span class="badge black"><svg><use href="#i-shield" style="color:#fff" /></svg></span><div class="t">Supplier risk monitor</div><div class="val">$0.9M<small>/ yr</small></div><span class="st ok">Ready to build</span></div>
+          <div id="uc-3" class="card uc" style="left:1280px; top:260px"><span class="badge black"><svg><use href="#i-doc" style="color:#fff" /></svg></span><div class="t">Claims triage copilot</div><div class="val">$2.1M<small>/ yr</small></div><span class="st warn">Needs 2 pipelines first</span></div>
+          <div id="uc-note" class="pill abs" style="left:120px; top:790px; font-size:24px"><span class="sq"><svg width="20" height="20"><use href="#i-bolt" style="color:#fff" /></svg></span>Ranked by value and readiness · from your data, not a workshop</div>
         </div>
       </section>
 
-      <!-- B22 · ripple / graph beat -->
-      <section id="sc-ripple" class="clip scene" data-start="50.8" data-duration="3.1" data-track-index="1">
-        <div class="cam" id="cam-ripple" data-layout-allow-overflow>
-          <div class="rr" id="rr-1"></div><div class="rr" id="rr-2"></div><div class="rr" id="rr-3"></div><div class="rr" id="rr-4"></div>
-          <div class="arc" id="arc-l" style="left:-1150px"></div><div class="arc" id="arc-r" style="right:-1150px"></div>
-          <div class="center" style="top:480px"><div id="llm-pill" class="pill" style="font-size:44px; padding:24px 54px; gap:20px"><svg width="44" height="44"><use href="#i-mark" style="color:#fff" /></svg>Datalith Graph</div></div>
+      <!-- 8 · close -->
+      <section id="sc-end" class="clip scene" data-start="49.8" data-duration="5.2" data-track-index="1">
+        <div class="cam" id="cam-end" style="filter:url(#mb-end)">
+          <div class="center" style="top:250px"><div id="end-line" class="display h-big" data-layout-allow-overlap>Every source. One graph. Agent-ready.</div></div>
+          <div class="center" style="top:420px"><div id="end-word" class="serif" style="font-size:230px" data-layout-allow-overlap>datalith <svg width="120" height="86" viewBox="0 0 28 20" style="vertical-align:0.05em"><use href="#i-mark" style="color:#111" /></svg></div></div>
+          <div class="center" style="top:740px"><div id="cta" class="ctarow"><span class="pill white">Start your free audit</span><span class="circ"><svg width="30" height="30"><use href="#i-right" style="color:#fff" /></svg></span><span class="pill white"><u>datalith.ai</u></span></div></div>
         </div>
       </section>
 
-      <!-- B23 · stats over a rising area chart -->
-      <section id="sc-stats" class="clip scene" data-start="53.8" data-duration="4.1" data-track-index="1">
-        <div class="cam" id="cam-stats" style="filter:url(#mb-stats)">
-          <svg id="chart" class="abs" style="left:0; top:0" width="1920" height="1080" viewBox="0 0 1920 1080" data-layout-ignore>
-            <g stroke="rgba(255,255,255,0.35)" stroke-dasharray="6 10" stroke-width="1.5"><line x1="240" y1="0" x2="240" y2="1080" /><line x1="560" y1="0" x2="560" y2="1080" /><line x1="880" y1="0" x2="880" y2="1080" /><line x1="1200" y1="0" x2="1200" y2="1080" /><line x1="1520" y1="0" x2="1520" y2="1080" /><line x1="1840" y1="0" x2="1840" y2="1080" /></g>
-            <clipPath id="chart-clip"><rect id="chart-rect" x="0" y="0" width="0" height="1080" /></clipPath>
-            <g clip-path="url(#chart-clip)">
-              <path id="chart-area" d="M0 960 C 300 940, 420 900, 560 820 C 700 740, 800 760, 900 700 C 1050 620, 1150 560, 1300 470 C 1450 380, 1600 330, 1920 240 L1920 1080 L0 1080 Z" fill="url(#area-grad)" />
-              <path id="chart-line" d="M0 960 C 300 940, 420 900, 560 820 C 700 740, 800 760, 900 700 C 1050 620, 1150 560, 1300 470 C 1450 380, 1600 330, 1920 240" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" />
-            </g>
-            <circle id="chart-dot" cx="0" cy="960" r="16" fill="#fff" stroke="#3D5FFF" stroke-width="6" />
-          </svg>
-          <div id="st1" class="stat" style="left:200px; top:200px"><span class="sq"><svg><use href="#i-layers" style="color:#111" /></svg></span><span class="k">Sources</span></div>
-          <div id="st1-n" class="stat abs" style="left:200px; top:340px"><span class="n" id="st1-v">0</span></div>
-          <div id="st2" class="stat" style="left:200px; top:200px"><span class="sq"><svg><use href="#i-rows" style="color:#111" /></svg></span><span class="k">Records</span></div>
-          <div id="st2-n" class="stat abs" style="left:200px; top:340px"><span class="n" id="st2-v">0.0M</span></div>
-        </div>
-      </section>
-
-      <!-- B24 · works with any AI agent -->
-      <section id="sc-any" class="clip scene" data-start="57.8" data-duration="3.1" data-track-index="1">
-        <div class="cam" id="cam-any">
-          <div class="abs" id="any-icons" style="left:830px; top:300px; width:260px; height:260px" data-layout-allow-overlap>
-            <svg id="ic-1" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-star" style="color:#fff" /></svg>
-            <svg id="ic-2" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-knot" style="color:#fff" /></svg>
-            <svg id="ic-3" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-cube" style="color:#fff" /></svg>
-          </div>
-          <div class="center" style="top:640px"><div id="any-h" class="display white h-big" data-layout-allow-overlap>Works with any AI agent</div></div>
-        </div>
-      </section>
-
-      <!-- B25 · logo condense -->
-      <section id="sc-lock" class="clip scene" data-start="60.8" data-duration="2.3" data-track-index="1">
-        <div class="cam" id="cam-lock">
-          <div class="abs" style="left:0; top:0; width:1920px; height:1080px; background:#F6F6F8"></div>
-          <div id="lk-group" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
-            <svg id="lk-mark" class="abs" style="left:790px; top:300px" width="340" height="243" viewBox="0 0 28 20"><g fill="none" stroke="url(#mark-grad)" stroke-width="1.6" stroke-linecap="round"><path d="M0 3 C8 3, 10 10, 16 10" /><path d="M0 10 L16 10" /><path d="M0 17 C8 17, 10 10, 16 10" /></g><path d="M16 10 L28 10" fill="none" stroke="#3D5FFF" stroke-width="3.4" stroke-linecap="round" /></svg>
-            <div id="lk-word" class="serif abs" style="left:640px; top:340px; font-size:200px; clip-path: inset(0 100% 0 0)">datalith</div>
-            <div class="center" style="top:640px"><div id="lk-sub" class="display h-mid" data-layout-allow-overlap>Agent-ready<span id="lk-sub2"> data.</span></div></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- B26 · end card -->
-      <section id="sc-end" class="clip scene" data-start="63" data-duration="3" data-track-index="1">
-        <div class="cam" id="cam-end">
-          <div class="center" style="top:330px"><div id="end-word" class="serif" style="font-size:230px" data-layout-allow-overlap>datalith <em>ready</em> <svg width="120" height="86" viewBox="0 0 28 20" style="vertical-align:0.05em"><use href="#i-mark" style="color:#111" /></svg></div></div>
-          <div class="center" style="top:660px"><div id="cta" class="ctarow"><span class="pill white">Start your free audit</span><span class="circ"><svg width="30" height="30"><use href="#i-right" style="color:#fff" /></svg></span><span class="pill white"><u>datalith.ai</u></span></div></div>
-        </div>
-      </section>
-
-      <div id="vig" data-layout-ignore></div>
       <div id="grain" data-layout-ignore></div>
     </div>
     <script src="assets/film.js"></script>

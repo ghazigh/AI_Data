@@ -1,16 +1,19 @@
-/* Datalith launch film v3 — one paused GSAP timeline.
+/* Datalith launch film — one paused GSAP timeline.
+   Story: data everywhere → one platform → scored dashboard → the knowledge graph forms →
+   a question, a light checks the graph, an answer → a pipeline per dataset, monitored →
+   proposed use cases → close.
    Motion rules: one virtual camera per board, directional SVG motion blur riding every
-   move, spring entrances (5–8 % overshoot), per-word masked text reveals, two typewriter
-   prompts, and a substrate (blooms, grain, dot grid) that never stops moving. */
+   move, spring entrances, per-word masked type, a typed prompt, and a substrate
+   (blooms, grain, dot grid) that never stops moving. */
 window.__buildFilm = function buildFilm() {
   const tl = gsap.timeline({ paused: true });
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
   const SPRING = 'back.out(1.7)';
   const OUT = 'power4.out';
+  const NS = 'http://www.w3.org/2000/svg';
 
   // ---------- helpers ----------
-  // A camera: frame centre lands on stage point (x, y) at scale s, rotated r degrees.
   function camera(el, init) {
     const c = Object.assign({ x: 960, y: 540, s: 1, r: 0 }, init);
     const write = () => {
@@ -19,9 +22,8 @@ window.__buildFilm = function buildFilm() {
       el.style.transform = `translate(${960 - (cos * sx - sin * sy)}px, ${540 - (sin * sx + cos * sy)}px) rotate(${c.r}deg) scale(${c.s})`;
     };
     write();
-    return { c, to: (t, vals, duration, ease) => tl.to(c, Object.assign({ duration, ease, onUpdate: write }, vals), t), set: (t, vals) => tl.set(c, Object.assign({ onUpdate: write }, vals), t) };
+    return { c, to: (t, vals, duration, ease) => tl.to(c, Object.assign({ duration, ease, onUpdate: write }, vals), t) };
   }
-  // Directional blur proxy bound to one feGaussianBlur.
   function blur(id) {
     const node = document.getElementById('mbb-' + id);
     const p = { v: 0, ax: 1, ay: 1 };
@@ -29,25 +31,21 @@ window.__buildFilm = function buildFilm() {
     write();
     const axis = (name) => { p.ax = name === 'y' ? 0 : 1; p.ay = name === 'x' ? 0 : 1; };
     return {
-      // symmetric envelope for an inOut leg: 0 → peak → 0
       leg: (t, dur, peak, ax = 'xy', ease = 'power2') => {
         tl.set(p, { v: 0, onUpdate: () => { axis(ax); write(); } }, t);
         tl.to(p, { v: peak, duration: dur / 2, ease: ease + '.in', onUpdate: write }, t);
         tl.to(p, { v: 0, duration: dur / 2, ease: ease + '.out', onUpdate: write }, t + dur / 2);
       },
-      // out-eased leg: starts at peak, resolves sharp
       out: (t, dur, peak, ax = 'xy', ease = OUT) => {
         tl.set(p, { v: peak, onUpdate: () => { axis(ax); write(); } }, t);
         tl.to(p, { v: 0, duration: dur, ease, onUpdate: write }, t);
       },
-      // in-eased leg: sharp → peak (a push-through that ends in the next scene)
       in: (t, dur, peak, ax = 'xy', ease = 'power3.in') => {
         tl.set(p, { v: 0, onUpdate: () => { axis(ax); write(); } }, t);
         tl.to(p, { v: peak, duration: dur, ease, onUpdate: write }, t);
       },
     };
   }
-  // Split an element's text into masked words (.m > .w). Keeps child elements intact.
   function words(el) {
     const out = [];
     Array.from(el.childNodes).forEach((n) => {
@@ -64,15 +62,12 @@ window.__buildFilm = function buildFilm() {
     });
     return out;
   }
-  function chars(el) {
-    const txt = el.textContent; el.textContent = '';
-    return txt.split('').map((ch) => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch === ' ' ? ' ' : ch; el.appendChild(s); return s; });
-  }
-  const reveal = (targets, t, { dur = 0.55, stagger = 0.04, y = 0.6, ease = OUT } = {}) =>
-    tl.fromTo(targets, { yPercent: 100 * y * 1.6, opacity: 0 }, { yPercent: 0, opacity: 1, duration: dur, stagger, ease }, t);
+  const reveal = (targets, t, { dur = 0.55, stagger = 0.04, ease = OUT } = {}) =>
+    tl.fromTo(targets, { yPercent: 96, opacity: 0 }, { yPercent: 0, opacity: 1, duration: dur, stagger, ease }, t);
+  const unreveal = (targets, t, { dur = 0.35, stagger = 0.025 } = {}) =>
+    tl.to(targets, { yPercent: -96, opacity: 0, duration: dur, stagger, ease: 'power3.in' }, t);
   const pop = (targets, t, { from = 0.92, dur = 0.5, stagger = 0.08, y = 0, ease = SPRING } = {}) =>
     tl.fromTo(targets, { scale: from, opacity: 0, y }, { scale: 1, opacity: 1, y: 0, duration: dur, stagger, ease }, t);
-  const fade = (targets, t, to, dur = 0.3, ease = 'power2.out') => tl.to(targets, { autoAlpha: to, duration: dur, ease }, t);
   const show = (targets, t) => tl.set(targets, { autoAlpha: 1 }, t);
   const hide = (targets, t) => tl.set(targets, { autoAlpha: 0 }, t);
   function count(el, t, from, to, dur, fmt = (v) => Math.round(v).toString(), ease = 'power2.out') {
@@ -82,28 +77,28 @@ window.__buildFilm = function buildFilm() {
   function typewrite(el, caret, t, text, cps = 30) {
     const p = { n: 0 }; el.textContent = '';
     tl.to(p, { n: text.length, duration: text.length / cps, ease: 'none', onUpdate: () => { el.textContent = text.slice(0, Math.floor(p.n)); } }, t);
-    if (caret) { const b = { i: 0 }; tl.to(b, { i: 14, duration: 7, ease: 'steps(14)', onUpdate: () => { caret.style.opacity = b.i % 2 ? 0 : 1; } }, t - 0.6); }
+    if (caret) { const b = { i: 0 }; tl.to(b, { i: 16, duration: 8, ease: 'steps(16)', onUpdate: () => { caret.style.opacity = b.i % 2 ? 0 : 1; } }, t - 0.6); }
   }
   function drawPath(path, t, dur, ease = 'power2.inOut') {
     const L = path.getTotalLength();
     path.style.strokeDasharray = `${L} ${L}`; path.style.strokeDashoffset = L;
     tl.to(path, { strokeDashoffset: 0, duration: dur, ease }, t);
   }
-  function pulsePath(path, t, dur) {
-    const L = path.getTotalLength(), seg = Math.min(220, L * 0.6);
+  function pulsePath(path, t, dur, segLen = 220) {
+    const L = path.getTotalLength(), seg = Math.min(segLen, L * 0.6);
     path.style.strokeDasharray = `${seg} ${L + seg}`; path.style.strokeDashoffset = seg;
     tl.set(path, { opacity: 1 }, t);
     tl.to(path, { strokeDashoffset: -L, duration: dur, ease: 'power1.inOut' }, t);
     tl.set(path, { opacity: 0 }, t + dur);
   }
-  const clip = (el, t, from, to, dur, ease = 'power3.inOut') => tl.fromTo(el, { clipPath: from }, { clipPath: to, duration: dur, ease }, t);
+  const svgEl = (tag, attrs) => { const e = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
 
-  // ---------- substrate: blooms drift, dot grid parallaxes, grain steps at 12 fps ----------
+  // ---------- substrate ----------
   const blooms = [$('#bloom-a'), $('#bloom-b'), $('#bloom-c')];
   const dots = $('#dots');
   const sub = { p: 0 };
   tl.to(sub, {
-    p: 66, duration: 66, ease: 'none', onUpdate: () => {
+    p: 55, duration: 55, ease: 'none', onUpdate: () => {
       const t = sub.p;
       blooms[0].style.transform = `translate(${Math.sin(t * 0.21) * 140}px, ${Math.cos(t * 0.17) * 110}px)`;
       blooms[1].style.transform = `translate(${Math.cos(t * 0.15 + 1) * 160}px, ${Math.sin(t * 0.19) * 120}px)`;
@@ -113,336 +108,263 @@ window.__buildFilm = function buildFilm() {
   }, 0);
   const grain = $('#grain'); const gp = { i: 0 };
   const GPOS = [[0, 0], [91, 37], [163, 121], [19, 203], [211, 77], [57, 149], [131, 11], [233, 191]];
-  tl.to(gp, { i: 66 * 12, duration: 66, ease: 'steps(' + 66 * 12 + ')', onUpdate: () => { const q = GPOS[Math.floor(gp.i) % 8]; grain.style.backgroundPosition = `${q[0]}px ${q[1]}px`; } }, 0);
+  tl.to(gp, { i: 55 * 12, duration: 55, ease: 'steps(' + 55 * 12 + ')', onUpdate: () => { const q = GPOS[Math.floor(gp.i) % 8]; grain.style.backgroundPosition = `${q[0]}px ${q[1]}px`; } }, 0);
+  tl.set('#darkplate', { clipPath: 'inset(0 100% 0 0)' }, 0);
+  hide('#field', 0);
 
-  const field = $('#field'), dark = $('#darkplate');
-  // stacked / skinned duplicates are intentional overlaps for the layout audit
-  $$('#deck .dk *, #win-mob *, #p2-txt, #b-chip, #b-chip *').forEach((e) => e.setAttribute('data-layout-allow-overlap', ''));
-  tl.set(dark, { clipPath: 'inset(0 100% 0 0)' }, 0);
-
-  // ======================= B1–B3 · 0.0–3.2 · builder, drop, exploded view =======================
+  // ======================= 1 + 2 · 0–11.5 · data everywhere → one platform =======================
   {
-    const cam = camera($('#cam-open'), { x: 700, y: 560, s: 3.0, r: -4 });
-    const mb = blur('open');
-    // cold open: defocused and tight, resolving as we pull back
-    tl.fromTo('#cam-open', { filter: 'blur(28px)' }, { filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0);
-    cam.to(0, { x: 960, y: 540, s: 1.0, r: 0 }, 1.2, 'power3.out');
-    // drag-in: the grab hand carries the Snowflake pill into the selected slot
-    tl.fromTo('#drag', { x: 260, y: 120, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.5, ease: OUT }, 0.15);
-    tl.to('#drag', { x: -990, y: -80, duration: 0.85, ease: 'power2.inOut' }, 0.5);
-    tl.to('#drag-pill', { scale: 0.7, opacity: 0, duration: 0.25, ease: 'power2.in' }, 1.35);
-    tl.to('#cur-hand', { opacity: 0, duration: 0.25 }, 1.45);
-    // drop lands: tile fills the slot with a spring
-    tl.fromTo('#b-tile', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.55, ease: SPRING }, 1.4);
-    tl.to('#b-slot-a', { opacity: 0, duration: 0.2 }, 1.45);
-    tl.fromTo('#b-tile2', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: SPRING }, 1.6);
-    // exploded view: parts separate in depth with heavy blur while the camera pushes out
-    const parts = ['#b-chip', '#b-h', '#b-dash', '#b-tile', '#b-copy', '#b-send', '#b-t', '#b-tile2', '#b-slot-b'];
-    const EXP = [[-520, -260, 380], [-60, -420, 220], [80, -40, -180], [-420, 120, 320], [60, 300, 140], [520, 140, 420], [420, 360, 260], [640, -300, 380], [200, -120, 60]];
-    parts.forEach((sel, i) => tl.to(sel, { x: EXP[i][0], y: EXP[i][1], z: EXP[i][2], rotationX: (i % 2 ? 1 : -1) * 6, duration: 0.9, ease: 'power3.in' }, 2.2));
-    tl.to('#builder', { boxShadow: '0 0 0 rgba(0,0,0,0)', backgroundColor: 'rgba(255,255,255,0)', duration: 0.6, ease: 'power2.in' }, 2.3);
-    cam.to(2.2, { s: 0.7, x: 980, y: 520 }, 1.0, 'power3.in');
-    mb.in(2.35, 0.95, 22, 'xy');
-    tl.to('#cam-open', { opacity: 0, duration: 0.2 }, 3.1);
-  }
-
-  // ======================= B4 · 3.2–4.4 · field, "Hi," =======================
-  {
-    fade(field, 3.15, 1, 0.12, 'none');
-    const cam = camera($('#cam-hi'), { s: 1.0 });
-    cam.to(3.2, { s: 1.08 }, 1.3, 'power1.inOut');
-    const hi = chars($('#hi-1'));
-    tl.fromTo('#hi-star', { scale: 0, rotation: -90, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.55, ease: SPRING }, 3.25);
-    tl.fromTo(hi, { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.45, stagger: 0.07, ease: OUT }, 3.3);
-    reveal(words($('#hi-2')), 3.7, { stagger: 0.05 });
-    hide(field, 4.4);
-  }
-
-  // ======================= B5 · 4.4–6.6 · prompt one, press, push-through =======================
-  {
-    const cam = camera($('#cam-p1'), { s: 1.0 });
-    const mb = blur('p1');
-    reveal(words($('#p1-h')), 4.42, { stagger: 0.035, dur: 0.5 });
-    pop('#p1-box', 4.55, { from: 0.94, dur: 0.6, y: 30 });
-    // the user's cursor slides in and presses submit
-    tl.fromTo('#cur-1', { x: 0, y: 0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 5.0);
-    tl.to('#cur-1', { x: -240, y: -320, duration: 0.7, ease: 'power3.inOut' }, 5.0);
-    tl.to('#p1-go', { scale: 0.9, duration: 0.1, ease: 'power2.in' }, 5.72);
-    tl.to('#p1-go', { scale: 1, duration: 0.3, ease: SPRING }, 5.82);
-    tl.to('#p1-box', { boxShadow: '0 30px 80px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.05), 0 0 0 14px rgba(61,95,255,0.22), 0 0 120px rgba(61,95,255,0.45)', duration: 0.3 }, 5.75);
-    // push-through the card: the next scene is what was inside it
-    cam.to(5.95, { x: 960, y: 595, s: 4.2 }, 0.7, 'power3.in');
-    mb.in(6.0, 0.65, 26, 'xy');
-    tl.to('#cam-p1', { opacity: 0, duration: 0.15 }, 6.5);
-  }
-
-  // ======================= B6–B7 · 6.4–10.4 · report at 250 % → stacked deck =======================
-  {
-    const cam = camera($('#cam-r1'), { x: 960, y: 380, s: 2.5 });
-    const mb = blur('r1');
-    mb.out(6.4, 0.6, 22, 'xy');
-    tl.fromTo('#cam-r1', { opacity: 0 }, { opacity: 1, duration: 0.25 }, 6.4);
-    count($('#r1-n'), 6.5, 0, 71, 1.4);
-    tl.fromTo('#r1-rows .bar i', { scaleX: 0 }, { scaleX: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, 6.7);
-    // slow scroll up through the report
-    cam.to(6.9, { y: 620 }, 1.6, 'power1.inOut');
-    // pull back: the deck fans up and back, numbered
-    const deck = ['#dk-1', '#dk-2', '#dk-3', '#dk-4', '#dk-5'];
-    deck.forEach((d, i) => { if (i) tl.set(d, { opacity: 0, y: 0, z: 0 }, 6.4); });
-    cam.to(8.4, { x: 960, y: 560, s: 0.92 }, 1.1, 'power3.inOut');
-    mb.leg(8.4, 1.1, 14, 'xy');
-    deck.forEach((d, i) => {
-      tl.to(d, { y: -i * 120, z: -i * 260, opacity: i ? 1 - i * 0.2 : 1, duration: 0.8, ease: 'power3.out' }, 8.55 + i * 0.07);
+    const CX = 960, CY = 540;
+    const LOGOS = [
+      ['snowflake', 'Snowflake', '#29B5E8', -1180, -560], ['aws', 'AWS', '#FF9900', -620, -650, '#232F3E'], ['googlecloud', 'Google Cloud', '#4285F4', -60, -720],
+      ['salesforce', 'Salesforce', '#032D60', 520, -650], ['sap', 'SAP', '#0FAAFF', 1120, -560], ['databricks', 'Databricks', '#FF3621', -1320, -120],
+      ['postgresql', 'PostgreSQL', '#4169E1', -760, -290], ['oracle', 'Oracle', '#C74634', 780, -300], ['googledrive', 'Google Drive', '#4285F4', 1340, -110],
+      ['zendesk', 'Zendesk', '#03363D', -1260, 330], ['hubspot', 'HubSpot', '#FF7A59', -720, 240], ['sharepoint', 'SharePoint', '#036C70', 740, 250],
+      ['jira', 'Jira', '#0052CC', 1300, 340], ['mongodb', 'MongoDB', '#47A248', -1020, 680], ['stripe', 'Stripe', '#635BFF', -400, 740],
+      ['notion', 'Notion', '#111111', 220, 720], ['confluence', 'Confluence', '#172B4D', 860, 680], ['dropbox', 'Dropbox', '#0061FF', -240, -420],
+    ];
+    const MONO = { aws: 'aws', salesforce: 'SF', oracle: 'O', sharepoint: 'SP' };
+    const wrap = $('#logos'), conn = $('#e-conn');
+    const cards = LOGOS.map(([id, name, color, dx, dy, ink]) => {
+      const el = document.createElement('div'); el.className = 'lg'; el.id = 'lg-' + id;
+      el.innerHTML = MONO[id] ? `<span class="mono-tile" style="background:${color}; color:${ink || '#fff'}">${MONO[id]}</span>${name}` : `<svg><use href="#lg-${id}" style="color:${color}"></use></svg>${name}`;
+      dx *= 0.82; dy *= 0.82;
+      el.style.left = (CX + dx - 140) + 'px'; el.style.top = (CY + dy - 52) + 'px';
+      wrap.appendChild(el);
+      // connector from the card centre toward the hub, bent so the bundle reads as streams
+      const x0 = CX + dx, y0 = CY + dy, mx = CX + dx * 0.55 + dy * 0.18, my = CY + dy * 0.55 - dx * 0.18;
+      const base = svgEl('path', { class: 'base', d: `M${x0} ${y0} Q${mx} ${my} ${CX} ${CY}` });
+      const pulse = svgEl('path', { class: 'pulse', d: `M${x0} ${y0} Q${mx} ${my} ${CX} ${CY}` });
+      conn.appendChild(base); conn.appendChild(pulse);
+      return { el, base, pulse, dx, dy };
     });
-    tl.to('#cam-r1', { opacity: 0, duration: 0.15 }, 10.35);
+    $$('#logos .lg, #logos .lg *').forEach((e) => e.setAttribute('data-layout-allow-overlap', ''));
+
+    const cam = camera($('#cam-estate'), { x: 260, y: 40, s: 2.1, r: -5 });
+    const mb = blur('estate');
+    tl.set(['#hub', '#hubring', '#hub-lbl', '#t-one'], { opacity: 0 }, 0);
+    tl.set('#e-conn path', { opacity: 0 }, 0);
+    // cold open: defocused, tight on the first logos; pull back to the whole estate
+    tl.fromTo('#cam-estate', { filter: 'blur(26px)' }, { filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0);
+    cards.forEach((c, i) => pop(c.el, 0.2 + i * 0.13, { from: 0.85, dur: 0.6, y: 24 }));
+    cam.to(0.3, { x: CX, y: CY - 30, s: 0.72, r: 0 }, 2.9, 'power3.inOut');
+    mb.leg(0.3, 2.9, 10, 'xy');
+    reveal(words($('#t-every')), 2.6, { stagger: 0.06, dur: 0.6 });
+    // the platform: hub, glowing ring, every source connects with a pulse; sources gather a little
+    unreveal($$('#t-every .w'), 4.7);
+    tl.set(['#hub', '#hubring'], { opacity: 1 }, 5.1);
+    pop('#hub', 5.1, { from: 0.6, dur: 0.7 });
+    tl.fromTo('#hubring', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: SPRING }, 5.2);
+    cards.forEach((c, i) => {
+      const t = 5.5 + (i % 6) * 0.12 + Math.floor(i / 6) * 0.5;
+      tl.set(c.base, { opacity: 1 }, t); drawPath(c.base, t, 0.7, 'power2.out'); pulsePath(c.pulse, t + 0.15, 0.8, 260);
+      tl.to(c.el, { x: -c.dx * 0.08, y: -c.dy * 0.08, duration: 1.2, ease: 'power2.out' }, t + 0.1);
+    });
+    tl.fromTo('#hubring', { boxShadow: '0 0 80px rgba(61,95,255,0.6), inset 0 0 50px rgba(61,95,255,0.25)' }, { boxShadow: '0 0 140px rgba(61,95,255,0.95), inset 0 0 70px rgba(61,95,255,0.45)', duration: 0.5, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 5.6);
+    tl.set('#hub-lbl', { opacity: 1, left: 960 - 250, top: 540 + 170 }, 7.4);
+    pop('#hub-lbl', 7.4, { from: 0.9, dur: 0.5, y: 14 });
+    tl.set('#t-one', { opacity: 1 }, 7.9);
+    reveal(words($('#t-one')), 7.9, { stagger: 0.06, dur: 0.6 });
+    tl.set('#t-one', { y: 420 }, 0);
+    cam.to(6.0, { s: 0.78, y: CY - 10 }, 3.4, 'power1.inOut');
+    // dolly through the hub into the dashboard
+    cam.to(10.2, { x: CX, y: CY, s: 4.5 }, 1.3, 'power3.in');
+    mb.in(10.4, 1.1, 26, 'xy');
+    tl.to('#cam-estate', { opacity: 0, duration: 0.2 }, 11.35);
   }
 
-  // ======================= B8 · 10.4–12.4 · brand card =======================
+  // ======================= 3 · 11.3–19.4 · the dashboard =======================
   {
-    const cam = camera($('#cam-brand'), { s: 1.0 });
-    cam.to(10.4, { s: 1.06 }, 2.1, 'power1.inOut');
-    tl.fromTo('#cam-brand', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 10.4);
-    clip('#brand-word', 10.55, 'inset(0 100% 0 0)', 'inset(0 0% 0 0)', 0.85, 'power3.inOut');
-    tl.fromTo('#brand-mark', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.6, ease: SPRING }, 11.3);
-    tl.to('#cam-brand', { opacity: 0, duration: 0.15 }, 12.35);
+    const cam = camera($('#cam-dash'), { x: 960, y: 590, s: 2.4 });
+    const mb = blur('dash');
+    tl.fromTo('#cam-dash', { opacity: 0 }, { opacity: 1, duration: 0.25 }, 11.3);
+    mb.out(11.3, 0.8, 22, 'xy');
+    cam.to(11.3, { x: 960, y: 570, s: 1.0 }, 1.4, 'power3.out');
+    pop('#dash', 11.35, { from: 0.94, dur: 0.7, y: 30 });
+    reveal(words($('#t-dash')), 11.8, { stagger: 0.05 });
+    // numbers land: ring, KPIs, quality tiles, domain bars, flags
+    const fill = $('#d-fill'); const FL = fill.getTotalLength(); fill.style.strokeDasharray = `${FL} ${FL}`; fill.style.strokeDashoffset = FL;
+    tl.to(fill, { strokeDashoffset: FL * (1 - 0.71), duration: 1.6, ease: 'power3.out' }, 12.1);
+    count($('#d-score'), 12.1, 0, 71, 1.6);
+    count($('#d-src'), 12.3, 0, 18, 1.2);
+    count($('#d-rec'), 12.4, 0, 50.5, 1.4, (v) => v.toFixed(1) + 'M');
+    count($('#d-flags'), 12.5, 0, 4, 1.0);
+    pop('#d-quality .qtile', 12.2, { from: 0.94, dur: 0.5, stagger: 0.1, y: 16 });
+    tl.to('#d-quality .qtile .b i', { scaleX: 1, duration: 0.9, stagger: 0.1, ease: 'power3.out' }, 12.6);
+    tl.fromTo('#d-domains .drow .bar i', { scaleX: 0 }, { scaleX: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, 12.7);
+    pop('#d-note', 13.2, { from: 0.96, dur: 0.5, y: 14 });
+    pop('#d-note .step', 13.5, { from: 0.9, dur: 0.45, stagger: 0.1, y: 8 });
+    // push in on the score, then drift across the flags
+    cam.to(14.6, { x: 560, y: 520, s: 1.5 }, 1.2, 'power2.inOut');
+    mb.leg(14.6, 1.2, 10, 'xy');
+    cam.to(16.6, { x: 1120, y: 780, s: 1.35 }, 1.4, 'power2.inOut');
+    mb.leg(16.6, 1.4, 10, 'x');
+    // whip out to the graph
+    cam.to(18.7, { x: 960, y: 560, s: 0.7 }, 0.7, 'power3.in');
+    mb.in(18.8, 0.6, 24, 'xy');
+    tl.to('#cam-dash', { opacity: 0, duration: 0.2 }, 19.2);
   }
 
-  // ======================= B9 · 12.4–14.8 · prompt two, typed live, push-in =======================
+  // ======================= 4 + 5 · 19.1–34.7 · the knowledge graph, a question, the light, the answer =======================
   {
-    const cam = camera($('#cam-p2'), { s: 1.0 });
-    const mb = blur('p2');
-    pop('#p2-box', 12.42, { from: 0.94, dur: 0.6, y: 30 });
-    typewrite($('#p2-txt'), $('#p2-caret'), 12.7, 'Build a claims triage agent. Claims and policy data only. Mask personal data. Log every read.', 52);
-    tl.to('#p2-go', { backgroundColor: '#8A8A8E', duration: 0.2 }, 12.7);
-    tl.to('#p2-go', { backgroundColor: '#0D0D0D', scale: 0.9, duration: 0.1 }, 14.32);
-    tl.to('#p2-go', { scale: 1, duration: 0.3, ease: SPRING }, 14.42);
-    cam.to(14.25, { x: 960, y: 540, s: 3.6 }, 0.6, 'power3.in');
-    mb.in(14.3, 0.55, 26, 'xy');
-    tl.to('#cam-p2', { opacity: 0, duration: 0.15 }, 14.7);
-  }
+    const G = 19.1;
+    // nodes: [id, label, icon, final x, final y, scattered dx, dy]
+    const NODES = [
+      ['invoices', 'Invoices', 'i-doc', 470, 330, -260, -90], ['payments', 'Payments', 'i-coin', 300, 500, -320, 120], ['suppliers', 'Suppliers', 'i-box', 640, 520, 180, -160],
+      ['contracts', 'Contracts', 'i-doc', 520, 690, -240, 220], ['budgets', 'Budgets', 'i-rows', 250, 300, -140, -260],
+      ['customers', 'Customers', 'i-user', 1420, 330, 200, -140], ['policies', 'Policies', 'i-shield', 1620, 500, 300, 60], ['claims', 'Claims', 'i-doc', 1300, 520, -160, 200],
+      ['brokers', 'Brokers', 'i-user', 1560, 690, 240, 240], ['tickets', 'Tickets', 'i-rows', 1250, 690, 90, -320],
+      ['orders', 'Orders', 'i-box', 820, 820, -220, 120], ['products', 'Products', 'i-layers', 1000, 700, 60, -260], ['shipments', 'Shipments', 'i-box', 1120, 860, 300, 60],
+      ['employees', 'Employees', 'i-user', 900, 560, 40, -420], ['assets', 'Assets', 'i-db', 1000, 960, -360, -20], ['documents', 'Documents', 'i-doc', 1220, 400, -60, 340],
+    ];
+    const EDGES = [
+      ['invoices', 'payments'], ['invoices', 'suppliers'], ['payments', 'contracts'], ['suppliers', 'contracts'], ['budgets', 'invoices'], ['budgets', 'payments'],
+      ['customers', 'policies'], ['policies', 'claims'], ['claims', 'brokers'], ['customers', 'claims'], ['policies', 'brokers'], ['tickets', 'customers'], ['tickets', 'claims'],
+      ['orders', 'products'], ['orders', 'shipments'], ['products', 'shipments'], ['employees', 'orders'], ['assets', 'shipments'], ['assets', 'orders'],
+      ['invoices', 'orders'], ['claims', 'payments'], ['customers', 'orders'], ['suppliers', 'shipments'], ['documents', 'claims'], ['documents', 'contracts'], ['employees', 'tickets'], ['products', 'policies'],
+    ];
+    const wrap = $('#g-nodes'), edges = $('#g-edges'), pos = {};
+    const nodes = NODES.map(([id, label, icon, x, y, sx, sy]) => {
+      pos[id] = { x, y };
+      const el = document.createElement('div'); el.className = 'node'; el.id = 'n-' + id;
+      el.innerHTML = `<i class="halo"></i><svg><use href="#${icon}" style="color:#111"></use></svg><span class="nl">${label}</span>`;
+      el.style.left = (x - 48) + 'px'; el.style.top = (y - 48) + 'px';
+      wrap.appendChild(el);
+      return { id, el, sx, sy };
+    });
+    $$('#g-nodes .node, #g-nodes .node *').forEach((e) => e.setAttribute('data-layout-allow-overlap', ''));
+    const edgeEls = EDGES.map(([a, b]) => { const p = svgEl('path', { d: `M${pos[a].x} ${pos[a].y} L${pos[b].x} ${pos[b].y}` }); edges.appendChild(p); return p; });
+    // the light's route: a loop through the graph, smoothed through node centres
+    const ROUTE = ['invoices', 'payments', 'contracts', 'suppliers', 'shipments', 'orders', 'customers', 'policies', 'claims', 'documents', 'employees', 'invoices'];
+    const rp = ROUTE.map((id) => pos[id]);
+    let d = `M${rp[0].x} ${rp[0].y}`;
+    for (let i = 1; i < rp.length - 1; i++) { const mx = (rp[i].x + rp[i + 1].x) / 2, my = (rp[i].y + rp[i + 1].y) / 2; d += ` Q${rp[i].x} ${rp[i].y} ${mx} ${my}`; }
+    d += ` L${rp[rp.length - 1].x} ${rp[rp.length - 1].y}`;
+    const route = svgEl('path', { class: 'route', d }); edges.appendChild(route);
+    const light = $('#g-light');
 
-  // ======================= B10–B16 · 14.6–35.8 · the graph board =======================
-  {
-    const G = 14.6;
-    const cam = camera($('#cam-graph'), { x: 640, y: 690, s: 2.4, r: 6 });
+    const cam = camera($('#cam-graph'), { x: 960, y: 560, s: 0.85 });
     const mb = blur('graph');
-    const board = $('#gboard');
-    tl.set(board, { transformPerspective: 1800, rotationY: 12 }, 0);
     tl.fromTo('#cam-graph', { opacity: 0 }, { opacity: 1, duration: 0.25 }, G);
     mb.out(G, 0.7, 20, 'xy');
-    // arrive tilted, extreme close-up on the checklist; straighten and pull back through the card
-    tl.set(['#kb1', '#kb2', '#ag1', '#kb3', '#kb4', '#ag2', '#kb5', '#kb6', '#ag3', '#t2', '#t3', '#lbl-1', '#lbl-2', '#lbl-3', '#g-plus', '#g-avatar', '#g-ring', '#g-sq'], { opacity: 0 }, 0);
-    tl.set('#g-conn path', { opacity: 0 }, 0);
-    tl.set('#g-conn .dot', { opacity: 0 }, 0);
-    pop('#t1-checks .check', G + 0.3, { from: 0.96, dur: 0.5, stagger: 0.28, y: 14 });
-    tl.to('#t1-c3 .spin', { rotation: 720, duration: 2.0, ease: 'none', transformOrigin: '50% 50%' }, G + 0.8);
-    tl.to('#t1-c3 .spin', { opacity: 0, duration: 0.2 }, G + 2.6);
-    tl.to('#t1-c3 .tick', { opacity: 1, duration: 0.2 }, G + 2.6);
-    tl.to('#t1-c3 i', { backgroundColor: '#EEF7DC', duration: 0.2 }, G + 2.6);
-    tl.to(board, { rotationY: 0, duration: 3.2, ease: 'power2.inOut' }, G + 0.2);
-    cam.to(G + 0.2, { x: 610, y: 615, s: 1.3, r: 0 }, 3.3, 'power2.inOut');
-    // connector draws down to KB1 with a gradient pulse
-    tl.set(['#c-11', '#g-conn .dot'], { opacity: 1 }, G + 3.5);
-    drawPath($('#c-11'), G + 3.5, 0.6);
-    pulsePath($('#p-11'), G + 3.6, 0.7);
-    tl.set('#kb1', { opacity: 1 }, G + 3.9);
-    pop('#kb1', G + 3.9, { from: 0.94, dur: 0.6, y: 30 });
-    cam.to(G + 3.9, { x: 700, y: 1125, s: 1.6 }, 1.0, 'power2.inOut');
-    mb.leg(G + 3.9, 1.0, 12, 'y');
-    // KB2
-    tl.set('#c-12', { opacity: 1 }, G + 5.4); drawPath($('#c-12'), G + 5.4, 0.5);
-    tl.set('#kb2', { opacity: 1 }, G + 5.7); pop('#kb2', G + 5.7, { from: 0.94, dur: 0.6, y: 30 });
-    cam.to(G + 5.8, { x: 790, y: 1685, s: 1.6 }, 1.0, 'power2.inOut');
-    mb.leg(G + 5.8, 1.0, 12, 'y');
-    // Agent
-    tl.set('#c-13', { opacity: 1 }, G + 7.4); drawPath($('#c-13'), G + 7.4, 0.5);
-    tl.set('#ag1', { opacity: 1 }, G + 7.7); pop('#ag1', G + 7.7, { from: 0.94, dur: 0.6, y: 30 });
-    cam.to(G + 7.8, { x: 880, y: 2230, s: 1.6 }, 1.0, 'power2.inOut');
-    mb.leg(G + 7.8, 1.0, 12, 'y');
-    // pull out to the diagonal 3-up, then snap back into KB1
-    cam.to(G + 9.4, { x: 760, y: 1420, s: 0.5 }, 1.1, 'power3.inOut');
-    mb.leg(G + 9.4, 1.1, 14, 'xy');
-    cam.to(G + 11.2, { x: 700, y: 1125, s: 1.7 }, 0.55, 'power3.inOut');
-    mb.leg(G + 11.2, 0.55, 22, 'xy');
-    // KB1 morphs into an opening envelope; the answer slides up out of it
-    tl.set('#env', { opacity: 1 }, G + 11.9);
-    tl.to('#kb1', { scale: 0.96, opacity: 0, duration: 0.45, ease: 'power2.in' }, G + 11.9);
-    tl.fromTo('#env-body', { scaleY: 0.5, opacity: 0, transformOrigin: '50% 100%' }, { scaleY: 1, opacity: 1, duration: 0.55, ease: SPRING }, G + 12.0);
-    tl.fromTo('#env-flap', { opacity: 0 }, { opacity: 1, duration: 0.3 }, G + 12.2);
-    tl.fromTo('#env-letter', { y: 200, scale: 0.9, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 1.3, ease: 'power3.out' }, G + 12.35);
-    tl.fromTo('#env-badge', { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2.2)' }, G + 12.9);
-    cam.to(G + 12.3, { y: 1050, s: 1.6 }, 2.4, 'power1.inOut');
-    // whip to the wide reset: avatar, glowing ring, connector to the graph square
-    cam.to(G + 14.9, { x: -820, y: 615, s: 1.0, r: 0 }, 0.7, 'power3.inOut');
-    mb.leg(G + 14.9, 0.7, 24, 'x');
-    tl.set('#env', { opacity: 0 }, G + 15.2);
-    tl.set('#kb1', { opacity: 1, scale: 1 }, G + 15.2);
-    pop('#g-avatar', G + 15.5, { from: 0.8, dur: 0.6 });
-    tl.fromTo('#g-ring', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: SPRING }, G + 15.6);
-    tl.set('#c-av', { opacity: 1 }, G + 16.0); drawPath($('#c-av'), G + 16.0, 0.35);
-    pop('#g-sq', G + 16.3, { from: 0.8, dur: 0.5 });
-    // the hero shot: one long pan-right and zoom-out while the three branches draw on
-    cam.to(G + 16.6, { x: 1450, y: 1280, s: 0.42 }, 3.6, 'power2.inOut');
-    mb.leg(G + 16.6, 3.6, 10, 'x');
-    ['#c-b1', '#c-b2', '#c-b3'].forEach((c, i) => { tl.set(c, { opacity: 1 }, G + 16.7 + i * 0.25); drawPath($(c), G + 16.7 + i * 0.25, 0.9, 'power2.out'); });
-    pop(['#lbl-1', '#lbl-2', '#lbl-3'], G + 17.4, { from: 0.9, dur: 0.5, stagger: 0.25 });
-    tl.set(['#t2', '#t3'], { opacity: 1 }, G + 17.5);
-    pop(['#t2', '#t3'], G + 17.5, { from: 0.94, dur: 0.6, stagger: 0.25, y: 30 });
-    ['#c-21', '#c-31', '#c-22', '#c-32', '#c-23', '#c-33'].forEach((c, i) => { tl.set(c, { opacity: 1 }, G + 18.0 + i * 0.18); drawPath($(c), G + 18.0 + i * 0.18, 0.5, 'power2.out'); });
-    tl.set(['#kb3', '#kb5', '#kb4', '#kb6', '#ag2', '#ag3', '#g-plus'], { opacity: 1 }, G + 18.2);
-    pop(['#kb3', '#kb5', '#kb4', '#kb6', '#ag2', '#ag3', '#g-plus'], G + 18.2, { from: 0.94, dur: 0.6, stagger: 0.16, y: 30 });
-    cam.to(G + 20.2, { x: 1520, y: 1300, s: 0.41 }, 1.1, 'power1.inOut');
-    // blur out into the field
-    mb.in(G + 20.7, 0.5, 24, 'xy');
-    tl.to('#cam-graph', { opacity: 0, duration: 0.2 }, G + 21.1);
-  }
-
-  // ======================= B17 · 35.8–37.8 · "Governed" title beat =======================
-  {
-    show(field, 35.75);
-    const cam = camera($('#cam-gov'), { s: 1.0 });
-    cam.to(35.8, { s: 1.05 }, 2.1, 'power1.inOut');
-    tl.fromTo('#gov-pill', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: SPRING }, 35.85);
-    tl.fromTo('#gov-guides .guide', { opacity: 0 }, { opacity: 1, duration: 0.4, stagger: 0.05 }, 36.1);
-    tl.fromTo('#gov-guides .handle', { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, stagger: 0.05, ease: SPRING }, 36.3);
-    hide(field, 37.8);
-  }
-
-  // ======================= B18–B19 · 37.8–43.8 · collaborative editing → rendered answer =======================
-  {
-    const cam = camera($('#cam-edit'), { x: 960, y: 540, s: 1.0 });
-    const mb = blur('edit');
-    tl.fromTo('#cam-edit', { opacity: 0 }, { opacity: 1, duration: 0.25 }, 37.8);
-    tl.fromTo('#yaml', { opacity: 0 }, { opacity: 0.35, duration: 0.6 }, 37.85);
-    pop('#thumb', 37.9, { from: 0.9, dur: 0.6 });
-    // the selected policy line assembles left to right
-    const sw = words($('#sel-text'));
-    reveal(sw, 38.0, { stagger: 0.05, dur: 0.45 });
-    tl.fromTo('#sel', { opacity: 0, scaleX: 0.6, transformOrigin: '0 50%' }, { opacity: 1, scaleX: 1, duration: 0.6, ease: OUT }, 38.5);
-    pop('#tb', 38.9, { from: 0.9, dur: 0.5, y: 14 });
-    // the collaborator arrives and swaps one word in place
-    tl.fromTo('#cur-amira', { x: 0, y: 0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 39.1);
-    tl.to('#cur-amira', { x: -640, y: -330, duration: 0.8, ease: 'power3.inOut' }, 39.1);
-    tl.set('#sw-new', { yPercent: 110 }, 0);
-    tl.to('#sw-old', { yPercent: -110, duration: 0.35, ease: 'power3.in' }, 40.1);
-    tl.to('#sw-new', { yPercent: 0, duration: 0.45, ease: OUT }, 40.35);
-    tl.to('#cur-amira', { x: -600, y: -300, duration: 0.5, ease: 'power2.inOut' }, 40.6);
-    // push-in on the selection, then dive down to the rendered copy at 300 %
-    cam.to(39.6, { x: 900, y: 560, s: 1.35 }, 1.6, 'power2.inOut');
-    cam.to(41.6, { x: 850, y: 1500, s: 1.7 }, 0.8, 'power3.inOut');
-    mb.leg(41.6, 0.8, 22, 'y');
-    cam.to(42.4, { y: 1580 }, 1.4, 'power1.inOut');
-    tl.to('#cam-edit', { opacity: 0, duration: 0.2 }, 43.7);
-  }
-
-  // ======================= B20–B21 · 43.8–50.8 · client window → phone · Every Agent → Any Model =======================
-  {
-    const cam = camera($('#cam-client'), { x: 960, y: 540, s: 1.0 });
-    const mb = blur('client'), mw = blur('words');
-    const win = $('#win');
-    tl.fromTo('#cam-client', { opacity: 0 }, { opacity: 1, duration: 0.25 }, 43.8);
-    tl.fromTo(win, { rotationY: -22, rotationX: 8, scale: 1.25, x: 120, transformPerspective: 2000, transformOrigin: '50% 50%' }, { rotationY: 0, rotationX: 0, scale: 1, x: 0, duration: 2.2, ease: 'power3.out' }, 43.8);
-    mb.out(43.8, 0.9, 18, 'xy');
-    tl.fromTo('#code2', { opacity: 0 }, { opacity: 0.22, duration: 0.8 }, 44.0);
-    pop('#win-desk .illus', 44.4, { from: 0.9, dur: 0.6 });
-    reveal(words($('#win-desk .display')), 44.6, { stagger: 0.04 });
-    // morph: the window reshapes into a phone
-    tl.set(['#w-every', '#w-agent', '#w-any', '#w-model'], { opacity: 0 }, 0);
-    tl.to('#win-desk', { opacity: 0, duration: 0.3 }, 47.7);
-    tl.to(win, { left: 740, top: 90, width: 440, height: 900, borderRadius: 60, duration: 0.9, ease: 'power3.inOut' }, 47.8);
-    tl.to('#win .island', { opacity: 1, duration: 0.3 }, 48.3);
-    tl.to('#win-mob', { opacity: 1, duration: 0.4 }, 48.3);
-    tl.to('#code2', { opacity: 0, duration: 0.4 }, 47.8);
-    mb.leg(47.8, 0.9, 12, 'xy');
-    // giant words fly in from both edges with blur
-    tl.fromTo('#w-every', { x: -700, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: OUT }, 48.4);
-    tl.fromTo('#w-agent', { x: 700, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: OUT }, 48.5);
-    mw.out(48.4, 0.7, 26, 'x');
-    // theme inversion: light → dark across the whole frame while the phone stays put
-    clip(dark, 49.5, 'inset(0 100% 0 0)', 'inset(0 0% 0 0)', 0.55, 'power3.inOut');
-    tl.to('#mob-dark', { opacity: 1, duration: 0.35 }, 49.6);
-    tl.to(['#w-every', '#w-agent'], { opacity: 0, duration: 0.25 }, 49.55);
-    tl.fromTo('#w-any', { x: -400, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: OUT }, 49.75);
-    tl.fromTo('#w-model', { x: 400, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: OUT }, 49.85);
-    mw.out(49.75, 0.65, 22, 'x');
-    tl.to('#cam-client', { opacity: 0, duration: 0.2 }, 50.7);
-    tl.to('#cam-words', { opacity: 0, duration: 0.2 }, 50.7);
-  }
-
-  // ======================= B22 · 50.8–53.8 · ripple / graph beat =======================
-  {
-    tl.fromTo('#llm-pill', { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: SPRING }, 50.85);
-    ['#rr-1', '#rr-2', '#rr-3', '#rr-4'].forEach((r, i) => {
-      tl.fromTo(r, { scale: 1, opacity: 0.9 }, { scale: 4.2, opacity: 0, duration: 1.6, ease: 'power1.out', repeat: 1, repeatDelay: 0.2 }, 50.95 + i * 0.32);
+    cam.to(G, { x: 960, y: 560, s: 1.0 }, 1.3, 'power3.out');
+    tl.set(['#ask-box', '#answer', '#cur-ask', '#cl-1', '#cl-2', '#cl-3'], { opacity: 0 }, 0);
+    // scattered nodes pop in, then drift into their clusters as the edges draw
+    nodes.forEach((n, i) => {
+      tl.set(n.el, { x: n.sx, y: n.sy }, 0);
+      pop(n.el, G + 0.1 + i * 0.06, { from: 0.7, dur: 0.6, y: 0 });
+      tl.to(n.el, { x: 0, y: 0, duration: 1.8, ease: 'power3.inOut' }, G + 1.4 + (i % 4) * 0.08);
     });
-    // back to light; the rings become wide blue arcs pulsing left and right
-    clip(dark, 52.3, 'inset(0 0% 0 0)', 'inset(0 0 0 100%)', 0.5, 'power3.inOut');
-    tl.set(dark, { clipPath: 'inset(0 100% 0 0)' }, 52.85);
-    tl.set('#llm-pill', { backgroundColor: '#0D0D0D' }, 0);
-    tl.fromTo('#arc-l', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: 'power2.out' }, 52.4);
-    tl.fromTo('#arc-r', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: 'power2.out' }, 52.5);
-    tl.to('#arc-l', { scale: 1.12, duration: 0.6, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 53.1);
-    tl.to('#arc-r', { scale: 1.12, duration: 0.6, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 53.2);
+    edgeEls.forEach((p, i) => { tl.set(p, { opacity: 0 }, 0); tl.set(p, { opacity: 1 }, G + 2.4 + i * 0.05); drawPath(p, G + 2.4 + i * 0.05, 0.6, 'power2.out'); });
+    reveal(words($('#t-graph')), G + 0.6, { stagger: 0.05 });
+    pop(['#cl-1', '#cl-2', '#cl-3'], G + 3.7, { from: 0.85, dur: 0.5, stagger: 0.12, y: 10 });
+    cam.to(G + 1.4, { x: 960, y: 580, s: 0.94 }, 3.0, 'power1.inOut');
+    // the question: the title leaves, the prompt arrives and is typed live
+    unreveal($$('#t-graph .w'), G + 5.4);
+    tl.set('#ask-box', { opacity: 1 }, G + 5.7);
+    pop('#ask-box', G + 5.7, { from: 0.94, dur: 0.6, y: 30 });
+    typewrite($('#ask-txt'), $('#ask-caret'), G + 6.2, 'Do we have data about invoices?', 26);
+    tl.set('#cur-ask', { opacity: 1 }, G + 7.4);
+    tl.fromTo('#cur-ask', { x: 0, y: 0 }, { x: -200, y: -80, duration: 0.7, ease: 'power3.inOut' }, G + 7.4);
+    tl.to('#ask-go', { scale: 0.88, duration: 0.1 }, G + 8.15);
+    tl.to('#ask-go', { scale: 1, duration: 0.3, ease: SPRING }, G + 8.25);
+    tl.to('#cur-ask', { opacity: 0, duration: 0.3 }, G + 8.5);
+    // the light races around the graph, lighting the nodes it checks
+    const L = route.getTotalLength(); const lp = { u: 0 };
+    tl.set(light, { opacity: 1 }, G + 8.3);
+    tl.to(lp, { u: 1, duration: 2.6, ease: 'power1.inOut', onUpdate: () => { const p = route.getPointAtLength(L * lp.u); light.style.left = p.x + 'px'; light.style.top = p.y + 'px'; } }, G + 8.3);
+    pulsePath(route, G + 8.3, 2.6, 420);
+    ROUTE.slice(0, -1).forEach((id, i) => {
+      const t = G + 8.3 + (i / (ROUTE.length - 1)) * 2.6;
+      tl.fromTo(`#n-${id} .halo`, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.25, ease: OUT }, t);
+      tl.to(`#n-${id} .halo`, { opacity: 0, scale: 1.25, duration: 0.6, ease: 'power2.out' }, t + 0.3);
+    });
+    tl.to(light, { opacity: 0, scale: 2.5, duration: 0.35 }, G + 10.9);
+    ['invoices', 'payments', 'suppliers', 'contracts'].forEach((id, i) => tl.to(`#n-${id}`, { boxShadow: 'var(--sh-card), 0 0 0 6px rgba(61,95,255,0.25), 0 0 60px rgba(61,95,255,0.6)', duration: 0.4 }, G + 10.9 + i * 0.08));
+    cam.to(G + 8.3, { x: 900, y: 560, s: 1.0 }, 2.6, 'power1.inOut');
+    // the answer card lands; the camera settles on it
+    tl.set('#answer', { opacity: 1 }, G + 11.2);
+    pop('#answer', G + 11.2, { from: 0.92, dur: 0.7, y: 30 });
+    pop('#answer .ans-row', G + 11.5, { from: 0.96, dur: 0.45, stagger: 0.12, y: 10 });
+    cam.to(G + 11.3, { x: 1180, y: 620, s: 1.2 }, 1.2, 'power2.inOut');
+    mb.leg(G + 11.3, 1.2, 10, 'x');
+    tl.to('#ask-box', { opacity: 0.35, duration: 0.5 }, G + 11.3);
+    // blur out to the pipelines
+    cam.to(G + 14.9, { s: 1.6, x: 1250, y: 560 }, 0.7, 'power3.in');
+    mb.in(G + 15.0, 0.6, 24, 'xy');
+    tl.to('#cam-graph', { opacity: 0, duration: 0.2 }, G + 15.45);
   }
 
-  // ======================= B23 · 53.8–57.8 · stats over the rising chart =======================
+  // ======================= 6 · 34.4–43 · a pipeline per dataset, applied and monitored =======================
   {
-    show(field, 53.8);
-    const cam = camera($('#cam-stats'), { x: 960, y: 540, s: 1.0 });
-    const mb = blur('stats');
-    mb.out(53.8, 0.5, 16, 'x');
-    tl.fromTo('#cam-stats', { opacity: 0 }, { opacity: 1, duration: 0.2 }, 53.8);
-    // the chart sweeps bottom-left → top-right; the leading dot rides the line
-    const line = $('#chart-line'), dot = $('#chart-dot'), rect = $('#chart-rect');
-    const L = line.getTotalLength(); const cp = { u: 0 };
-    tl.to(cp, { u: 1, duration: 3.6, ease: 'power1.inOut', onUpdate: () => { const p = line.getPointAtLength(L * cp.u); rect.setAttribute('width', p.x); dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); } }, 53.85);
-    tl.set('#st2', { opacity: 0 }, 0); tl.set('#st2-n', { opacity: 0 }, 0);
-    pop('#st1', 53.95, { from: 0.9, dur: 0.5, y: 20 });
-    tl.fromTo('#st1-n', { yPercent: 30, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: OUT }, 54.05);
-    count($('#st1-v'), 54.05, 0, 34, 1.3);
-    tl.to(['#st1', '#st1-n'], { opacity: 0, y: -30, duration: 0.3, ease: 'power2.in' }, 55.7);
-    tl.set(['#st2', '#st2-n'], { opacity: 1 }, 55.95);
-    pop('#st2', 55.95, { from: 0.9, dur: 0.5, y: 20 });
-    tl.fromTo('#st2-n', { yPercent: 30, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: OUT }, 56.05);
-    count($('#st2-v'), 56.05, 0, 50.5, 1.4, (v) => v.toFixed(1) + 'M');
-    cam.to(53.8, { x: 1010, y: 540 }, 4.0, 'none');
-    tl.to('#cam-stats', { opacity: 0, duration: 0.15 }, 57.75);
+    const P = 34.4;
+    const cam = camera($('#cam-pipes'), { x: 960, y: 560, s: 1.6 });
+    const mb = blur('pipes');
+    tl.fromTo('#cam-pipes', { opacity: 0 }, { opacity: 1, duration: 0.25 }, P);
+    mb.out(P, 0.8, 22, 'xy');
+    cam.to(P, { x: 960, y: 560, s: 1.0 }, 1.3, 'power3.out');
+    reveal(words($('#t-pipes')), P + 0.3, { stagger: 0.05 });
+    pop(['#pp-1', '#pp-2', '#pp-3'], P + 0.5, { from: 0.94, dur: 0.6, stagger: 0.14, y: 30 });
+    pop('#pp-1 .step, #pp-2 .step, #pp-3 .step', P + 1.0, { from: 0.9, dur: 0.4, stagger: 0.04, y: 8 });
+    // the user applies the first pipeline; it runs and is monitored live
+    tl.set('#cur-pipes', { opacity: 0 }, 0);
+    tl.set('#cur-pipes', { opacity: 1 }, P + 2.0);
+    tl.fromTo('#cur-pipes', { x: 0, y: 0 }, { x: -140, y: -700, duration: 0.8, ease: 'power3.inOut' }, P + 2.0);
+    tl.to('#pp1-apply', { scale: 0.92, duration: 0.1 }, P + 2.85);
+    tl.to('#pp1-apply', { scale: 1, backgroundColor: '#2F7A1F', duration: 0.3, ease: SPRING }, P + 2.95);
+    tl.to('#cur-pipes', { opacity: 0, duration: 0.3 }, P + 3.2);
+    cam.to(P + 2.9, { x: 960, y: 400, s: 1.16 }, 1.0, 'power2.inOut');
+    mb.leg(P + 2.9, 1.0, 10, 'y');
+    tl.to('#pp1-live', { opacity: 1, duration: 0.3 }, P + 3.1);
+    tl.to('#pp1-count', { opacity: 1, duration: 0.3 }, P + 3.1);
+    count($('#pp1-count'), P + 3.1, 0, 1200000, 4.2, (v) => Math.round(v).toLocaleString('en-US') + ' records', 'power1.inOut');
+    tl.to('#pp1-prog i', { scaleX: 1, duration: 4.4, ease: 'power1.inOut' }, P + 3.1);
+    const steps = $$('#pp1-steps .step');
+    steps.forEach((s, i) => {
+      const t = P + 3.2 + i * 0.85;
+      tl.to(s, { backgroundColor: '#3D5FFF', color: '#ffffff', duration: 0.25 }, t);
+      tl.to(s, { backgroundColor: '#0D0D0D', color: '#ffffff', duration: 0.25 }, t + 0.8);
+    });
+    count($('#pp1-r'), P + 3.6, 64, 78, 4.0, undefined, 'power1.inOut');
+    tl.to('#pp1-r', { color: '#2F7A1F', duration: 0.4 }, P + 6.8);
+    // blur out to the use cases
+    cam.to(P + 8.0, { s: 1.5, x: 960, y: 400 }, 0.7, 'power3.in');
+    mb.in(P + 8.1, 0.6, 24, 'xy');
+    tl.to('#cam-pipes', { opacity: 0, duration: 0.2 }, P + 8.5);
   }
 
-  // ======================= B24 · 57.8–60.8 · works with any AI agent =======================
+  // ======================= 7 · 42.9–50 · proposed use cases =======================
   {
-    const cam = camera($('#cam-any'), { s: 1.0 });
-    cam.to(57.8, { s: 1.04 }, 3.0, 'power1.inOut');
-    tl.fromTo('#field-circle', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1.08, duration: 3.0, ease: 'power1.out' }, 57.8);
-    tl.set(['#ic-2', '#ic-3'], { opacity: 0 }, 0);
-    tl.fromTo('#ic-1', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: SPRING }, 57.85);
-    tl.to('#ic-1', { opacity: 0, scale: 0.9, duration: 0.35 }, 58.9);
-    tl.fromTo('#ic-2', { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: OUT }, 58.95);
-    tl.to('#ic-2', { opacity: 0, scale: 0.9, duration: 0.35 }, 59.8);
-    tl.fromTo('#ic-3', { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: OUT }, 59.85);
-    reveal(words($('#any-h')), 58.1, { stagger: 0.09, dur: 0.5 });
-    hide(field, 60.8); hide('#field-circle', 60.8);
+    const U = 42.9;
+    const cam = camera($('#cam-uses'), { x: 960, y: 560, s: 1.5 });
+    const mb = blur('uses');
+    tl.fromTo('#cam-uses', { opacity: 0 }, { opacity: 1, duration: 0.25 }, U);
+    mb.out(U, 0.8, 22, 'xy');
+    cam.to(U, { x: 960, y: 560, s: 1.0 }, 1.3, 'power3.out');
+    reveal(words($('#t-uses')), U + 0.3, { stagger: 0.05 });
+    pop(['#uc-1', '#uc-2', '#uc-3'], U + 0.5, { from: 0.92, dur: 0.65, stagger: 0.16, y: 40 });
+    pop('#uc-note', U + 1.6, { from: 0.94, dur: 0.5, y: 14 });
+    // a slow push onto the first card, then a drift across all three
+    cam.to(U + 2.2, { x: 520, y: 520, s: 1.35 }, 1.4, 'power2.inOut');
+    mb.leg(U + 2.2, 1.4, 9, 'xy');
+    cam.to(U + 4.4, { x: 1200, y: 540, s: 1.15 }, 1.6, 'power1.inOut');
+    mb.leg(U + 4.4, 1.6, 8, 'x');
+    cam.to(U + 6.4, { s: 1.6, x: 1000, y: 560 }, 0.6, 'power3.in');
+    mb.in(U + 6.5, 0.55, 24, 'xy');
+    tl.to('#cam-uses', { opacity: 0, duration: 0.2 }, U + 6.9);
   }
 
-  // ======================= B25 · 60.8–63 · logo condense =======================
+  // ======================= 8 · 49.8–55 · close =======================
   {
-    tl.fromTo('#cam-lock', { opacity: 0 }, { opacity: 1, duration: 0.2 }, 60.8);
-    tl.fromTo('#lk-mark', { scale: 2.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'power3.out' }, 60.85);
-    tl.set('#lk-sub2', { opacity: 0 }, 0);
-    reveal(words($('#lk-sub')), 61.3, { stagger: 0.06 });
-    // the mark slides into the wordmark; the line resolves
-    tl.to('#lk-mark', { x: -420, y: 40, scale: 0.55, duration: 0.8, ease: 'power3.inOut' }, 62.0);
-    clip('#lk-word', 62.15, 'inset(0 100% 0 0)', 'inset(0 0% 0 0)', 0.7, 'power3.inOut');
-    tl.to('#lk-sub2', { opacity: 1, duration: 0.3 }, 62.6);
-  }
-
-  // ======================= B26 · 63–66 · end card =======================
-  {
-    const cam = camera($('#cam-end'), { s: 1.02 });
-    cam.to(63, { s: 1.0 }, 3.0, 'power1.out');
-    tl.fromTo('#cam-end', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 63);
-    pop('#end-word', 63.05, { from: 0.96, dur: 0.7, y: 20 });
-    pop('#cta > *', 63.4, { from: 0.9, dur: 0.55, stagger: 0.1, y: 16 });
+    const E = 49.8;
+    const cam = camera($('#cam-end'), { s: 1.04 });
+    const mb = blur('end');
+    tl.fromTo('#cam-end', { opacity: 0 }, { opacity: 1, duration: 0.25 }, E);
+    mb.out(E, 0.7, 18, 'xy');
+    cam.to(E, { s: 1.0 }, 5.0, 'power1.out');
+    reveal(words($('#end-line')), E + 0.2, { stagger: 0.07, dur: 0.6 });
+    pop('#end-word', E + 1.0, { from: 0.96, dur: 0.7, y: 20 });
+    pop('#cta > *', E + 1.6, { from: 0.9, dur: 0.55, stagger: 0.1, y: 16 });
   }
 
   return tl;
