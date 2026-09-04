@@ -3,211 +3,412 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
-    <title>Datalith — launch</title>
+    <title>Datalith — launch film</title>
     <script src="assets/vendor/gsap.min.js"></script>
-    <script src="assets/world.bundle.js"></script>
-    <link rel="stylesheet" href="assets/launch.css" />
+    <link rel="stylesheet" href="assets/film.css" />
     <style>
       html, body { width: 1920px; height: 1080px; }
       #root { width: 1920px; height: 1080px; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="90" data-width="1920" data-height="1080" data-fps="30">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="66" data-width="1920" data-height="1080" data-fps="30">
 
-      <!-- the Three.js world canvas is inserted here at build time; this layer only shades its edges -->
-      <div id="bg" data-layout-ignore><div class="scrim"></div><div class="scrim-b"></div><div class="vignette"></div></div>
+      <!-- shared SVG symbols and the per-camera motion-blur filters -->
+      <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+        <defs>
+          <linearGradient id="pulse-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFC800" stop-opacity="0" /><stop offset="0.5" stop-color="#FFB300" /><stop offset="1" stop-color="#3D5FFF" /></linearGradient>
+          <linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.55" /><stop offset="1" stop-color="#ffffff" stop-opacity="0.04" /></linearGradient>
+          <linearGradient id="mark-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A8FFF" /><stop offset="0.6" stop-color="#3D5FFF" /><stop offset="1" stop-color="#FFB300" /></linearGradient>
+          <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" /></symbol>
+          <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" /><path d="M10 8.5v7l5.5-3.5z" fill="currentColor" /></symbol>
+          <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6" fill="currentColor" /><circle cx="18" cy="8" r="2.6" fill="currentColor" /><circle cx="12" cy="18" r="2.6" fill="currentColor" /><path d="M8 7l7.5 1M7.2 8l3.8 8M16.8 10l-3.8 6" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
+          <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="currentColor" /></symbol>
+          <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" stroke="currentColor" stroke-width="2" fill="none" /><path d="M8.5 12l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+          <symbol id="i-spin" viewBox="0 0 40 40"><path d="M20 5a15 15 0 1 1-10.6 4.4" stroke="#3D5FFF" stroke-width="4" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+          <symbol id="i-right" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+          <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" stroke-width="2" fill="none" /><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" stroke="currentColor" stroke-width="2" fill="none" /></symbol>
+          <symbol id="i-rows" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" /></symbol>
+          <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /><path d="M3 13l9 5 9-5M3 17l9 5 9-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" /></symbol>
+          <symbol id="i-knot" viewBox="0 0 24 24"><path d="M12 3a4.5 4.5 0 0 1 3.9 6.75A4.5 4.5 0 0 1 12 21a4.5 4.5 0 0 1-3.9-6.75A4.5 4.5 0 0 1 12 3z" stroke="currentColor" stroke-width="1.8" fill="none" /><path d="M4.2 7.5a4.5 4.5 0 0 1 7.8 0 4.5 4.5 0 0 1 7.8 0M4.2 16.5a4.5 4.5 0 0 0 7.8 0 4.5 4.5 0 0 0 7.8 0" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
+          <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round" /><path d="M3 7l9 5 9-5M12 12v10" stroke="currentColor" stroke-width="1.8" fill="none" /></symbol>
+          <symbol id="i-mark" viewBox="0 0 28 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M0 3 C8 3, 10 10, 16 10" /><path d="M0 10 L16 10" /><path d="M0 17 C8 17, 10 10, 16 10" /></g><path d="M16 10 L28 10" fill="none" stroke="#3D5FFF" stroke-width="3.4" stroke-linecap="round" /></symbol>
+          <symbol id="i-arrow" viewBox="0 0 32 40"><path d="M4 2 L4 31 L11 24 L16.5 37 L21.5 35 L16 22 L26 22 Z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round" /></symbol>
+          <symbol id="i-arrow-c" viewBox="0 0 32 40"><path d="M4 2 L4 31 L11 24 L16.5 37 L21.5 35 L16 22 L26 22 Z" fill="#FF6A3D" stroke="#fff" stroke-width="2" stroke-linejoin="round" /></symbol>
+          <symbol id="i-hand" viewBox="0 0 48 48"><path d="M14 26v-9a3 3 0 0 1 6 0v-4a3 3 0 0 1 6 0v3a3 3 0 0 1 6 0v3a3 3 0 0 1 6 0v10a12 12 0 0 1-24 0v-3l-3-4a3 3 0 0 1 3-4z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round" /></symbol>
+          <filter id="mb-open" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-open" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-p1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-p1" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-r1" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-r1" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-p2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-p2" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-graph" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-graph" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-edit" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-edit" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-client" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-client" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-stats" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-stats" in="SourceGraphic" stdDeviation="0 0" /></filter>
+          <filter id="mb-words" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur id="mbb-words" in="SourceGraphic" stdDeviation="0 0" /></filter>
+        </defs>
+      </svg>
 
-      <!-- HUD: corner marks, phase label, progress rule. Never timed. -->
-      <div id="hud" data-layout-allow-overlap>
-        <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
-        <p id="hud-phase" class="hud-l" style="left:64px; top:44px"><b>00</b> The estate</p>
-        <p class="hud-l" style="right:64px; top:44px">Datalith · Launch film · 2026</p>
-        <p class="hud-l" style="left:64px; bottom:44px">Every source · One graph · Agent-ready</p>
-        <p class="hud-l" style="right:64px; bottom:44px">datalith.ai</p>
-        <div id="hud-track" style="left:64px; right:64px; bottom:84px"><i id="hud-bar"></i></div>
+      <!-- substrate: never timed -->
+      <div id="plate" data-layout-ignore>
+        <div id="dots"></div>
+        <div class="bloom" id="bloom-a"></div>
+        <div class="bloom" id="bloom-b"></div>
+        <div class="bloom" id="bloom-c"></div>
       </div>
+      <div id="field" data-layout-ignore><div class="fb fb1"></div><div class="fb fb2"></div><div class="circle" id="field-circle"></div></div>
+      <div id="darkplate" data-layout-ignore><div class="dots"></div><div class="bloom"></div></div>
 
-      <!-- S0 the scatter -->
-      <section id="s0" class="clip scene" data-start="0" data-duration="6.5" data-track-index="1">
-        <div class="sc">
-          <p id="s0-read" class="meta" style="left:64px; top:104px; font-size:22px">38 systems</p>
-          <div class="pad" style="display:grid; place-items:center">
-            <div style="position:relative; text-align:center; width:1500px; height:240px">
-              <h1 id="s0-h1" class="h-hero" data-layout-allow-overlap style="position:absolute; inset:0; display:grid; place-items:center"><span class="line">Your data is everywhere.</span></h1>
-              <h1 id="s0-h2" class="h-hero" data-layout-allow-overlap style="position:absolute; inset:0; display:grid; place-items:center; color:#fff"><span class="line">Your agents can’t reach it.</span></h1>
+      <!-- B1–B3 · estate builder → drop → exploded view -->
+      <section id="sc-open" class="clip scene" data-start="0" data-duration="3.3" data-track-index="1">
+        <div class="cam" id="cam-open" style="filter:url(#mb-open)">
+          <div class="p3d">
+            <div id="builder" class="card" style="left:410px; top:150px; width:1100px; height:780px; transform-style:preserve-3d" data-layout-allow-overflow>
+              <div id="b-chip" class="chip abs" style="left:40px; top:36px"><i>MM</i>Meridian Mutual</div>
+              <h2 id="b-h" class="display h-mid abs" style="left:40px; top:120px">Build your estate</h2>
+              <div id="b-dash" class="dash" style="left:40px; top:230px; width:1020px; height:330px"><span class="tag" style="left:14px; top:14px">Sources</span></div>
+              <div id="b-slot-a" class="slot sel" style="left:80px; top:290px; width:460px; height:230px"></div>
+              <div id="b-slot-b" class="slot" style="left:580px; top:290px; width:440px; height:230px"></div>
+              <div id="b-tile" class="tile" style="left:80px; top:290px; width:460px; height:230px; opacity:0"><span class="tag" style="left:16px; top:16px; background:rgba(0,0,0,0.6)">Claims · 1.4M rows</span></div>
+              <p id="b-copy" class="body abs" style="left:40px; top:600px; width:820px">Connect every system read-only. Datalith maps the estate, scores each domain and tells you <b>what your agents can safely use.</b></p>
+              <div id="b-send" class="pill abs" style="left:880px; top:600px; padding:14px 30px"><svg width="22" height="22"><use href="#i-bolt" fill="#fff" /></svg>Score</div>
+              <div id="b-t" class="circ abs" style="left:880px; top:690px; width:64px; height:64px; font-family:var(--mono); font-size:26px">T</div>
+              <div id="b-tile2" class="tile blue abs" style="left:1140px; top:100px; width:260px; height:160px; opacity:0"></div>
+            </div>
+            <div id="drag" class="abs" style="left:1380px; top:420px" data-layout-allow-overflow>
+              <div id="drag-pill" class="pill white" style="left:0; top:0; padding:12px 24px 12px 12px"><span class="sq"><svg width="20" height="20"><use href="#i-db" fill="none" stroke="#fff" /></svg></span>Snowflake</div>
+              <svg id="cur-hand" class="cursor hand abs" style="left:120px; top:40px"><use href="#i-hand" /></svg>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- S1 the one number -->
-      <section id="s1" class="clip scene" data-start="6" data-duration="5.5" data-track-index="1">
-        <div class="sc">
-          <p id="s1-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Why agent projects stall</p>
-          <div id="s1-rule" class="rule" style="left:120px; top:204px; width:1680px"></div>
-          <div id="s1-stat" class="stat giant" style="left:112px; top:300px">
-            <p class="v">&gt;<span id="s1-n">0</span><small>%</small></p>
-            <p class="l">of agentic AI projects will be <b>canceled by 2027</b>. Data readiness is the number one cause.</p>
-          </div>
-          <p id="s1-src" class="meta" style="right:120px; top:150px"><b>Gartner</b> · 2025</p>
+      <!-- B4 · full-bleed field, "Hi," -->
+      <section id="sc-hi" class="clip scene" data-start="3.2" data-duration="1.3" data-track-index="1">
+        <div class="cam" id="cam-hi">
+          <div class="center" style="top:330px"><div id="hi-line" class="display white h-giant" data-layout-allow-overlap><svg id="hi-star" width="150" height="150" style="vertical-align:-0.05em; margin-right:30px"><use href="#i-star" style="color:#fff" /></svg><span id="hi-1">Hi,</span></div></div>
+          <div class="center" style="top:640px"><div id="hi-2" class="display white h-big" data-layout-allow-overlap>what should your agents know?</div></div>
         </div>
       </section>
 
-      <!-- S2 the name -->
-      <section id="s2" class="clip scene" data-start="11" data-duration="6.5" data-track-index="1">
-        <div class="sc">
-          <div id="s2-lock" style="position:absolute; inset:0">
-            <div class="center" style="top:300px">
-              <div id="s2-logo" class="logo">
-                <svg width="420" height="300" viewBox="0 0 28 20" aria-hidden="true">
-                  <g class="streams">
-                    <path d="M0 3 C8 3, 10 10, 16 10" />
-                    <path d="M0 10 L16 10" />
-                    <path d="M0 17 C8 17, 10 10, 16 10" />
-                  </g>
-                  <path class="merge" d="M16 10 L28 10" />
-                </svg>
-                <div id="s2-word" class="wordmark"><span>d</span><span>a</span><span>t</span><span>a</span><span>l</span><span>i</span><span>t</span><span>h</span></div>
+      <!-- B5 · prompt one -->
+      <section id="sc-p1" class="clip scene" data-start="4.4" data-duration="2.3" data-track-index="1">
+        <div class="cam" id="cam-p1" style="filter:url(#mb-p1)">
+          <div class="center" style="top:250px"><div id="p1-h" class="display h-big" data-layout-allow-overlap><svg width="76" height="76" style="vertical-align:-0.08em; margin-right:18px"><use href="#i-star" style="color:#F49A9A" /></svg>Hi, what should your agents know?</div></div>
+          <div id="p1-box" class="prompt" style="left:360px; top:520px">
+            <span class="plus">+</span>
+            <span class="txt" id="p1-txt">Connect our estate and score it for agent-readiness</span>
+            <span class="model">Claude Opus 4.8 <span style="opacity:0.5">⌄</span></span>
+            <span class="go" id="p1-go"><svg><use href="#i-up" /></svg></span>
+          </div>
+          <svg id="cur-1" class="cursor big abs" style="left:1700px; top:900px"><use href="#i-arrow" /></svg>
+        </div>
+      </section>
+
+      <!-- B6–B7 · generated readiness report → stacked deck of domains -->
+      <section id="sc-r1" class="clip scene" data-start="6.4" data-duration="4.1" data-track-index="1">
+        <div class="cam" id="cam-r1" style="filter:url(#mb-r1)">
+          <div class="p3d">
+            <div id="deck" class="abs" style="left:0; top:0; width:1920px; height:1080px; transform-style:preserve-3d">
+              <div id="dk-5" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">5</div><p class="display h-mid abs" style="left:110px; top:40px">Finance</p><p class="label abs" style="left:110px; top:110px">Readiness 58 · 4 flags</p></div>
+              <div id="dk-4" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">4</div><p class="display h-mid abs" style="left:110px; top:40px">Brokers</p><p class="label abs" style="left:110px; top:110px">Readiness 64 · 3 flags</p></div>
+              <div id="dk-3" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">3</div><p class="display h-mid abs" style="left:110px; top:40px">Customers</p><p class="label abs" style="left:110px; top:110px">Readiness 71 · 2 flags</p></div>
+              <div id="dk-2" class="card dk" style="left:560px; top:120px; width:800px; height:1000px"><div class="badge black num" style="left:34px; top:34px">2</div><p class="display h-mid abs" style="left:110px; top:40px">Policy</p><p class="label abs" style="left:110px; top:110px">Readiness 74 · 1 flag</p></div>
+              <div id="dk-1" class="card dk" style="left:560px; top:120px; width:800px; height:1000px; box-shadow: var(--sh-card), 0 0 0 6px rgba(255,179,0,0.18)">
+                <div class="badge black num" id="dk-1-badge" style="left:34px; top:34px">1</div>
+                <p class="display h-mid abs" style="left:110px; top:40px">Claims</p>
+                <p class="label abs" style="left:110px; top:110px">Meridian Mutual · scored just now</p>
+                <div class="abs" style="left:60px; top:200px"><div class="score"><span class="n" id="r1-n">0</span><span class="of">/100</span></div><p class="label" style="margin-top:6px; font-size:22px">Agent-readiness</p></div>
+                <div class="abs" id="r1-rows" style="left:60px; top:470px; width:680px">
+                  <div class="drow"><b>Completeness</b><span class="bar"><i style="width:82%"></i></span><span class="v">82</span></div>
+                  <div class="drow"><b>Freshness</b><span class="bar"><i style="width:64%"></i></span><span class="v">64</span></div>
+                  <div class="drow"><b>Consistency</b><span class="bar"><i style="width:74%"></i></span><span class="v">74</span></div>
+                  <div class="drow"><b>Semantic coverage</b><span class="bar"><i style="width:58%"></i></span><span class="v">58</span></div>
+                  <div class="drow"><b>Governance</b><span class="bar"><i style="width:79%"></i></span><span class="v">79</span></div>
+                </div>
+                <div class="abs" style="left:60px; top:840px"><span class="btn">Fix the 3 flags <svg width="22" height="22"><use href="#i-right" style="color:#fff" /></svg></span></div>
+                <p class="label abs" style="left:60px; top:930px">Datalith · read-only · nothing moved</p>
               </div>
             </div>
-            <div class="center" style="top:690px">
-              <div id="s2-tag" class="tagline">
-                <span><em>01</em>Every source.</span><span><em>02</em>One graph.</span><span><em>03</em>Agent-ready.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- B8 · brand card -->
+      <section id="sc-brand" class="clip scene" data-start="10.4" data-duration="2.1" data-track-index="1">
+        <div class="cam" id="cam-brand">
+          <div class="abs" style="left:0; top:0; width:1920px; height:1080px; background: linear-gradient(120deg, rgba(255,179,0,0.55) 0%, rgba(255,200,0,0.15) 40%, rgba(61,95,255,0.18) 100%)"></div>
+          <div class="center" style="top:360px" data-layout-allow-overflow>
+            <div style="position:relative; width:1180px; height:360px" data-layout-allow-overflow>
+              <div id="brand-word" class="serif abs" style="left:0; top:0; font-size:330px; clip-path: inset(0 100% 0 0)">datalith</div>
+              <svg id="brand-mark" class="abs" width="300" height="214" style="left:1000px; top:80px; transform-origin:0 50%" viewBox="0 0 28 20"><use href="#i-mark" style="color:#111" /></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- B9 · prompt two, typed live -->
+      <section id="sc-p2" class="clip scene" data-start="12.4" data-duration="2.4" data-track-index="1">
+        <div class="cam" id="cam-p2" style="filter:url(#mb-p2)">
+          <div id="p2-box" class="prompt" style="left:360px; top:465px">
+            <span class="plus">+</span>
+            <span class="txt"><span id="p2-txt"></span><span class="caret" id="p2-caret"></span></span>
+            <span class="model">Claude Opus 4.8 <span style="opacity:0.5">⌄</span></span>
+            <span class="go" id="p2-go"><svg><use href="#i-up" /></svg></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- B10–B16 · the agent graph board: one camera, one long move -->
+      <section id="sc-graph" class="clip scene" data-start="14.6" data-duration="21.3" data-track-index="1">
+        <div class="cam" id="cam-graph" style="filter:url(#mb-graph)">
+          <div class="p3d">
+            <div id="gboard" class="abs" style="left:0; top:0; width:1920px; height:1080px; transform-origin: 610px 615px" data-layout-allow-overflow>
+              <svg class="conn abs" id="g-conn" style="left:-1200px; top:0" width="5200" height="2800" viewBox="-1200 0 5200 2800" data-layout-allow-overflow>
+                <path class="base" id="c-av" d="M-940 615 L-700 615" />
+                <path class="base" id="c-b1" d="M-580 615 C-200 615, 200 400, 610 400" />
+                <path class="base" id="c-b2" d="M-580 615 C 300 615, 800 400, 1810 400" />
+                <path class="base" id="c-b3" d="M-580 615 C 900 615, 1800 400, 3010 400" />
+                <path class="base" id="c-11" d="M610 830 L700 960" /><path class="pulse" id="p-11" d="M610 830 L700 960" />
+                <path class="base" id="c-12" d="M700 1290 L790 1520" /><path class="base" id="c-13" d="M790 1850 L880 2080" />
+                <path class="base" id="c-21" d="M1810 830 L1900 960" /><path class="base" id="c-22" d="M1900 1290 L1990 1520" /><path class="base" id="c-23" d="M1990 1850 L2080 2080" />
+                <path class="base" id="c-31" d="M3010 830 L3100 960" /><path class="base" id="c-32" d="M3100 1290 L3190 1520" /><path class="base" id="c-33" d="M3190 1850 L3280 2080" />
+                <circle class="dot" cx="-940" cy="615" r="8" /><circle class="dot" cx="-580" cy="615" r="8" />
+                <circle class="dot" cx="610" cy="400" r="8" /><circle class="dot" cx="1810" cy="400" r="8" /><circle class="dot" cx="3010" cy="400" r="8" />
+                <circle class="dot" cx="610" cy="830" r="8" /><circle class="dot" cx="700" cy="960" r="8" /><circle class="dot" cx="700" cy="1290" r="8" /><circle class="dot" cx="790" cy="1520" r="8" /><circle class="dot" cx="790" cy="1850" r="8" /><circle class="dot" cx="880" cy="2080" r="8" />
+              </svg>
+              <div id="g-avatar" class="avatar" style="left:-1080px; top:475px; width:280px; height:280px"><svg width="120" height="86" viewBox="0 0 28 20"><use href="#i-mark" style="color:#fff" /></svg></div>
+              <div id="g-ring" class="ring" style="left:-1104px; top:451px; width:328px; height:328px"></div>
+              <div id="g-sq" class="sqicon" style="left:-700px; top:555px; width:120px; height:120px"><svg width="56" height="56"><use href="#i-graph" style="color:#3D5FFF" /></svg></div>
+
+              <!-- branch 1 · Claims triage (the one we travel) -->
+              <div id="t1" class="card" style="left:300px; top:400px; width:620px; height:430px">
+                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
+                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
+                <div class="abs" id="t1-checks" style="left:28px; top:190px">
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Scope: Claims + Policy</div>
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Personal data masked</div>
+                  <div class="check pending" id="t1-c3"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg><span class="spin"><svg><use href="#i-spin" /></svg></span></i>Audit logging on</div>
+                </div>
+              </div>
+              <div id="kb1" class="card" style="left:390px; top:960px; width:620px; height:330px">
+                <div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 1</div>
+                <p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Claims</p>
+                <p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">1.4M claims · 12 fields masked · entities resolved to Policy</p>
+                <p class="label abs" style="left:28px; top:272px">Synced 2 min ago</p>
+                <div class="pill abs" style="left:480px; top:256px; padding:10px 22px; font-size:20px">Edit</div>
+              </div>
+              <div id="kb2" class="card" style="left:480px; top:1520px; width:620px; height:330px">
+                <div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 2</div>
+                <p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Policy</p>
+                <p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">96K policies · coverage terms chunked · linked to Claims</p>
+                <p class="label abs" style="left:28px; top:272px">Synced 1 min ago</p>
+                <div class="pill abs" style="left:480px; top:256px; padding:10px 22px; font-size:20px">Edit</div>
+              </div>
+              <div id="ag1" class="card" style="left:570px; top:2080px; width:620px; height:300px">
+                <div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div>
+                <p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">claims-triage-01</p>
+                <p class="label abs" style="left:28px; top:180px">Reads only what the scope allows</p>
+                <div class="chip abs" style="left:28px; top:224px; background:#EEF7DC"><i style="background:#3A8F2E; width:14px; height:14px"></i>Live</div>
+              </div>
+              <!-- the envelope morph, built around kb1 -->
+              <div id="env" class="abs" style="left:390px; top:960px; width:620px; height:330px; opacity:0" data-layout-allow-overflow>
+                <div id="env-letter" class="card" style="left:40px; top:-60px; width:540px; height:430px; padding:40px 34px">
+                  <p class="label">claims-triage-01 · answer</p>
+                  <p class="display abs" style="left:34px; top:80px; font-size:40px; line-height:1.05">Claim CL-77310 is<br>covered. Fraud signal low.</p>
+                  <p class="body abs" style="left:34px; top:210px; width:470px; font-size:20px">Coverage confirmed against policy PL-88421. Prior claims: 1. Recommended route: <b>fast-track</b>.</p>
+                  <p class="mono abs" style="left:34px; top:340px; font-size:18px; color:#8A8A8E">national_id ●●●●●●●● · masked</p>
+                </div>
+                <div id="env-body" class="abs" style="left:0; top:110px; width:620px; height:280px; border-radius:24px; background:rgba(255,255,255,0.86); box-shadow:var(--sh-card)"></div>
+                <svg id="env-flap" class="abs" style="left:0; top:110px" width="620" height="150" viewBox="0 0 620 150"><path d="M0 0 L310 140 L620 0" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="2" /></svg>
+                <div id="env-badge" class="badge red num" style="left:-26px; top:-26px; width:56px; height:56px">1</div>
+              </div>
+
+              <!-- branch 2 · Broker insights -->
+              <div id="t2" class="card" style="left:1500px; top:400px; width:620px; height:430px">
+                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
+                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
+                <div class="abs" style="left:28px; top:190px">
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Weekly broker digest</div>
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Personalised recommendations</div>
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Segmented by book size</div>
+                </div>
+              </div>
+              <div id="kb3" class="card" style="left:1590px; top:960px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 3</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Brokers</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">2,400 brokers · commissions · book performance</p><p class="label abs" style="left:28px; top:272px">Synced 4 min ago</p></div>
+              <div id="kb4" class="card" style="left:1680px; top:1520px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 4</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Customers</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">310K customers · tenure · renewals</p><p class="label abs" style="left:28px; top:272px">Synced 3 min ago</p></div>
+              <div id="ag2" class="card" style="left:1770px; top:2080px; width:620px; height:300px"><div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div><p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">broker-insights-01</p><p class="label abs" style="left:28px; top:180px">Scheduled · Mondays 07:00</p></div>
+
+              <!-- branch 3 · Fraud signals -->
+              <div id="t3" class="card" style="left:2700px; top:400px; width:620px; height:430px">
+                <div class="hdr"><span class="badge"><svg><use href="#i-play" style="color:#fff" /></svg></span>Trigger</div>
+                <p class="display h-mid abs" style="left:28px; top:110px; font-size:44px">Agent builder</p>
+                <div class="abs" style="left:28px; top:190px">
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Claim filed</div>
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Cross-check policy + history</div>
+                  <div class="check"><i><svg class="tick"><use href="#i-check" style="color:#3A8F2E" /></svg></i>Flag → human review</div>
+                </div>
+              </div>
+              <div id="kb5" class="card" style="left:2790px; top:960px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 5</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Claims history</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">9 years · 4.1M events · resolved entities</p><p class="label abs" style="left:28px; top:272px">Synced 2 min ago</p></div>
+              <div id="kb6" class="card" style="left:2880px; top:1520px; width:620px; height:330px"><div class="hdr"><span class="badge black"><svg><use href="#i-graph" style="color:#fff" /></svg></span>Knowledge base 6</div><p class="display h-mid abs" style="left:28px; top:110px; font-size:40px">Finance</p><p class="body quote abs" style="left:28px; top:180px; width:560px; font-size:21px">Payments · reserves · reinsurance recoveries</p><p class="label abs" style="left:28px; top:272px">Synced 6 min ago</p></div>
+              <div id="g-plus" class="circ" style="left:3190px; top:1920px; width:70px; height:70px; background:#fff; color:#111; box-shadow:var(--sh-card)"><svg width="30" height="30"><use href="#i-plus" /></svg></div>
+              <div id="ag3" class="card" style="left:2970px; top:2080px; width:620px; height:300px"><div class="hdr"><span class="badge"><svg><use href="#i-bolt" style="color:#fff" /></svg></span>Agent</div><p class="display h-mid abs mono" style="left:28px; top:110px; font-size:36px; letter-spacing:0">fraud-signal-01</p><p class="label abs" style="left:28px; top:180px">Event-driven · every claim</p></div>
+
+              <div id="lbl-1" class="pill frost abs" style="left:300px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Claims triage</div>
+              <div id="lbl-2" class="pill frost abs" style="left:1500px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Broker insights</div>
+              <div id="lbl-3" class="pill frost abs" style="left:2700px; top:290px; background:rgba(17,17,17,0.85); color:#fff; font-size:28px">Fraud signals</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- B17 · "Governed" title beat on the field -->
+      <section id="sc-gov" class="clip scene" data-start="35.8" data-duration="2.1" data-track-index="1">
+        <div class="cam" id="cam-gov">
+          <div id="gov-guides" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
+            <div class="guide" style="left:0; right:0; top:420px; height:1.5px"></div><div class="guide" style="left:0; right:0; top:660px; height:1.5px"></div>
+            <div class="guide" style="top:0; bottom:0; left:640px; width:1.5px"></div><div class="guide" style="top:0; bottom:0; left:1280px; width:1.5px"></div>
+            <div class="handle" style="left:631px; top:411px"></div><div class="handle" style="left:1271px; top:411px"></div><div class="handle" style="left:631px; top:651px"></div><div class="handle" style="left:1271px; top:651px"></div>
+          </div>
+          <div class="center" style="top:455px"><div id="gov-pill" class="pill frost" style="font-size:96px; padding:28px 70px; gap:28px; border-radius:999px"><svg width="90" height="90"><use href="#i-star" style="color:#fff" /></svg>Governed</div></div>
+        </div>
+      </section>
+
+      <!-- B18–B19 · collaborative policy editing → rendered answer -->
+      <section id="sc-edit" class="clip scene" data-start="37.8" data-duration="6.1" data-track-index="1">
+        <div class="cam" id="cam-edit" style="filter:url(#mb-edit)">
+          <pre id="yaml" class="code" style="left:140px; top:60px; opacity:0.35" data-layout-ignore><span class="k">agent</span>: claims-triage-01
+<span class="k">scope</span>:
+  - <span class="s">claims.*</span>
+  - <span class="s">policy.*</span>
+<span class="k">mask</span>: [<span class="s">national_id</span>, <span class="s">date_of_birth</span>]
+<span class="k">audit</span>: <span class="s">every_read</span>   <span class="c"># column, row and chunk level</span>
+<span class="k">deny_reason</span>: <span class="s">required</span>
+<span class="k">model</span>: <span class="s">claude-opus-4-8</span>
+<span class="k">owner</span>: <span class="s">amira.h@meridianmutual.com</span></pre>
+          <div id="thumb" class="tile" style="left:1420px; top:110px; width:360px; height:220px; box-shadow:var(--sh-card)"><span class="tag" style="left:16px; top:16px; background:rgba(0,0,0,0.55)">Meridian · claims</span></div>
+          <div id="sel-wrap" class="abs" style="left:260px; top:430px" data-layout-allow-overflow>
+            <div id="sel-text" class="mono" style="font-size:66px; padding:20px 26px; white-space:nowrap; color:#111">scope: claims.* policy.* · <span id="sw" style="position:relative; display:inline-block; overflow:hidden; vertical-align:bottom; width:6ch"><span id="sw-old" style="display:inline-block">mask</span><span id="sw-new" style="position:absolute; left:0; top:0; display:inline-block; color:#3D5FFF">redact</span></span> national_id</div>
+            <div id="sel" class="selbox" style="left:0; top:0; right:0; bottom:0"><i class="hd" style="left:-12px; top:-12px"></i><i class="hd" style="right:-12px; bottom:-12px"></i></div>
+          </div>
+          <div id="tb" class="toolbar" style="left:260px; top:600px"><i>col</i><i class="on">row</i><i>chunk</i><i>log</i></div>
+          <svg id="cur-amira" class="cursor abs" style="left:1500px; top:800px" data-layout-allow-overflow><use href="#i-arrow-c" /><foreignObject x="26" y="30" width="120" height="40"><div xmlns="http://www.w3.org/1999/xhtml" class="name" style="position:static; display:inline-block">Amira</div></foreignObject></svg>
+          <div id="render1" class="abs" style="left:300px; top:1300px; width:1100px" data-layout-allow-overflow>
+            <p class="display" style="font-size:72px; line-height:1.02">Claim CL-77310</p>
+            <p class="body" style="font-size:34px; margin-top:34px; width:1060px">Hi Amira,<br>Here is the triage for claim CL-77310. Coverage is <b>confirmed</b> against policy PL-88421. Fraud signal is <b>low</b>. One prior claim in 2024. Recommended route: <b>fast-track</b>.</p>
+            <p class="mono" style="font-size:26px; margin-top:34px; color:#8A8A8E">national_id ●●●●●●●● · redacted by policy · read logged 14:22:07</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- B20–B21 · desktop client → phone morph · Every Agent → Any Model -->
+      <section id="sc-client" class="clip scene" data-start="43.8" data-duration="7.1" data-track-index="1">
+        <div class="cam" id="cam-client" style="filter:url(#mb-client)">
+          <pre id="code2" class="code" style="left:60px; top:-40px; font-size:26px; opacity:0.22" data-layout-ignore>POST /v1/agents/claims-triage-01/query
+{ "claim": "CL-77310", "scope": ["claims.*", "policy.*"] }
+→ 200 · 412 ms · 3 knowledge bases · masked: 2 fields
+{ "coverage": "confirmed", "fraud_signal": "low", "route": "fast-track" }
+audit: read logged · policy PL-88421 · chunk 14/22</pre>
+          <div class="p3d">
+            <div id="win" class="win" style="left:260px; top:140px; width:1400px; height:800px">
+              <div class="lights"><i></i><i></i><i></i></div>
+              <div class="island"></div>
+              <div id="win-desk" class="abs" style="left:0; top:0; width:1400px; height:800px">
+                <div class="rail"><div class="pill white" style="font-size:20px"><span class="sq" style="width:28px; height:28px; border-radius:8px"><svg width="16" height="16"><use href="#i-bolt" style="color:#fff" /></svg></span>Agents</div><p class="label" style="margin:26px 0 0 18px">claims-triage-01</p><p class="label" style="margin:14px 0 0 18px">broker-insights-01</p><p class="label" style="margin:14px 0 0 18px">fraud-signal-01</p></div>
+                <div class="main">
+                  <div class="hrow"><span style="color:#111">Hi, Amira! Your triage for CL-77310</span><span>15 min ago</span></div>
+                  <div style="display:flex; gap:34px; margin-top:30px">
+                    <div class="illus" style="width:420px; height:300px; flex:none"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div>
+                    <div><p class="display" style="font-size:38px; line-height:1.05">Covered. Fraud signal low. Fast-track.</p><p class="body" style="margin-top:18px; font-size:21px; width:560px">Confirmed against policy PL-88421. One prior claim. Every field the agent read is logged, and two fields were redacted by policy.</p><span class="btn" style="margin-top:22px; font-size:20px; padding:12px 20px">Open claim</span></div>
+                  </div>
+                </div>
+              </div>
+              <div id="win-mob" class="abs" style="left:0; top:0; width:440px; height:900px; opacity:0; padding:90px 30px 0">
+                <div class="pill white" style="position:relative; font-size:18px; padding:10px 16px"><span class="sq" style="width:26px; height:26px; border-radius:8px"><svg width="14" height="14"><use href="#i-bolt" style="color:#fff" /></svg></span>claims-triage-01</div>
+                <div class="illus" style="width:380px; height:250px; margin-top:22px"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div>
+                <p class="display" style="font-size:32px; line-height:1.05; margin-top:24px">Covered. Fraud signal low.</p>
+                <p class="body" style="font-size:18px; margin-top:12px">Confirmed against PL-88421. Two fields redacted by policy. Read logged.</p>
+                <div id="mob-dark" class="abs" style="left:0; top:0; width:440px; height:900px; background:#151517; opacity:0; padding:90px 30px 0; color:#fff"><div class="pill" style="position:relative; font-size:18px; padding:10px 16px; background:#2A2A2E"><span class="sq" style="width:26px; height:26px; border-radius:8px"><svg width="14" height="14"><use href="#i-bolt" style="color:#fff" /></svg></span>claims-triage-01</div><div class="illus" style="width:380px; height:250px; margin-top:22px"><div class="doc"><i style="top:18%; width:60%"></i><i style="top:34%; width:44%"></i><i style="top:50%; width:52%"></i></div><div class="shield"></div></div><p class="display" style="font-size:32px; line-height:1.05; margin-top:24px; color:#fff">Covered. Fraud signal low.</p><p class="body" style="font-size:18px; margin-top:12px; color:#A0A0A8">Confirmed against PL-88421. Two fields redacted by policy. Read logged.</p></div>
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- S3 connect -->
-      <section id="s3" class="clip scene" data-start="17" data-duration="8.5" data-track-index="1">
-        <div class="sc">
-          <p id="s3-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>01</b> · Connect</p>
-          <h2 id="s3-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:760px"><span class="line">Connect every</span><span class="line">system. Read-only.</span></h2>
-          <p id="s3-lead" class="lead" style="position:absolute; left:120px; top:420px; max-width:640px">150+ connectors. No migration, no engineering project. Credentials in, estate mapped.</p>
-          <div id="s3-grid" style="position:absolute; left:120px; top:580px; width:760px; height:230px; display:flex; flex-wrap:wrap; align-content:flex-start; gap:10px" data-layout-allow-overflow></div>
-          <div id="s3-c1" class="callout ok" style="left:120px; top:850px"><i></i><b>0</b>&nbsp;sources live</div>
+        <div class="cam" id="cam-words" style="filter:url(#mb-words)" data-layout-allow-overflow>
+          <div id="w-every" class="display h-giant abs" style="left:60px; top:300px" data-layout-allow-overlap>Every</div>
+          <div id="w-agent" class="display h-giant abs" style="left:1200px; top:560px" data-layout-allow-overlap>Agent</div>
+          <div id="w-any" class="display h-giant white abs" style="left:150px; top:300px" data-layout-allow-overlap>Any</div>
+          <div id="w-model" class="display h-giant white abs" style="left:1180px; top:560px" data-layout-allow-overlap>Model</div>
         </div>
       </section>
 
-      <!-- S4 ready -->
-      <section id="s4" class="clip scene" data-start="25" data-duration="8.5" data-track-index="1">
-        <div class="sc">
-          <p id="s4-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>02</b> · Ready</p>
-          <h2 id="s4-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:900px"><span class="line">One score for</span><span class="line">agent-readiness.</span></h2>
-          <div id="s4-ring" class="ring" style="left:120px; top:440px; width:360px; height:360px">
-            <svg width="360" height="360" viewBox="0 0 360 360" aria-hidden="true">
-              <path class="track" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" />
-              <path class="fill" d="M 73.9 286.1 A 150 150 0 1 1 286.1 286.1" />
-              <line class="tick" x1="309.6" y1="118.9" x2="322.9" y2="112.2" />
-            </svg>
-            <div class="body"><div><p class="v"><span id="s4-score">0</span><span class="of">/100</span></p><p class="cap">Agent-readiness</p><p class="delta">▲ 6 this quarter</p></div></div>
+      <!-- B22 · ripple / graph beat -->
+      <section id="sc-ripple" class="clip scene" data-start="50.8" data-duration="3.1" data-track-index="1">
+        <div class="cam" id="cam-ripple" data-layout-allow-overflow>
+          <div class="rr" id="rr-1"></div><div class="rr" id="rr-2"></div><div class="rr" id="rr-3"></div><div class="rr" id="rr-4"></div>
+          <div class="arc" id="arc-l" style="left:-1150px"></div><div class="arc" id="arc-r" style="right:-1150px"></div>
+          <div class="center" style="top:480px"><div id="llm-pill" class="pill" style="font-size:44px; padding:24px 54px; gap:20px"><svg width="44" height="44"><use href="#i-mark" style="color:#fff" /></svg>Datalith Graph</div></div>
+        </div>
+      </section>
+
+      <!-- B23 · stats over a rising area chart -->
+      <section id="sc-stats" class="clip scene" data-start="53.8" data-duration="4.1" data-track-index="1">
+        <div class="cam" id="cam-stats" style="filter:url(#mb-stats)">
+          <svg id="chart" class="abs" style="left:0; top:0" width="1920" height="1080" viewBox="0 0 1920 1080" data-layout-ignore>
+            <g stroke="rgba(255,255,255,0.35)" stroke-dasharray="6 10" stroke-width="1.5"><line x1="240" y1="0" x2="240" y2="1080" /><line x1="560" y1="0" x2="560" y2="1080" /><line x1="880" y1="0" x2="880" y2="1080" /><line x1="1200" y1="0" x2="1200" y2="1080" /><line x1="1520" y1="0" x2="1520" y2="1080" /><line x1="1840" y1="0" x2="1840" y2="1080" /></g>
+            <clipPath id="chart-clip"><rect id="chart-rect" x="0" y="0" width="0" height="1080" /></clipPath>
+            <g clip-path="url(#chart-clip)">
+              <path id="chart-area" d="M0 960 C 300 940, 420 900, 560 820 C 700 740, 800 760, 900 700 C 1050 620, 1150 560, 1300 470 C 1450 380, 1600 330, 1920 240 L1920 1080 L0 1080 Z" fill="url(#area-grad)" />
+              <path id="chart-line" d="M0 960 C 300 940, 420 900, 560 820 C 700 740, 800 760, 900 700 C 1050 620, 1150 560, 1300 470 C 1450 380, 1600 330, 1920 240" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" />
+            </g>
+            <circle id="chart-dot" cx="0" cy="960" r="16" fill="#fff" stroke="#3D5FFF" stroke-width="6" />
+          </svg>
+          <div id="st1" class="stat" style="left:200px; top:200px"><span class="sq"><svg><use href="#i-layers" style="color:#111" /></svg></span><span class="k">Sources</span></div>
+          <div id="st1-n" class="stat abs" style="left:200px; top:340px"><span class="n" id="st1-v">0</span></div>
+          <div id="st2" class="stat" style="left:200px; top:200px"><span class="sq"><svg><use href="#i-rows" style="color:#111" /></svg></span><span class="k">Records</span></div>
+          <div id="st2-n" class="stat abs" style="left:200px; top:340px"><span class="n" id="st2-v">0.0M</span></div>
+        </div>
+      </section>
+
+      <!-- B24 · works with any AI agent -->
+      <section id="sc-any" class="clip scene" data-start="57.8" data-duration="3.1" data-track-index="1">
+        <div class="cam" id="cam-any">
+          <div class="abs" id="any-icons" style="left:830px; top:300px; width:260px; height:260px" data-layout-allow-overlap>
+            <svg id="ic-1" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-star" style="color:#fff" /></svg>
+            <svg id="ic-2" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-knot" style="color:#fff" /></svg>
+            <svg id="ic-3" class="abs" style="left:0; top:0" width="260" height="260"><use href="#i-cube" style="color:#fff" /></svg>
           </div>
-          <div id="s4-bars" class="bars" style="left:560px; top:420px; width:500px"></div>
-          <p id="s4-note" class="meta" style="left:120px; top:900px"><b>Every node lit by its score</b> · green is ready · amber is under 70</p>
+          <div class="center" style="top:640px"><div id="any-h" class="display white h-big" data-layout-allow-overlap>Works with any AI agent</div></div>
         </div>
       </section>
 
-      <!-- S5 fix -->
-      <section id="s5" class="clip scene" data-start="33" data-duration="8.5" data-track-index="1">
-        <div class="sc">
-          <p id="s5-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>03</b> · Pipelines</p>
-          <h2 id="s5-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:700px"><span class="line">Fix what</span><span class="line">holds it back.</span></h2>
-          <div id="s5-flags" class="rows glass" style="left:120px; top:380px; width:680px"></div>
-          <div id="s5-frame" class="frame" style="left:920px; top:170px; width:920px; height:518px; transform-origin:30% 50%"></div>
-          <div id="s5-c1" class="callout ok" style="left:880px; top:722px"><i></i>+7 readiness on this domain when the run completes</div>
-        </div>
-      </section>
-
-      <!-- S6 the graph -->
-      <section id="s6" class="clip scene" data-start="41" data-duration="10.5" data-track-index="1">
-        <div class="sc">
-          <p id="s6-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>04</b> · Graph</p>
-          <h2 id="s6-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:560px"><span class="line">One map of</span><span class="line">the whole business.</span></h2>
-          <div id="s6-n1" class="stat sm" data-layout-allow-overlap style="left:120px; top:440px"><p class="v"><span>0.0M</span></p><p class="l" data-layout-allow-overlap>entities resolved</p></div>
-          <div id="s6-n2" class="stat sm" data-layout-allow-overlap style="left:120px; top:610px"><p class="v"><span>0.0M</span></p><p class="l" data-layout-allow-overlap>relationships mapped</p></div>
-          <div id="s6-n3" class="stat sm" data-layout-allow-overlap style="left:120px; top:780px"><p class="v"><span>0</span></p><p class="l" data-layout-allow-overlap>knowledge bases, served to any agent</p></div>
-          <div id="s6-domains" class="domains" style="right:120px; top:150px">
-            <span>Claims</span><span>Policy</span><span>Customers</span><span>Brokers</span><span>Reinsurance</span><span>Finance</span><span>Compliance</span><span>Support</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- S7 ask -->
-      <section id="s7" class="clip scene" data-start="51" data-duration="7.5" data-track-index="1">
-        <div class="sc">
-          <p id="s7-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>05</b> · Search</p>
-          <h2 id="s7-h" class="h-big" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:700px"><span class="line">Ask what</span><span class="line">data you have.</span></h2>
-          <p id="s7-lead" class="lead" style="position:absolute; left:120px; top:450px; max-width:620px">A business question in. The datasets that carry it out, where each lives, how fresh, how ready. <b>Never a guess.</b></p>
-          <div id="s7-frame" class="frame" style="left:920px; top:170px; width:920px; height:518px; transform-origin:30% 50%"></div>
-          <div id="s7-c1" class="callout" style="left:880px; top:722px"><i></i>Searched 34 sources · 50.5M records · 4 matches</div>
-        </div>
-      </section>
-
-      <!-- S8 build -->
-      <section id="s8" class="clip scene" data-start="58" data-duration="8.5" data-track-index="1">
-        <div class="sc">
-          <p id="s8-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Stage <b>06</b> · Use cases</p>
-          <h2 id="s8-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:640px"><span class="line">Know what to build</span><span class="line">before you build it.</span></h2>
-          <div id="s8-hero" class="stat accent" style="left:120px; top:400px"><p class="v">$<span>0.0</span><small>M / yr</small></p><p class="l">projected from what is <b>buildable today</b></p></div>
-          <div id="s8-legend" class="legend" style="left:120px; top:700px; width:520px">
-            <p class="ready"><i></i>Ready to build<b>7</b></p>
-            <p class="review"><i></i>In review<b>2</b></p>
-            <p class="blocked"><i></i>Blocked by a domain under 70<b>5</b></p>
-          </div>
-          <div id="s8-panel" class="glass" style="left:900px; top:150px; width:940px; height:620px; transform-origin:30% 50%">
-            <div class="ucmap" style="left:30px; top:30px">
-              <svg id="s8-svg" width="880" height="560" viewBox="0 0 880 560" data-w="880" data-h="560" aria-hidden="true"></svg>
-            </div>
+      <!-- B25 · logo condense -->
+      <section id="sc-lock" class="clip scene" data-start="60.8" data-duration="2.3" data-track-index="1">
+        <div class="cam" id="cam-lock">
+          <div class="abs" style="left:0; top:0; width:1920px; height:1080px; background:#F6F6F8"></div>
+          <div id="lk-group" class="abs" style="left:0; top:0; width:1920px; height:1080px" data-layout-allow-overflow>
+            <svg id="lk-mark" class="abs" style="left:790px; top:300px" width="340" height="243" viewBox="0 0 28 20"><g fill="none" stroke="url(#mark-grad)" stroke-width="1.6" stroke-linecap="round"><path d="M0 3 C8 3, 10 10, 16 10" /><path d="M0 10 L16 10" /><path d="M0 17 C8 17, 10 10, 16 10" /></g><path d="M16 10 L28 10" fill="none" stroke="#3D5FFF" stroke-width="3.4" stroke-linecap="round" /></svg>
+            <div id="lk-word" class="serif abs" style="left:640px; top:340px; font-size:200px; clip-path: inset(0 100% 0 0)">datalith</div>
+            <div class="center" style="top:640px"><div id="lk-sub" class="display h-mid" data-layout-allow-overlap>Agent-ready<span id="lk-sub2"> data.</span></div></div>
           </div>
         </div>
       </section>
 
-      <!-- S9 govern -->
-      <section id="s9" class="clip scene" data-start="66" data-duration="7.6" data-track-index="1">
-        <div class="sc">
-          <p id="s9-eyebrow" class="eyebrow" style="position:absolute; left:120px; top:150px"><i></i>Control · Governance</p>
-          <h2 id="s9-h" class="h-mid" data-layout-allow-overlap style="position:absolute; left:120px; top:204px; max-width:700px"><span class="line">Every call scoped.</span><span class="line">Every read logged.</span><span class="line">Every denial explained.</span></h2>
-          <div id="s9-tiles" class="tiles three" style="left:120px; top:470px; width:700px">
-            <div class="tile" id="s9-t1"><p class="k">Agents</p><p class="v">6</p><p class="s">Each scoped to named knowledge bases</p></div>
-            <div class="tile" id="s9-t2"><p class="k">Calls · 30 days</p><p class="v">0K</p><p class="s">100% logged to audit</p></div>
-            <div class="tile" id="s9-t3"><p class="k">Denials</p><p class="v">0</p><p class="s">Each cites the policy that blocked it</p></div>
-          </div>
-          <p id="s9-note" class="meta" data-layout-allow-overlap style="left:120px; top:790px"><b data-layout-allow-overlap>Column-, row- and chunk-level policy</b> · enforced on every read</p>
-          <div id="s9-panel" class="glass" style="left:860px; top:150px; width:980px; height:560px; transform-origin:30% 50%">
-            <p class="glass-k" style="left:30px; top:26px">Audit log · live</p>
-            <div id="s9-log" class="audit" style="left:30px; top:76px; width:920px"></div>
-          </div>
+      <!-- B26 · end card -->
+      <section id="sc-end" class="clip scene" data-start="63" data-duration="3" data-track-index="1">
+        <div class="cam" id="cam-end">
+          <div class="center" style="top:330px"><div id="end-word" class="serif" style="font-size:230px" data-layout-allow-overlap>datalith <em>ready</em> <svg width="120" height="86" viewBox="0 0 28 20" style="vertical-align:0.05em"><use href="#i-mark" style="color:#111" /></svg></div></div>
+          <div class="center" style="top:660px"><div id="cta" class="ctarow"><span class="pill white">Start your free audit</span><span class="circ"><svg width="30" height="30"><use href="#i-right" style="color:#fff" /></svg></span><span class="pill white"><u>datalith.ai</u></span></div></div>
         </div>
       </section>
 
-      <!-- S10 the close -->
-      <section id="s10" class="clip scene" data-start="73" data-duration="17" data-track-index="1">
-        <div class="sc">
-          <div class="center" style="top:600px"><div id="s10-word" class="wordmark" style="font-size:120px"><span>d</span><span>a</span><span>t</span><span>a</span><span>l</span><span>i</span><span>t</span><span>h</span></div></div>
-          <div style="position:absolute; left:0; right:0; top:770px; height:200px; text-align:center">
-            <h1 id="s10-l1" class="h-hero" data-layout-allow-overlap style="position:absolute; left:0; right:0; top:0; font-size:60px"><span class="line">First we show you what you have.</span></h1>
-            <h1 id="s10-l2" class="h-hero" data-layout-allow-overlap style="position:absolute; left:0; right:0; top:88px; font-size:60px; color:#7A8FFF"><span class="line">Then we turn it into an agent workforce.</span></h1>
-          </div>
-          <div class="center" style="top:770px">
-            <div id="s10-cta" class="cta" style="width:1120px">
-              <span class="btn">Start your free audit →</span>
-              <p class="txt"><b>A 48-hour Agent-Readiness Audit.</b>Read-only credentials in, a board-ready score out.</p>
-            </div>
-          </div>
-          <div class="center" style="top:935px"><p id="s10-site" class="site"><b>datalith.ai</b> · hello@datalith.ai</p></div>
-        </div>
-      </section>
-
-      <!-- root-level footage layers, geometry copied from their frames at setup -->
-      <video id="v-pipeline" src="assets/footage/pipeline.mp4" data-start="33.6" data-duration="8" data-media-start="1.4" data-track-index="2" data-frame="s5-frame" muted playsinline></video>
-      <video id="v-search" src="assets/footage/search.mp4" data-start="51.5" data-duration="7.1" data-media-start="0.9" data-track-index="2" data-frame="s7-frame" muted playsinline></video>
+      <div id="vig" data-layout-ignore></div>
+      <div id="grain" data-layout-ignore></div>
     </div>
-    <script src="assets/launch.js"></script>
+    <script src="assets/film.js"></script>
     <script>
       window.__timelines = window.__timelines || {};
-      window.__timelines["main"] = window.__buildLaunch();
+      window.__timelines["main"] = window.__buildFilm();
     </script>
   </body>
 </html>
