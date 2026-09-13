@@ -14,4 +14,4 @@ design-system/dist-site/
 .vscode/
 
 # startup documentation — kept local, not tracked
-docs/
+/docs/

@@ -25,6 +25,8 @@ MCP moves context — it doesn't *produce* it. Datalith is the layer that produc
 
 ## Repository map
 
+> **The product lives in its own private repo, [`ghazigh/datalith`](https://github.com/ghazigh/datalith)** — the PRD, the v0 plans, the platform code and its own copy of the design system. This repo is the marketing side: website, demo, deck, film.
+
 | Path | Contents |
 |---|---|
 | `docs/` | Market research, competitive landscape, product strategy, GTM plan and pitch narrative, plus the design specs and implementation plans. **Local only — gitignored, not in the repo.** |
