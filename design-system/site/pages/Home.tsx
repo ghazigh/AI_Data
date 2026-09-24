@@ -82,6 +82,43 @@ export function Home() {
         </div>
       </section>
 
+      {/* the launch film — site.js loads it on approach and plays it while it is in view */}
+      <section id="film" data-rail="Film" className="st-section st-film-section">
+        <div className="dl-wrap">
+          <SectionLabel>The film</SectionLabel>
+          <h2 className="dl-h2">Datalith in fifty-six seconds.</h2>
+          <p className="st-lead">
+            From the systems you already run to the agents your data makes possible — connect,
+            score, map, ask, prepare, build.
+          </p>
+          <figure className="st-film" data-film>
+            <div className="st-film-frame">
+              <video
+                className="st-film-video"
+                src="./assets/datalith-film.mp4"
+                poster="./assets/datalith-film-poster.jpg"
+                width={1920}
+                height={1080}
+                muted
+                loop
+                playsInline
+                controls
+                preload="none"
+                aria-label="Datalith launch film: every source connected, scored, mapped into one knowledge graph, searched, prepared and turned into agent use cases."
+              />
+              <button type="button" className="st-film-toggle" data-film-toggle aria-label="Pause film" hidden>
+                <svg className="st-film-icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3h3v10H4zM9 3h3v10H9z" /></svg>
+                <svg className="st-film-icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z" /></svg>
+              </button>
+            </div>
+            <figcaption className="st-console-cap">
+              <span>Illustrative estate. Datalith is pre-launch; these are not customer figures.</span>
+              <span>0:56 · silent</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       {/* what the platform provides — one section per stage */}
       <section id="capabilities" className="st-section">
         <div className="dl-wrap">

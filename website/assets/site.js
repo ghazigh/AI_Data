@@ -329,6 +329,54 @@
     if (el.hasAttribute('data-countup')) animateCount(el)
   }
 
+  /* launch film: nothing downloads until the section approaches; it plays while
+     at least half of it is on screen and pauses when it leaves. A visitor who
+     pauses it keeps it paused. Reduced motion keeps the native controls and
+     never autoplays. Without JS the markup already carries controls. */
+  var film = document.querySelector('[data-film]')
+  var filmVideo = film && film.querySelector('video')
+  if (filmVideo && !reduced && 'IntersectionObserver' in window) {
+    var filmToggle = film.querySelector('[data-film-toggle]')
+    var heldByViewer = false
+    filmVideo.controls = false
+    filmToggle.hidden = false
+    var setPaused = function (p) {
+      film.classList.toggle('is-paused', p)
+      filmToggle.setAttribute('aria-label', p ? 'Play film' : 'Pause film')
+    }
+    filmToggle.addEventListener('click', function () {
+      if (filmVideo.paused) { heldByViewer = false; filmVideo.play().catch(function () {}) }
+      else { heldByViewer = true; filmVideo.pause() }
+    })
+    // the screen tilts back while below the fold and straightens as it scrolls up into place
+    var filmFrame = film.querySelector('.st-film-frame'), tiltQueued = false
+    var tilt = function () {
+      tiltQueued = false
+      var vh = window.innerHeight, top = filmFrame.getBoundingClientRect().top
+      var p = Math.min(1, Math.max(0, (vh - top) / (vh * 0.75)))
+      film.style.setProperty('--film-p', (p * p * (3 - 2 * p)).toFixed(3))
+    }
+    window.addEventListener('scroll', function () { if (!tiltQueued) { tiltQueued = true; requestAnimationFrame(tilt) } }, { passive: true })
+    window.addEventListener('resize', tilt)
+    tilt()
+    filmVideo.addEventListener('play', function () { setPaused(false) })
+    filmVideo.addEventListener('pause', function () { setPaused(true) })
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) filmVideo.preload = 'auto'
+      })
+    }, { rootMargin: '0px 0px 150px 0px' }).observe(film)
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          if (!heldByViewer) filmVideo.play().catch(function () { setPaused(true) })
+        } else if (!filmVideo.paused) {
+          filmVideo.pause()
+        }
+      })
+    }, { threshold: [0, 0.5] }).observe(film)
+  }
+
   var targets = document.querySelectorAll('[data-reveal], [data-reveal-group], [data-draw], [data-scoremeter], [data-countup]')
   // Only observe top-level targets; nested countups are handled by their container.
   var observed = Array.prototype.filter.call(targets, function (el) {

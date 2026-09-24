@@ -72,6 +72,8 @@ await build({
 cpSync('site/assets/favicon.svg', `${OUT}/assets/favicon.svg`)
 cpSync('site/assets/logo-mark.svg', `${OUT}/assets/logo-mark.svg`)
 if (existsSync('site/assets/og.png')) cpSync('site/assets/og.png', `${OUT}/assets/og.png`)
+// the launch film on Home — a web encode of video/keynote's master, plus its poster frame
+for (const f of ['datalith-film.mp4', 'datalith-film-poster.jpg']) cpSync(`site/assets/${f}`, `${OUT}/assets/${f}`)
 
 // investor deck download
 mkdirSync(`${OUT}/deck`, { recursive: true })

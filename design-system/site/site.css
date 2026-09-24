@@ -555,6 +555,43 @@
   .st-console-cap { flex-direction: column; gap: 6px; }
 }
 
+/* ===== the launch film — a floating screen: rounded, lit from beneath, tilted back until
+   it scrolls into place. site.js drives --film-p (0 → 1); without it the screen sits flat. ===== */
+.st-film { position: relative; margin: var(--dl-space-8) 0 0; --film-p: 1; }
+.st-film::before {
+  content: ''; position: absolute; left: 10%; right: 10%; bottom: -8%; height: 34%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(61, 95, 255, 0.55) 0%, rgba(61, 95, 255, 0.18) 45%, rgba(61, 95, 255, 0) 75%);
+  filter: blur(40px); opacity: calc(0.35 + 0.65 * var(--film-p)); pointer-events: none;
+}
+.st-film-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #05060A;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(16, 16, 19, 0.06), 0 50px 100px -40px rgba(16, 16, 19, 0.55), 0 20px 40px -24px rgba(0, 49, 227, 0.25);
+  transform-origin: 50% 100%;
+  transform: perspective(1800px) rotateX(calc((1 - var(--film-p)) * 16deg)) scale(calc(0.93 + 0.07 * var(--film-p)));
+}
+.st-film-frame::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.st-film-video { display: block; width: 100%; height: 100%; object-fit: cover; background: #05060A; }
+.st-film .st-console-cap { margin-top: var(--dl-space-6); }
+.st-film-toggle {
+  position: absolute; right: var(--dl-space-4); bottom: var(--dl-space-4);
+  display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22); border-radius: var(--dl-radius-pill);
+  background: rgba(5, 6, 10, 0.55); color: #fff; cursor: pointer;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.st-film-frame:hover .st-film-toggle, .st-film-toggle:focus-visible, .st-film.is-paused .st-film-toggle { opacity: 1; }
+.st-film-toggle:focus-visible { outline: 2px solid var(--dl-blue-bright); outline-offset: 2px; }
+.st-film-toggle svg { width: 14px; height: 14px; fill: currentColor; }
+.st-film-icon-play, .st-film.is-paused .st-film-icon-pause { display: none; }
+.st-film.is-paused .st-film-icon-play { display: block; }
+
 /* ===== company: roadmap ===== */
 .st-roadmap { margin: var(--dl-space-7) 0 0; padding: 0; list-style: none; border-top: var(--dl-hairline); }
 .st-roadmap-row { display: grid; grid-template-columns: 200px 1fr; gap: var(--dl-space-6); padding: var(--dl-space-6) 0; border-bottom: var(--dl-hairline); align-items: baseline; }
