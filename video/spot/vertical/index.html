@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Datalith — Every source. One graph. Agent-ready.</title>
+    <link rel="stylesheet" href="assets/spot.css" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/film.js"></script>
+    <style>
+      html, body, #root { width: 1080px; height: 1920px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-aspect="9x16" data-start="0" data-duration="20" data-width="1080" data-height="1920" data-fps="30">
+      <!-- the 3D world: strands, graph, beam and the fibre logo (three.js, drawn by the timeline) -->
+      <canvas id="gl" width="1080" height="1920" data-layout-ignore></canvas>
+      <div id="scrim" data-layout-ignore></div>
+      <!-- logo tiles, domain labels, the agent and its chips: positioned every frame from the 3D camera -->
+      <div id="over" data-layout-ignore></div>
+
+      <section id="s-l1" class="clip" data-start="1.35" data-duration="2.7" data-track-index="1">
+        <h1 class="hl" id="l1">Your data<br />is <span class="it">everywhere.</span></h1>
+      </section>
+      <section id="s-l2" class="clip" data-start="3.95" data-duration="2.12" data-track-index="1">
+        <h1 class="hl" id="l2">Your agents<br /><span class="it">can’t use it.</span></h1>
+      </section>
+      <section id="s-tri" class="clip" data-start="5.95" data-duration="6.1" data-track-index="1">
+        <div class="eyebrow" id="eb"><i></i><span id="eb-n">01</span></div>
+        <div class="tri" id="w1">Every<br />source.</div>
+        <div class="tri" id="w2">One graph.</div>
+        <div class="tri blue" id="w3">Agent-<br />ready.</div>
+        <div class="detail" id="d1"><span class="txt">150+ connectors · read-only</span></div>
+        <div class="detail" id="d2"><span class="txt">Enterprise knowledge graph</span></div>
+        <div class="detail" id="d3"><span class="txt">Governed · audited · any agent</span></div>
+      </section>
+      <section id="s-lock" class="clip" data-start="13.9" data-duration="6.1" data-track-index="1">
+        <svg id="glyph" viewBox="0 0 28 20" data-layout-allow-overflow>
+          <defs>
+            <linearGradient id="g-run" gradientUnits="userSpaceOnUse" x1="-8" y1="0" x2="0" y2="0">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.9" />
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path class="st" d="M0 3 C8 3, 10 10, 16 10" />
+          <path class="st" d="M0 10 L16 10" />
+          <path class="st" d="M0 17 C8 17, 10 10, 16 10" />
+          <path class="bar" d="M16 10 L28 10" />
+          <g id="g-glint" opacity="0">
+            <path d="M0 3 C8 3, 10 10, 16 10" stroke="url(#g-run)" stroke-width="1.4" fill="none" />
+            <path d="M0 10 L16 10" stroke="url(#g-run)" stroke-width="1.4" fill="none" />
+            <path d="M0 17 C8 17, 10 10, 16 10" stroke="url(#g-run)" stroke-width="1.4" fill="none" />
+          </g>
+        </svg>
+        <div id="wm-mask" data-layout-allow-overflow><div id="wm">datalith</div></div>
+        <div id="tagline"><span class="p">Every source.</span> <span class="p">One graph.</span> <b class="p">Agent-ready.</b></div>
+        <div id="cta"><span class="sheen"></span><span>Get your free readiness score</span><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" /></svg></div>
+        <div id="url">48 hours · read-only · <b>datalith.ai</b></div>
+      </section>
+
+      <div id="grain" data-layout-ignore></div>
+      <!-- music bed + sound design, synthesized by audio/score.py, mastered to -14 LUFS -->
+      <audio id="score" src="assets/audio/spot-mix.wav" data-start="0" data-duration="20" data-volume="1" data-track-index="2"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = window.__buildFilm();
+    </script>
+  </body>
+</html>
