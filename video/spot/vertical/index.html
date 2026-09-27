@@ -12,29 +12,37 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-aspect="9x16" data-start="0" data-duration="20" data-width="1080" data-height="1920" data-fps="30">
+    <div id="root" data-composition-id="main" data-aspect="9x16" data-start="0" data-duration="26" data-width="1080" data-height="1920" data-fps="30">
       <!-- the 3D world: strands, graph, beam and the fibre logo (three.js, drawn by the timeline) -->
       <canvas id="gl" width="1080" height="1920" data-layout-ignore></canvas>
       <div id="scrim" data-layout-ignore></div>
       <!-- logo tiles, domain labels, the agent and its chips: positioned every frame from the 3D camera -->
       <div id="over" data-layout-ignore></div>
 
+      <!-- the sources, named: four big cards that ride in on the pour-in beats -->
+      <section id="s-src" class="clip" data-start="0.4" data-duration="3.6" data-track-index="1"></section>
       <section id="s-l1" class="clip" data-start="1.35" data-duration="2.7" data-track-index="1">
         <h1 class="hl" id="l1">Your data<br />is <span class="it">everywhere.</span></h1>
       </section>
       <section id="s-l2" class="clip" data-start="3.95" data-duration="2.12" data-track-index="1">
         <h1 class="hl" id="l2">Your agents<br /><span class="it">can’t use it.</span></h1>
       </section>
-      <section id="s-tri" class="clip" data-start="5.95" data-duration="6.1" data-track-index="1">
+      <section id="s-tri" class="clip" data-start="5.95" data-duration="12.1" data-track-index="1">
         <div class="eyebrow" id="eb"><i></i><span id="eb-n">01</span></div>
         <div class="tri" id="w1">Every<br />source.</div>
-        <div class="tri" id="w2">One graph.</div>
-        <div class="tri blue" id="w3">Agent-<br />ready.</div>
+        <div class="tri" id="w2">Made<br />readable.</div>
+        <div class="tri" id="w3">One graph.</div>
+        <div class="tri long" id="w4">Know what<br />to build.</div>
+        <div class="tri blue" id="w5">Agent-<br />ready.</div>
         <div class="detail" id="d1"><span class="txt">150+ connectors · read-only</span></div>
-        <div class="detail" id="d2"><span class="txt">Enterprise knowledge graph</span></div>
-        <div class="detail" id="d3"><span class="txt">Governed · audited · any agent</span></div>
+        <div class="detail" id="d2"><span class="txt">One pipeline per modality · typed · PII masked</span></div>
+        <div class="detail" id="d3"><span class="txt">Enterprise knowledge graph</span></div>
+        <div class="detail" id="d4"><span class="txt">Use cases detected in your data</span></div>
+        <div class="detail" id="d5"><span class="txt">Governed · audited · any agent</span></div>
       </section>
-      <section id="s-lock" class="clip" data-start="13.9" data-duration="6.1" data-track-index="1">
+      <!-- the use-case catalog, detected from the graph -->
+      <section id="s-uses" class="clip" data-start="12.2" data-duration="4.0" data-track-index="1"><div id="cat"></div></section>
+      <section id="s-lock" class="clip" data-start="19.9" data-duration="6.1" data-track-index="1">
         <svg id="glyph" viewBox="0 0 28 20" data-layout-allow-overflow>
           <defs>
             <linearGradient id="g-run" gradientUnits="userSpaceOnUse" x1="-8" y1="0" x2="0" y2="0">
@@ -61,7 +69,7 @@
 
       <div id="grain" data-layout-ignore></div>
       <!-- music bed + sound design, synthesized by audio/score.py, mastered to -14 LUFS -->
-      <audio id="score" src="assets/audio/spot-mix.wav" data-start="0" data-duration="20" data-volume="1" data-track-index="2"></audio>
+      <audio id="score" src="assets/audio/spot-mix.wav" data-start="0" data-duration="26" data-volume="1" data-track-index="2"></audio>
     </div>
     <script>
       window.__timelines = window.__timelines || {};

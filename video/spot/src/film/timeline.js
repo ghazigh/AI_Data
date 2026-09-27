@@ -2,7 +2,7 @@
 // Tweens are ordinary GSAP on the paused timeline. Anything that must follow the camera, or flicker
 // per frame (glitch, scramble, typewriter, grain), is written by place(), which the driver calls
 // with the world's anchors for time t — so every frame is a pure function of t.
-import { T, LAYOUTS } from '../config.js';
+import { T, LAYOUTS, USES } from '../config.js';
 import { clamp, smooth, hash1 } from '../math.js';
 import { LOGOS } from './logos.js';
 
@@ -17,6 +17,8 @@ const TYPE = {
     eb: { left: 124, top: 598 },
     tri: { left: 112, top: 640 },
     det: { left: 124, top: 842 },
+    cat: { left: 1150, top: 96, width: 660, cardH: 92, gap: 12, head: 46 },
+    src: [[170, 150], [820, 88], [1330, 250], [560, 372]],
     tagline: { top: 604 },
     cta: { top: 712 },
     url: { top: 840 },
@@ -27,6 +29,8 @@ const TYPE = {
     eb: { left: 80, top: 1128 },
     tri: { left: 68, top: 1170 },
     det: { left: 80, top: 1520 },
+    cat: { left: 64, top: 780, width: 952, cardH: 74, gap: 8, head: 40 },
+    src: [[70, 250], [560, 140], [520, 540], [90, 790]],
     tagline: { top: 1050 },
     cta: { top: 1160 },
     url: { top: 1292 },
@@ -37,7 +41,18 @@ const TYPE = {
 const CHAOS_TAGS = ['snowflake', 'sap', 'SF', 'postgresql', 'zendesk', 'jira', 'SP', 'googledrive', 'mongodb', 'databricks', 'hubspot', 'notion', 'stripe', 'confluence'];
 const FUNNEL_TAGS = ['googlebigquery', 'mysql', 'redis', 'SF', 'apachekafka', 'clickhouse', 'elastic', 'airtable', 'snowflake', 'dropbox', 'S3', 'googlecloud', 'sap', 'postgresql', 'databricks', 'SP'];
 const DOMAINS = ['Customers', 'Policies', 'Claims', 'Contracts', 'Support', 'Suppliers'];
-const AGENTS = ['Claims triage copilot', 'Collections agent', 'Churn-risk digest'];
+const AGENTS = ['Claims triage copilot', 'Subrogation finder', 'Fraud signal agent'];
+// the four sources named up front, one per pour-in beat
+const AWS = '<svg viewBox="0 0 64 40" class="aws"><text x="32" y="23" text-anchor="middle">aws</text><path d="M13 29 q19 9 38 0" /><path d="M45 25.5 l7 3.5 l-6.5 4.5" /></svg>';
+const SOURCES = [
+  { t: 0.5, name: 'AWS', icon: AWS, color: '#FF9900' },
+  { t: 0.75, name: 'Snowflake', id: 'snowflake', color: '#29B5E8' },
+  { t: 1.0, name: 'Databricks', id: 'databricks', color: '#FF3621' },
+  { t: 1.25, name: 'PostgreSQL', id: 'postgresql', color: '#6F8FE8' },
+];
+const GATE_NAMES = ['EXTRACT', 'TYPE', 'RESOLVE', 'MASK PII', 'EMBED'];
+const LANE_NAMES = ['DOCUMENTS', 'TABLES', 'EMAIL', 'TICKETS', 'TRANSCRIPTS', 'IMAGES', 'STREAMS'];
+const DOMAIN_SHORT = ['Customers', 'Policies', 'Claims', 'Contracts', 'Support', 'Suppliers'];
 const CHIP_T = [T.beam + 0.5, T.beam + 0.75, T.beam + 1.0];
 
 export function buildTimeline(tl, aspect) {
@@ -84,8 +99,8 @@ export function buildTimeline(tl, aspect) {
   place($('#l1'), TY.l1);
   place($('#l2'), TY.l2);
   place($('#eb'), TY.eb);
-  ['#w1', '#w2', '#w3'].forEach((s) => place($(s), TY.tri));
-  ['#d1', '#d2', '#d3'].forEach((s) => place($(s), TY.det));
+  ['#w1', '#w2', '#w3', '#w4', '#w5'].forEach((s) => place($(s), TY.tri));
+  ['#d1', '#d2', '#d3', '#d4', '#d5'].forEach((s) => place($(s), TY.det));
   const glyph = $('#glyph');
   glyph.setAttribute('width', String(28 * gs));
   glyph.setAttribute('height', String(20 * gs));
@@ -197,9 +212,9 @@ export function buildTimeline(tl, aspect) {
   }
 
   // ================= 03 · the triad =================
-  const triT = [T.drop, T.graph, T.beam];
-  const triEnd = [T.graph, T.beam, T.fold];
-  const triLetters = ['#w1', '#w2', '#w3'].map((s) => splitChars($(s)));
+  const triT = [T.drop, T.pipe, T.graph, T.uses, T.beam];
+  const triEnd = [T.pipe, T.graph, T.uses, T.beam, T.fold];
+  const triLetters = ['#w1', '#w2', '#w3', '#w4', '#w5'].map((s) => splitChars($(s)));
   triLetters.forEach((ls, k) => {
     rise(ls, triT[k], { dur: 0.62, stagger: 0.016, from: 112 });
     tl.fromTo(ls[0].closest('.tri'), { scale: 1.06, transformOrigin: '0% 100%' }, { scale: 1, duration: 0.8, ease: OUT, immediateRender: true }, triT[k]);
@@ -209,8 +224,71 @@ export function buildTimeline(tl, aspect) {
   tl.fromTo('#eb', { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: true }, T.drop);
   tl.to('#eb', { opacity: 0, duration: 0.2 }, T.fold - 0.2);
 
+  // ================= the named sources =================
+  const srcCards = SOURCES.map((sc, k) => {
+    const card = el('div', 'src', $('#s-src'));
+    const icon = sc.icon || `<svg viewBox="0 0 24 24" style="fill:${sc.color}"><use href="#lg-${sc.id}"></use></svg>`;
+    card.innerHTML = `<span class="ico" style="--c:${sc.color}">${icon}</span><span class="nm">${sc.name}</span>`;
+    card.style.setProperty('--c', sc.color);
+    place(card, { left: TY.src[k][0], top: TY.src[k][1] });
+    const R = (s) => hash1(k * 17 + s) * 2 - 1;
+    tl.fromTo(card, { scale: 0.55, opacity: 0, y: 30, filter: 'blur(12px)', transformOrigin: '50% 50%' }, { scale: 1, opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'back.out(1.8)', immediateRender: true }, sc.t);
+    tl.to(card, { x: R(1) * 36, y: R(2) * 22, duration: 3.55 - sc.t, ease: 'sine.inOut' }, sc.t + 0.6);
+    tl.to(card, { x: R(3) * 420, y: -120 + R(4) * 200, rotation: R(5) * 18, opacity: 0, filter: 'blur(10px)', duration: 0.36, ease: 'power3.in' }, 3.6 + k * 0.03);
+    return card;
+  });
+  void srcCards;
+
   // ================= overlays: source tiles, domain labels, the agent, the chips =================
   const over = $('#over');
+  // pipeline labels: a stage name over each gate, a modality at the head of each lane
+  const gateLabels = GATE_NAMES.map((n) => {
+    const a = el('div', 'anc', over);
+    el('div', 'gate', a, n);
+    a.style.opacity = '0';
+    return a;
+  });
+  const laneLabels = LANE_NAMES.map((n) => {
+    const a = el('div', 'anc', over);
+    el('div', 'lane', a, n);
+    a.style.opacity = '0';
+    return a;
+  });
+  // use-case catalog: cards on the right, a line from each back to the domains it reads
+  const C = TY.cat;
+  const cat = $('#cat');
+  place(cat, { position: 'absolute', left: C.left, top: C.top, width: C.width });
+  const head = el('div', 'cat-h', cat, `<span>USE-CASE CATALOG</span><span class="n"><b>3</b> ready · <i>1</i> blocked</span>`);
+  place(head, { height: C.head });
+  const ucs = USES.map((uc, k) => {
+    const ready = uc.status === 'ready';
+    const card = el('div', 'uc' + (ready ? '' : ' blocked'), cat,
+      `<div class="top"><span class="nm">${uc.name}</span><span class="val">${ready ? `<b>${uc.value}</b><small>/ yr</small>` : '<b>—</b>'}</span></div>` +
+      `<div class="bot"><span class="srcs">${uc.domains.map((d) => DOMAIN_SHORT[d].toUpperCase()).join(' · ')}</span>` +
+      `<span class="st"><i></i>${ready ? 'Ready to build' : 'Blocked · Contracts not ready'}</span></div>`);
+    place(card, { height: C.cardH, marginBottom: C.gap });
+    tl.fromTo(card, { x: 46, opacity: 0, filter: 'blur(8px)' }, { x: 0, opacity: 1, filter: 'blur(0px)', duration: 0.55, ease: OUT, immediateRender: true }, uc.t);
+    tl.to(card, { x: 30, opacity: 0, duration: 0.25, ease: 'power3.in' }, T.beam - 0.35 + k * 0.04);
+    return { card, uc, valEl: card.querySelector('.val b'), y: C.top + C.head + k * (C.cardH + C.gap) + C.cardH / 2 };
+  });
+  const foot = el('div', 'cat-f', cat, 'Example use cases and values · illustrative estate');
+  tl.fromTo(head, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: OUT, immediateRender: true }, T.uses + 0.2);
+  tl.fromTo(head.querySelector('.n'), { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true }, T.uses + 2.3);
+  tl.fromTo(foot, { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: true }, T.uses + 2.4);
+  tl.to([head, foot], { opacity: 0, duration: 0.25 }, T.beam - 0.3);
+  const wires = document.createElementNS(NS, 'svg');
+  wires.setAttribute('class', 'wires');
+  wires.setAttribute('width', String(L.W));
+  wires.setAttribute('height', String(L.H));
+  over.prepend(wires);
+  const wireOf = [];
+  ucs.forEach((u, k) => u.uc.domains.forEach((d) => {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('pathLength', '1');
+    p.setAttribute('class', u.uc.status === 'ready' ? 'w' : 'w bad');
+    wires.appendChild(p);
+    wireOf.push({ p, k, d, u });
+  }));
   const mkTag = (id) => {
     const a = el('div', 'anc', over);
     const tile = el('div', 'tile', a, tileHTML(id));
@@ -285,12 +363,12 @@ export function buildTimeline(tl, aspect) {
   tl.set('#g-glint', { opacity: 1 }, T.lock + 4.1);
   tl.fromTo(run, { attr: { x1: -8, x2: 0 } }, { attr: { x1: 16, x2: 24 }, duration: 1.1, ease: 'power2.inOut', immediateRender: false }, T.lock + 4.1);
   tl.set('#g-glint', { opacity: 0 }, T.lock + 5.25);
-  tl.to('#cta svg', { x: 9, duration: 0.16, ease: 'power2.out' }, 18.0);
-  tl.to('#cta svg', { x: 0, duration: 0.5, ease: 'back.out(3)' }, 18.16);
-  tl.fromTo('#cta .sheen', { x: -140 }, { x: 1000, duration: 0.9, ease: 'power2.inOut', immediateRender: false }, 18.9);
+  tl.to('#cta svg', { x: 9, duration: 0.16, ease: 'power2.out' }, T.lock + 4.0);
+  tl.to('#cta svg', { x: 0, duration: 0.5, ease: 'back.out(3)' }, T.lock + 4.16);
+  tl.fromTo('#cta .sheen', { x: -140 }, { x: 1000, duration: 0.9, ease: 'power2.inOut', immediateRender: false }, T.lock + 4.9);
 
   // ================= per-frame writer =================
-  const det = ['#d1', '#d2', '#d3'].map((s) => {
+  const det = ['#d1', '#d2', '#d3', '#d4', '#d5'].map((s) => {
     const n = $(s);
     const txt = n.querySelector('.txt');
     const full = txt.textContent;
@@ -330,8 +408,41 @@ export function buildTimeline(tl, aspect) {
     ftags.forEach((tag, k) => {
       const p = A.ftags && A.ftags[k];
       if (!p) return placeTag(tag, null, 0, 1);
-      const a = smooth(T.drop + 0.12 + k * 0.03, T.drop + 0.3 + k * 0.03, t) * smooth(160, 420, p.depth) * (1 - smooth(4200, 6400, p.depth)) * (1 - smooth(T.graph - 0.25, T.graph - 0.05, t));
+      const a = smooth(T.drop + 0.12 + k * 0.03, T.drop + 0.3 + k * 0.03, t) * smooth(160, 420, p.depth) * (1 - smooth(4200, 6400, p.depth)) * (1 - smooth(T.pipe - 0.4, T.pipe - 0.15, t));
       placeTag(tag, p, a, clamp(p.ppu * 2.8, 0.6, 2.4));
+    });
+    // pipeline labels ride the gates and lanes
+    const pipeOn = smooth(T.pipe + 0.05, T.pipe + 0.35, t) * (1 - smooth(T.graph - 0.6, T.graph - 0.35, t));
+    gateLabels.forEach((a, g) => {
+      const p = A.gates && A.gates[g];
+      const o = p && p.on ? pipeOn * smooth(T.pipe - 0.1 + g * 0.08, T.pipe + 0.2 + g * 0.08, t) : 0;
+      a.style.opacity = o.toFixed(3);
+      if (o > 0) a.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
+    });
+    laneLabels.forEach((a, l) => {
+      const p = A.lanes && A.lanes[l];
+      const o = p && p.on ? pipeOn * zoneFade(p) : 0;
+      a.style.opacity = o.toFixed(3);
+      if (o > 0) a.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
+    });
+    // catalog: values count up as each card lands; wires draw from the domains that feed it
+    ucs.forEach((u) => {
+      if (!u.valEl || u.uc.status !== 'ready') return;
+      const target = parseFloat(u.uc.value.replace(/[^0-9.]/g, ''));
+      const dec = (u.uc.value.split('.')[1] || '').replace(/[^0-9]/g, '').length;
+      const v = target * Math.min(1, Math.max(0, (t - u.uc.t - 0.05) / 0.5)) ** 0.6;
+      u.valEl.textContent = '$' + v.toFixed(dec) + 'M';
+    });
+    wireOf.forEach((w) => {
+      const n = A.labels[w.d];
+      const draw = clamp((t - w.u.uc.t + 0.18) / 0.4);
+      const fade = 1 - smooth(T.beam - 0.5, T.beam - 0.2, t);
+      if (!n || !n.on || draw <= 0 || fade <= 0) return w.p.setAttribute('d', '');
+      const x2 = C.left - 10, y2 = w.u.y;
+      const mx = (n.x + x2) / 2;
+      w.p.setAttribute('d', `M${n.x.toFixed(1)} ${n.y.toFixed(1)} C${mx.toFixed(1)} ${n.y.toFixed(1)}, ${mx.toFixed(1)} ${y2.toFixed(1)}, ${x2} ${y2.toFixed(1)}`);
+      w.p.style.strokeDashoffset = (1 - draw).toFixed(3);
+      w.p.style.opacity = (fade * (0.45 + 0.55 * Math.exp(-Math.max(0, t - w.u.uc.t) * 1.2))).toFixed(3);
     });
     // domain labels follow their nodes
     dlabels.forEach((d, c) => {
@@ -377,7 +488,8 @@ export function buildTimeline(tl, aspect) {
     }
     // eyebrow: the stage number scrambles, then locks, on each downbeat
     {
-      let k = t < T.graph ? 0 : t < T.beam ? 1 : 2;
+      let k = 0;
+      triT.forEach((x, i) => { if (t >= x) k = i; });
       const since = t - triT[k];
       const target = '0' + (k + 1);
       ebN.textContent = since < 0.28 ? DIG[Math.floor(hash1(frame * 5) * 10)] + DIG[Math.floor(hash1(frame * 9 + 2) * 10)] : target;

@@ -1,6 +1,6 @@
 // The renderer: temporal-supersampled motion blur into an HDR buffer, then bloom, streak and grade.
 import * as THREE from 'three';
-import { T, CUTS, WORLD, LAYOUTS } from '../config.js';
+import { T, CUTS, WORLD, LAYOUTS, USES } from '../config.js';
 import { E, inv, smooth, rng, TAU } from '../math.js';
 import { createField, NS, NP, ROWS, HERO, PROBE } from './field.js';
 import { createCamera } from './camera.js';
@@ -81,6 +81,7 @@ export function createWorld(canvas, aspect = '16x9') {
   idx.nodes = nB; nB += nodes.length;
   idx.merge = nB++;
   idx.stations = nB; nB += 3;
+  idx.gates = nB; nB += field.LANES * field.GATES.length;
   idx.dust = nB; nB += N_DUST;
   const iPos = new Float32Array(nB * 3), iCol = new Float32Array(nB * 4), iSize = new Float32Array(nB * 2);
   const dgeo = new THREE.InstancedBufferGeometry();
@@ -156,8 +157,24 @@ export function createWorld(canvas, aspect = '16x9') {
       const sc = E.backOut(inv(pop[n], pop[n] + 0.38, t), 2.6) * (1 - E.cubicIn(inv(T.fold + 0.05, T.fold + 0.6, t)));
       const size = [30, 15, 6.5][nd.kind] * Math.max(0, sc);
       const beamDim = 1 - 0.35 * smooth(T.beam, T.beam + 0.5, t);
-      const flash = Math.exp(-Math.max(0, t - pop[n]) * 6) * (t >= pop[n] ? 1.5 : 0);
+      let flash = Math.exp(-Math.max(0, t - pop[n]) * 6) * (t >= pop[n] ? 1.5 : 0);
+      if (nd.kind === 1) {
+        for (const uc of USES) if (uc.domains.includes(nd.cluster) && t >= uc.t - 0.12) flash += Math.exp(-(t - uc.t + 0.12) * 4) * 2.2;
+        if (t >= T.uses) flash += Math.exp(-(t - T.uses - nd.cluster * 0.06) * 5) * (t >= T.uses + nd.cluster * 0.06 ? 1.8 : 0);
+      }
       setB(idx.nodes + n, field.nodeAt(n, t, tmp3), nd.kind === 0 ? [0.3, 0.46, 1.0] : ICE, ([2.2, 1.35, 1.6][nd.kind] + flash) * beamDim * (sc > 0.001 ? 1 : 0), size, nd.kind === 2 ? 0 : 1);
+    }
+    // pipeline gates: a ring per stage on every lane
+    {
+      const vis = 1 - smooth(T.graph - 0.55, T.graph - 0.25, t);
+      for (let g = 0; g < field.GATES.length; g++) {
+        for (let l = 0; l < field.LANES; l++) {
+          const tp = T.pipe - 0.1 + g * 0.08 + l * 0.02;
+          const sc = E.backOut(inv(tp, tp + 0.35, t), 2.2) * vis;
+          const flash = t >= tp ? Math.exp(-(t - tp) * 5) * 1.5 : 0;
+          setB(idx.gates + g * field.LANES + l, field.gatePos(g, l), [0.45, 0.6, 1.0], (1.1 + flash) * (sc > 0.001 ? 1 : 0), 10 * Math.max(0, sc), 1);
+        }
+      }
     }
     // beam: the merge point and the agents along the line
     {
@@ -276,6 +293,7 @@ export function createWorld(canvas, aspect = '16x9') {
     if (look.shock) {
       let c = [0.5, 0.5];
       if (look.shock.at === 'merge') c = uvOf(field.M);
+      if (look.shock.at === 'hub') c = uvOf(G);
       if (look.shock.at === 'glyph') {
         const [gl, gt, gs] = L.glyph;
         c = [(gl + 14 * gs) / W, 1 - (gt + 10 * gs) / H];
@@ -286,6 +304,7 @@ export function createWorld(canvas, aspect = '16x9') {
   }
 
   const v3 = new THREE.Vector3();
+  const V3add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
   function uvOf(p) {
     v3.set(p[0], p[1], p[2]).project(cam);
     return [(v3.x + 1) / 2, (v3.y + 1) / 2];
@@ -340,8 +359,11 @@ export function createWorld(canvas, aspect = '16x9') {
     const tags = tagStrands.map((i) => ({ ...screen([H4[i * 4], H4[i * 4 + 1], H4[i * 4 + 2]]), I: H4[i * 4 + 3] }));
     const labels = field.graph.centres.map((id) => screen(field.nodeAt(id, t, [0, 0, 0])));
     const stations = stationX.map((dx) => screen([field.M[0] + dx, field.M[1], field.M[2]]));
-    const ftags = t >= T.drop - 0.1 && t < T.graph + 0.1 ? funnelTags(t) : null;
-    return { tags, ftags, labels, stations, agent: screen(field.agentPos(t)), merge: screen(field.M), hub: screen(G) };
+    const ftags = t >= T.drop - 0.1 && t < T.pipe + 0.1 ? funnelTags(t) : null;
+    const inPipe = t >= T.pipe - 0.1 && t < T.graph + 0.05;
+    const gates = inPipe ? field.GATES.map((_, g) => screen(V3add(field.gatePos(g, 0), [0, 80, 0]))) : null;
+    const lanes = inPipe ? Array.from({ length: field.LANES }, (_, l) => screen([field.PX0 + field.PLEN * 0.68, field.laneY(l) + 30, WORLD.hub[2]])) : null;
+    return { tags, ftags, labels, stations, gates, lanes, agent: screen(field.agentPos(t)), merge: screen(field.M), hub: screen(G) };
   }
 
   // funnel tag anchors: points riding the combed strands toward the hub

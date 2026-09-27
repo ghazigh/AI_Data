@@ -15,8 +15,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-CUTS = {0.0: 'whip', 2.0: 'cut', 3.0: 'cut', 4.0: 'agent', 4.85: 'fail', 5.5: 'stop', 6.0: 'DROP', 8.0: 'graph', 10.0: 'beam',
-        10.5: 'chip', 10.75: 'chip', 11.0: 'chip', 12.0: 'fold', 14.0: 'LOCK', 16.0: 'cta'}
+CUTS = {0.0: 'whip', 2.0: 'cut', 3.0: 'cut', 4.0: 'agent', 4.85: 'fail', 5.5: 'stop', 6.0: 'DROP', 8.0: 'pipes', 10.0: 'graph',
+        12.0: 'scan', 12.5: 'case', 13.0: 'case', 13.5: 'case', 14.0: 'case', 16.0: 'beam', 16.5: 'chip', 18.0: 'fold', 20.0: 'LOCK', 22.0: 'cta'}
 
 src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, 'assets/audio/spot-mix.wav')
 if src.endswith('.mp4'):

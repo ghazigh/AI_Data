@@ -8,11 +8,11 @@ export function gradeAt(t) {
   // exposure: dark open, the whip lights the world, stop-down dims it, the drop overexposes
   let exposure = 1.0;
   exposure *= 1 - 0.5 * smooth(T.stop - 0.04, T.stop + 0.12, t) * (t < T.drop ? 1 : 0);
-  exposure += hit(t, T.drop, 1.5, 0.1) + hit(t, T.graph, 0.6, 0.18) + hit(t, T.beam, 1.1, 0.25) + hit(t, T.lock, 0.5, 0.3);
+  exposure += hit(t, T.drop, 1.5, 0.1) + hit(t, T.pipe, 0.4, 0.15) + hit(t, T.graph, 0.6, 0.18) + hit(t, T.uses, 0.35, 0.2) + hit(t, T.beam, 1.1, 0.25) + hit(t, T.lock, 0.5, 0.3);
   // bursts on the pour-in beats
   for (const b of [0.5, 0.75, 1.0, 1.25, 1.5]) exposure += hit(t, b, 0.18, 0.12);
 
-  let bloom = 0.85 + 0.55 * smooth(T.drop, T.drop + 0.4, t) * (1 - smooth(T.graph - 0.2, T.graph + 0.3, t)) + 0.35 * smooth(T.beam, T.beam + 0.3, t) * (1 - smooth(T.fold, T.lock, t));
+  let bloom = 0.85 + 0.55 * smooth(T.drop, T.drop + 0.4, t) * (1 - smooth(T.pipe - 0.2, T.pipe + 0.3, t)) + 0.35 * smooth(T.beam, T.beam + 0.3, t) * (1 - smooth(T.fold, T.lock, t));
   let streak = 0.25 + 0.5 * smooth(T.beam - 0.2, T.beam + 0.4, t) * (1 - smooth(T.fold + 0.2, T.fold + 0.9, t)) - 0.17 * smooth(T.fold + 0.2, T.fold + 0.9, t);
 
   let ca = 0.35 + hit(t, T.drop, 3.2, 0.35) + hit(t, T.graph, 1.0, 0.2) + hit(t, T.beam, 1.2, 0.3);
@@ -27,6 +27,8 @@ export function gradeAt(t) {
   let shock = null;
   const sd = t - T.drop;
   if (sd >= 0 && sd < 0.9) shock = { at: 'center', r: E.cubicOut(sd / 0.9) * 1.3, a: 1 - sd / 0.9 };
+  const su = t - T.uses;
+  if (su >= 0 && su < 0.8) shock = { at: 'hub', r: E.cubicOut(su / 0.8) * 1.0, a: 0.5 * (1 - su / 0.8) };
   const sb = t - T.beam;
   if (sb >= 0 && sb < 0.7) shock = { at: 'merge', r: E.cubicOut(sb / 0.7) * 0.9, a: 0.7 * (1 - sb / 0.7) };
   const sl = t - T.lock;
@@ -42,8 +44,9 @@ export function gradeAt(t) {
   // more samples where things move violently, so the blur stays smooth instead of stepping
   let K = 6;
   if (t < 1.1) K = 14; // the opening whip
-  if (t >= T.drop && t < T.graph) K = 10;
+  if (t >= T.drop && t < T.pipe) K = 10;
   if (t >= T.drop && t < T.drop + 0.55) K = 26; // the snap from tangle to funnel
+  if (t >= T.pipe - 0.5 && t < T.pipe + 0.4) K = 14; // the funnel swings into lanes
   if (t >= T.graph - 0.6 && t < T.graph) K = 16; // the implosion into the hub
   if (t >= T.graph && t < T.graph + 0.5) K = 12; // the bloom out of it
   if (t >= T.beam && t < T.beam + 0.6) K = 14; // strands swing into the beam
@@ -51,10 +54,10 @@ export function gradeAt(t) {
   if (t >= T.fold + 1.4 && t < T.lock + 0.1) K = 12; // the pull-back onto the lockup
   if (t >= T.lock + 0.7) K = 3;
   // the snap into the funnel reads crisper with a short shutter; the rush down it wants long streaks
-  const shutter = t >= T.drop && t < T.graph ? (t < T.drop + 0.4 ? 0.3 : 0.75) / 30 : 0.5 / 30;
+  const shutter = t >= T.drop && t < T.pipe ? (t < T.drop + 0.4 ? 0.3 : 0.75) / 30 : 0.5 / 30;
 
   // haze centre follows the action
-  const hazeC = t < T.graph ? [0.5, 0.5] : t < T.fold ? [lerp(0.6, 0.36, smooth(T.beam, T.beam + 0.8, t)), 0.6] : [0.5, 0.55];
+  const hazeC = t < T.graph ? [0.5, 0.5] : t < T.fold ? [lerp(0.6, 0.36, smooth(T.uses, T.uses + 0.8, t)), 0.6] : [0.5, 0.55];
   const haze = t < T.drop ? 0.016 : 0.024;
   return { exposure, bloom, streak, ca, glitch, shock, flash, sat, vig, fade, grain, K, shutter, hazeC, haze };
 }

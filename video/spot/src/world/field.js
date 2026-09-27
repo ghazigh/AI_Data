@@ -1,6 +1,7 @@
 // Everything in the 3D world, as a pure function of time.
 // 288 strands of light share one set of points and morph through five shapes:
-//   CHAOS  (every source, tangled)  →  FUNNEL (combed into one flow)  →  GRAPH (woven into one graph)
+//   CHAOS  (every source, tangled)  →  FUNNEL (combed into one flow)  →  PIPES (one lane per modality,
+//   raw on the way in, clean after five gates)  →  GRAPH (woven into one graph)
 //   →  BEAM (pulled into one blue line)  →  LOGO (three streams merging into the bar: the datalith mark)
 // Because it is always the same strands, every transition carries motion across the cut.
 import { T, WORLD } from '../config.js';
@@ -82,6 +83,15 @@ export function createField(opts = {}) {
     return out;
   };
 
+  // pipelines: seven lanes (one per modality) run left to right through five gates, then merge into the hub
+  const LANES = 7;
+  const LANE_DY = 108;
+  const PLEN = 3000;
+  const PX0 = G[0] - PLEN;
+  const GATES = [0.22, 0.33, 0.44, 0.55, 0.66];
+  const laneY = (l) => G[1] + (3 - l) * LANE_DY;
+  const gatePos = (g, l) => [PX0 + PLEN * GATES[g], laneY(l), G[2]];
+
   // ---- per-strand parameters ----
   const S = [];
   const bursts = [
@@ -133,6 +143,17 @@ export function createField(opts = {}) {
     s.dF = 0.32 * clamp(Math.hypot(s.C[0], s.C[1] * 1.5) / 1700) + r() * 0.04;
     s.fb = 0.025 + 0.34 * Math.pow(r(), 3);
     s.fpul = r() < 0.6 ? 1 : 0;
+
+    // pipes: a lane, a messy raw path before the gates, a tight place in the bundle after them
+    s.pl = i % LANES;
+    s.po = (r() - 0.5) * 16;
+    s.pz = (r() - 0.5) * 16;
+    s.pay = 30 + 70 * r();
+    s.paz = 90 + 200 * r();
+    s.pf = 2.5 + 4 * r();
+    s.pph = r() * TAU;
+    s.ppu = r();
+    s.dP = 0.25 * r();
 
     // graph: each strand is one fibre of an edge bundle
     s.e = edgeOf[i];
@@ -216,6 +237,29 @@ export function createField(opts = {}) {
     o[5] = lerp(ICE[1], BLUE[1], cb) + p * 0.5;
     o[6] = lerp(ICE[2], BLUE[2], cb) + p * 0.3;
     o[7] = 3.0;
+  }
+
+  function pipe(s, u, t, tau, o) {
+    const x = PX0 + PLEN * u;
+    let clean = 0;
+    for (const g of GATES) clean += smooth(g - 0.012, g + 0.012, u);
+    clean /= GATES.length;
+    const cv = E.cubicInOut(inv(0.74, 1.0, u)); // merge into the hub
+    const fl = u * s.pf * TAU - (t - T.pipe) * 5.5 + s.pph;
+    const raw = 1 - clean;
+    const ny = s.pay * (Math.sin(fl) + 0.5 * Math.sin(fl * 2.3 + 1.1)) * raw;
+    const nz = s.paz * Math.sin(fl * 0.7 + s.pph * 2) * raw;
+    o[0] = x;
+    o[1] = lerp(laneY(s.pl) + s.po + ny, G[1] + s.po * 0.15, cv);
+    o[2] = G[2] + nz + s.pz * (1 - cv);
+    const xp = fract(u - 0.42 * (t - T.pipe) + s.ppu) - 0.5;
+    const p = Math.exp(-xp * xp * 500) * clean;
+    o[3] = 0.1 * raw + 0.3 * clean + 1.9 * p + 0.5 * cv;
+    const cb = clean * (0.35 + 0.65 * cv);
+    o[4] = lerp(s.c[0] * 0.8, lerp(ICE[0], BLUE[0], cb), clean) + p * 0.4;
+    o[5] = lerp(s.c[1] * 0.8, lerp(ICE[1], BLUE[1], cb), clean) + p * 0.4;
+    o[6] = lerp(s.c[2] * 0.8, lerp(ICE[2], BLUE[2], cb), clean) + p * 0.2;
+    o[7] = 2.2;
   }
 
   const TINTS = [[0.8, 0.88, 1.0], [0.72, 0.85, 1.0], [0.88, 0.86, 1.0], [0.8, 0.92, 1.0], [0.9, 0.9, 1.0], [0.76, 0.8, 1.0]];
@@ -370,7 +414,7 @@ export function createField(opts = {}) {
   }
 
   // ---- time remap: the tangle crawls, freezes for the stop, then everything drives forward ----
-  const tauTable = new Float64Array(Math.ceil(21 * 1000) + 2);
+  const tauTable = new Float64Array(Math.ceil(27 * 1000) + 2);
   {
     let acc = 0;
     for (let k = 0; k < tauTable.length; k++) {
@@ -382,7 +426,7 @@ export function createField(opts = {}) {
     }
   }
   const tauOf = (t) => {
-    const x = clamp(t, 0, 20.999) * 1000;
+    const x = clamp(t, 0, 26.999) * 1000;
     const k = Math.floor(x);
     return lerp(tauTable[k], tauTable[k + 1], x - k);
   };
@@ -397,6 +441,7 @@ export function createField(opts = {}) {
     for (let i = 0; i < NS; i++) {
       const s = S[i];
       const wF = t < T.drop ? 0 : E.backOut(inv(T.drop + s.dF, T.drop + s.dF + 0.5, t), 0.9);
+      const wP = t < T.pipe - 0.6 ? 0 : E.quartInOut(inv(T.pipe - 0.45 + s.dP, T.pipe + 0.2 + s.dP, t));
       const wG = E.quartInOut(inv(s.gT, s.gT + 0.5, t));
       const wB = t < T.beam ? 0 : E.quartOut(inv(T.beam + s.dB, T.beam + s.dB + 0.6, t));
       const wL = t < T.fold ? 0 : E.quintInOut(inv(T.fold + s.dL, T.fold + s.dL + 0.72, t));
@@ -407,13 +452,18 @@ export function createField(opts = {}) {
         const u = j / (NP - 1);
         // evaluate only the shapes that are live for this strand
         if (wF < 1 || wF > 1.0001) chaos(s, u, t, tau, A);
-        if (wF > 0 && wG < 1) {
+        if (wF > 0 && wP < 1) {
           funnel(s, u, t, tau, B);
           mix(A, B, wF);
         }
+        if (wP > 0 && wG < 1) {
+          pipe(s, u, t, tau, B);
+          if (wP >= 1 && wF >= 1) A.set(B);
+          else mix(A, B, wP);
+        }
         if (wG > 0 && wB < 1) {
           graphF(s, u, t, tau, B);
-          if (wG >= 1 && wF >= 1) A.set(B);
+          if (wG >= 1 && wP >= 1) A.set(B);
           else mix(A, B, wG);
         }
         if (wB > 0 && wL < 1) {
@@ -460,5 +510,5 @@ export function createField(opts = {}) {
     for (let c = 0; c < 8; c++) a[c] = a[c] + (b[c] - a[c]) * w;
   }
 
-  return { S, graph, pop, M, BEAM_LEN, ORG, pos, col, heads, fill, agentPos, tauOf, nodeAt, gsc };
+  return { S, graph, pop, M, BEAM_LEN, ORG, pos, col, heads, fill, agentPos, tauOf, nodeAt, gsc, gatePos, laneY, LANES, GATES, PX0, PLEN };
 }

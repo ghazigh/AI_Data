@@ -78,16 +78,17 @@ export function createCamera(aspect) {
     return [x, y, f];
   };
 
-  const graphYaw = track([[T.graph, -70], [T.graph + 0.75, -44, E.expoOut], [T.beam, -26, E.sineInOut], [T.beam + 0.6, -8, E.cubicInOut], [T.fold, 3, E.sineInOut]]);
-  const graphPitch = track([[T.graph, 22], [T.beam, 14, E.sineInOut], [T.fold, 7, E.sineInOut]]);
-  const graphR = track([[T.graph, 2050], [T.graph + 0.75, 1720, E.expoOut], [T.beam, 1640, E.sineInOut], [T.beam + 0.6, 2050, E.cubicInOut], [T.fold, 2300, E.sineInOut]]);
-  // where the graph centre sits on screen (px)
+  const graphYaw = track([[T.graph, -70], [T.graph + 0.75, -44, E.expoOut], [T.uses, -30, E.sineInOut], [T.uses + 0.8, -22, E.cubicInOut], [T.beam, -12, E.sineInOut], [T.beam + 0.6, -8, E.cubicInOut], [T.fold, 3, E.sineInOut]]);
+  const graphPitch = track([[T.graph, 22], [T.uses, 16, E.sineInOut], [T.beam, 12, E.sineInOut], [T.fold, 7, E.sineInOut]]);
+  const graphR = track([[T.graph, 2050], [T.graph + 0.75, 1720, E.expoOut], [T.uses, 1640, E.sineInOut], [T.uses + 0.8, 1760, E.cubicInOut], [T.beam, 1860, E.sineInOut], [T.beam + 0.6, 2050, E.cubicInOut], [T.fold, 2300, E.sineInOut]]);
+  // where the graph centre sits on screen (px): right for "One graph.", left once the catalog needs the room
   const gsx = portrait
     ? track([[T.graph, 540], [T.fold, 540]])
-    : track([[T.graph, 960], [T.graph + 0.9, 1240, E.expoOut], [T.beam, 1230], [T.beam + 0.8, 610, E.cubicInOut], [T.fold, 590]]);
+    : track([[T.graph, 960], [T.graph + 0.9, 1240, E.expoOut], [T.uses, 1230], [T.uses + 0.8, 620, E.cubicInOut], [T.beam, 610], [T.beam + 0.8, 610, E.cubicInOut], [T.fold, 590]]);
   const gsy = portrait
-    ? track([[T.graph, 960], [T.graph + 0.9, 700, E.expoOut], [T.beam, 700], [T.beam + 0.8, 880, E.cubicInOut], [T.fold, 880]])
-    : track([[T.graph, 540], [T.graph + 0.9, 398, E.expoOut], [T.beam, 390], [T.beam + 0.8, 360, E.cubicInOut], [T.fold, 380]]);
+    ? track([[T.graph, 960], [T.graph + 0.9, 700, E.expoOut], [T.uses, 700], [T.uses + 0.8, 470, E.cubicInOut], [T.beam, 470], [T.beam + 0.8, 880, E.cubicInOut], [T.fold, 880]])
+    : track([[T.graph, 540], [T.graph + 0.9, 398, E.expoOut], [T.uses, 390], [T.uses + 0.8, 400, E.cubicInOut], [T.beam, 390], [T.beam + 0.8, 360, E.cubicInOut], [T.fold, 380]]);
+  // pipelines: a tracking shot that rides the flow and ends on the merge point, dead centre, for the cut
 
   function at(t) {
     let pos, tgt, fov, roll = 0, focus = 1500, ap = 0;
@@ -125,9 +126,22 @@ export function createCamera(aspect) {
       roll = 0;
       focus = lerp(950, 820, push);
       ap = 5.5;
+    } else if (t >= T.pipe && t < T.graph) {
+      const u = inv(T.pipe, T.graph, t);
+      const e = E.sineInOut(u);
+      const k = portrait ? 1.55 : 1;
+      const anchor = [G[0] - lerp(1650, 0, E.quadIn(u)), G[1], G[2]];
+      pos = [anchor[0] - lerp(650, 150, e) * k, G[1] + lerp(300, 120, e) * k, G[2] + lerp(2900, 2000, e) * k];
+      fov = 42;
+      roll = lerp(2.5, 0, e);
+      const sx = portrait ? 540 : lerp(1000, 960, E.cubicIn(u));
+      const sy = portrait ? lerp(700, 960, E.cubicIn(u)) : lerp(405, 540, E.cubicIn(u));
+      tgt = aimAt(pos, anchor, sx, sy, fov * fovK, L, roll);
+      focus = Math.hypot(...V.sub(anchor, pos));
+      ap = 3;
     } else if (t < T.graph) {
       // the drop: rush down the funnel, lens widening, barrel roll
-      const u = inv(T.drop, T.graph, t);
+      const u = inv(T.drop, T.pipe, t);
       const z = 1245 - 3500 * (0.62 * E.expoOut(clamp(u * 1.15)) + 0.38 * u * u);
       pos = [0, 0, z];
       tgt = [0, 0, z - 3000];

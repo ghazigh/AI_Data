@@ -20,7 +20,7 @@ from numba import njit
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SR = 48000
-DUR = 20.0
+DUR = 26.0
 N = int(SR * DUR)
 BEAT = 0.5
 S16 = BEAT / 4
@@ -28,7 +28,7 @@ RNG = np.random.default_rng(20260926)
 
 # ---- story beats (must match src/config.js) ----
 T = dict(pour=0.5, line1=1.5, agent=4.0, probe=4.3, fail=4.85, stop=5.5, drop=6.0,
-         graph=8.0, beam=10.0, fold=12.0, lock=14.0, cta=16.0, end=20.0)
+         pipe=8.0, graph=10.0, uses=12.0, beam=16.0, fold=18.0, lock=20.0, cta=22.0, end=26.0)
 
 
 def midi(n):
@@ -382,7 +382,7 @@ def build():
         'Dbma9': [49, 53, 56, 60, 63],
     }
     ROOT = {'Fm': 29, 'Db': 25, 'Ab': 32, 'Eb': 27}
-    drop_bars = [(T['drop'], 'Fm'), (T['graph'], 'Db'), (T['beam'], 'Ab'), (T['fold'], 'Eb')]
+    drop_bars = [(6.0, 'Fm'), (8.0, 'Db'), (10.0, 'Ab'), (12.0, 'Eb'), (14.0, 'Fm'), (16.0, 'Db'), (18.0, 'Eb')]
 
     # ---------- INTRO: the tangle (0 – 5.5) ----------
     stop = T['stop']
@@ -458,15 +458,16 @@ def build():
     inhale = bp(noise(n), expseg(n, 400, 2600), 1.0) * np.linspace(0, 1, n) ** 2.5
     put('sfx', T['drop'] - 0.5, inhale, 0.35)
 
-    # ---------- THE DROP (6 – 14) ----------
+    # ---------- THE DROP (6 – 20) ----------
     drop, lock = T['drop'], T['lock']
+    groove_end = T['fold'] + 1.0  # last kick; the final half-bar is a roll into the lockup
     put('impact', drop, boom(2.6, 72, 27, 1.1), 0.95)
     put('impact', drop, crash(2.8), 0.45, rev=0.35)
     put('impact', drop, whoosh(0.8, 6500, 280, 1.1, 0.05), 0.55, rev=0.3)
-    kick_times = [drop + k * BEAT for k in range(int((13.0 - drop) / BEAT) + 1)]
+    kick_times = [drop + k * BEAT for k in range(int((groove_end - drop) / BEAT) + 1)]
     for k, kt in enumerate(kick_times):
         put('drums', kt, kick(1.0 if k % 4 == 0 else 0.92), 0.95)
-    for k in range(int((13.5 - drop) / BEAT)):
+    for k in range(int((groove_end + 0.5 - drop) / BEAT)):
         bt = drop + k * BEAT
         if k % 2 == 1:
             put('drums', bt, clap(), 0.42, rev=0.25)
@@ -501,7 +502,7 @@ def build():
         seq = [notes[0] + 12, notes[1] + 12, notes[2] + 12, notes[3] + 12, notes[2] + 24, notes[3] + 12, notes[1] + 24, notes[2] + 12]
         for k in range(16):
             tn = b0 + k * S16
-            if tn >= 13.5:
+            if tn >= groove_end + 0.5:
                 break
             f = midi(seq[k % 8])
             put('keys', tn, pluck(f, 0.3, 0.9 + 0.2 * (k % 4 == 0)), 0.16 + 0.05 * (k % 4 == 0), pan=(-0.35 if k % 2 else 0.35), rev=0.3, dly=0.35)
@@ -513,6 +514,14 @@ def build():
     for k in range(10):
         tw = drop + 0.35 + k * 0.16 + r.random() * 0.05
         put('sfx', tw, whoosh(0.22, 2500, 700, 1.8, 0.4), 0.14, pan=(r.random() * 2 - 1))
+    # the funnel swings into lanes: an impact, then each gate clicks into place along the lanes
+    put('impact', T['pipe'], boom(1.2, 95, 45, 0.45), 0.4)
+    put('sfx', T['pipe'] - 0.35, whoosh(0.5, 900, 4800, 1.2, 0.7), 0.3)
+    for g in range(5):
+        put('sfx', T['pipe'] - 0.1 + g * 0.08, tick(1800 + 350 * g, 0.03), 0.12, pan=-0.6 + 0.3 * g)
+    n = secs(1.8)
+    proc = bp(noise(n), 2400 + 1200 * np.sin(2 * np.pi * 8 * tt(n)), 4.0) * (np.floor(tt(n) / (S16 / 2)) % 2 == 0) * np.linspace(0.6, 1, n)
+    put('sfx', T['pipe'] + 0.1, proc, 0.05, pan=np.linspace(-0.5, 0.5, n))
     # implosion into the hub, then the graph blooms
     n = secs(0.5)
     suck = whoosh(0.5, 300, 5200, 1.2, 0.95)
@@ -522,25 +531,32 @@ def build():
     for c in range(6):
         f = midi([61, 65, 68, 73, 77, 80][c])
         put('keys', T['graph'] + c * S16, bell(f, 0.9, 1.4, 2.0, 0.28), 0.14, pan=(c / 2.5 - 1), rev=0.35)
+    # the catalog: a scan sweeps the graph, then each use case lands on its beat (the blocked one lower, darker)
+    n = secs(0.9)
+    scanf = expseg(n, 300, 2400)
+    sweep = np.sin(2 * np.pi * np.cumsum(scanf) / SR) * np.exp(-((tt(n) - 0.35) ** 2) / 0.08)
+    put('sfx', T['uses'], sweep, 0.18, pan=np.linspace(-0.6, 0.6, n), rev=0.35, dly=0.2)
+    put('sfx', T['uses'], sparkle(0.6, 22, False, 3000, 8000, seed=41), 0.14, rev=0.35)
+    for k, (tc_, m) in enumerate(((12.5, 80), (13.0, 84), (13.5, 87), (14.0, 71))):
+        put('keys', tc_, bell(midi(m), 1.2, 1.5 if k < 3 else 2.6, 3.5 if k < 3 else 1.41, 0.5), 0.16, pan=0.45, rev=0.35)
+        put('sfx', tc_, tick(3600 if k < 3 else 1600, 0.025), 0.1, pan=0.5)
     # the beam fires; agents check in
     put('impact', T['beam'], laser(1.1), 0.34, rev=0.4, dly=0.25)
     put('impact', T['beam'], boom(1.5, 80, 34, 0.6), 0.5)
-    for k, tc_ in enumerate((10.5, 10.75, 11.0)):
+    for k, tc_ in enumerate((T['beam'] + 0.5, T['beam'] + 0.75, T['beam'] + 1.0)):
         put('keys', tc_, bell(midi([80, 84, 87][k]), 1.4, 1.8, 3.5, 0.6), 0.2, pan=0.35 + 0.15 * k, rev=0.35)
         put('sfx', tc_, tick(4200, 0.02), 0.1, pan=0.4)
     # the fold: whoosh, snare roll, drums out, reverse swell into the lockup
     put('sfx', T['fold'], whoosh(1.0, 3500, 500, 1.0, 0.35), 0.3, pan=np.linspace(0.6, -0.4, secs(1.0)))
-    tr = 13.0
-    k = 0
-    while tr < 13.5:
-        put('drums', tr, clap(), 0.12 + 0.3 * (tr - 13.0), rev=0.2)
-        tr += S16 / (1 if tr < 13.25 else 2)
-        k += 1
-    put('sfx', 12.2, riser(lock - 12.2, 260, 7000), 0.3, rev=0.25)
+    tr = groove_end
+    while tr < groove_end + 0.5:
+        put('drums', tr, clap(), 0.12 + 0.3 * (tr - groove_end), rev=0.2)
+        tr += S16 / (1 if tr < groove_end + 0.25 else 2)
+    put('sfx', T['fold'] + 0.2, riser(lock - T['fold'] - 0.2, 260, 7000), 0.3, rev=0.25)
     put('impact', lock - 0.55, reverse_swell(0.55, 1.2), 0.5)
     put('sfx', T['fold'] + 1.45, whoosh(0.55, 800, 3800, 1.1, 0.8), 0.25)
 
-    # ---------- THE LOCKUP (14 – 20) ----------
+    # ---------- THE LOCKUP (20 – 26) ----------
     put('impact', lock, kick(1.1), 0.8)
     put('impact', lock, boom(3.2, 70, 30, 1.4), 0.75)
     put('impact', lock, crash(3.4), 0.42, rev=0.45)
@@ -549,24 +565,24 @@ def build():
     for m in (56, 63, 68, 72):
         put('keys', lock, bell(midi(m + 12), 3.0, 1.6, 3.5, 1.1), 0.1, pan=(m - 64) / 12, rev=0.4)
     # sustained bed: Ab add9 → Db maj9 → Ab add9, fading to the end
-    bed = [(lock, 2.2, 'Ab9'), (16.0, 2.2, 'Dbma9'), (18.0, 2.0, 'Ab9')]
+    bed = [(lock, 2.2, 'Ab9'), (lock + 2.0, 2.2, 'Dbma9'), (lock + 4.0, 2.0, 'Ab9')]
     for b0, d, ch in bed:
         pdd = pad([midi(m) for m in CH[ch]], d + 0.4, cutoff=1500, attack=0.35, release=0.8)
         put('pads', b0, pdd, 0.55, rev=0.45)
     n = secs(DUR - lock)
     put('bass', lock, np.sin(2 * np.pi * midi(32) * tt(n)) * adsr(n, 0.02, 1.2, 0.5, 2.2), 0.35)
-    for k, tw in enumerate((14.5, 14.75, 15.0)):
+    for k, tw in enumerate((lock + 0.5, lock + 0.75, lock + 1.0)):
         put('keys', tw, bell(midi([72, 75, 80][k]), 1.6, 1.1, 2.0, 0.55), 0.13, pan=-0.3 + 0.3 * k, rev=0.4, dly=0.25)
     put('keys', T['cta'], bell(midi(80), 2.6, 1.4, 3.5, 1.0), 0.22, rev=0.45, dly=0.2)
     put('keys', T['cta'], bell(midi(87), 2.6, 1.0, 3.5, 0.9), 0.1, rev=0.45)
     put('sfx', T['cta'] + 0.3, tick(3600), 0.08)
-    put('sfx', 17.1, sparkle(0.9, 18, False, 4000, 9000, seed=31), 0.12, rev=0.4)
+    put('sfx', lock + 3.1, sparkle(0.9, 18, False, 4000, 9000, seed=31), 0.12, rev=0.4)
     # the arrow nudges on the downbeat; a second sheen crosses the button
-    put('sfx', 18.0, tick(3000, 0.025), 0.07, pan=0.15)
-    put('sfx', 18.9, sparkle(0.8, 14, False, 4200, 9000, seed=37), 0.09, rev=0.4)
+    put('sfx', lock + 4.0, tick(3000, 0.025), 0.07, pan=0.15)
+    put('sfx', lock + 4.9, sparkle(0.8, 14, False, 4200, 9000, seed=37), 0.09, rev=0.4)
     # a soft pulse keeps the end card alive
-    for k in range(int((19.0 - 16.0) / (BEAT / 2))):
-        put('drums', 16.0 + k * BEAT / 2, hat(False, 1.1), 0.05, pan=(-0.2 if k % 2 else 0.2))
+    for k in range(int(3.0 / (BEAT / 2))):
+        put('drums', T['cta'] + k * BEAT / 2, hat(False, 1.1), 0.05, pan=(-0.2 if k % 2 else 0.2))
 
 
 def master():
@@ -630,7 +646,7 @@ def main():
     for it in range(6):
         lufs = meter.integrated_loudness(mix)
         mix = mix * 10 ** ((target - lufs) / 20)
-        mix = limit(mix, -1.35)
+        mix = limit(mix, -1.6)
     lufs = meter.integrated_loudness(mix)
     tp = true_peak(mix)
     os.makedirs(os.path.join(ROOT, 'assets/audio'), exist_ok=True)
